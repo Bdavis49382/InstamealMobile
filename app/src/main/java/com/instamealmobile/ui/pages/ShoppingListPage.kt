@@ -31,7 +31,7 @@ import com.instamealmobile.viewModels.ShoppingListViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.LaunchedEffect
-import com.instamealmobile.viewModels.ApiState
+import com.instamealmobile.data.ApiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,7 +70,7 @@ fun ShoppingListPage(onDismiss : () -> Unit) {
                 is ApiState.Loading -> {
                     CircularProgressIndicator()
                 }
-                is ApiState.Success -> {
+                is ApiState.Success<*> -> {
                     val shoppingList = (shoppingListState as ApiState.Success<List<String>>).data
                     LazyColumn(
                         modifier = Modifier

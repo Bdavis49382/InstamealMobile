@@ -4,16 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.instamealmobile.data.ApiState
 import com.instamealmobile.network.BackendApiService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-sealed class ApiState<out T> {
-    data object Loading : ApiState<Nothing>()
-    data class Success<T>(val data: T) : ApiState<T>()
-    data class Error(val message: String) : ApiState<Nothing>()
-}
 
 
 @HiltViewModel
