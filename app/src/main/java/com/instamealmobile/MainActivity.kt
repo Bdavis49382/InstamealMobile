@@ -5,9 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.MaterialTheme
@@ -22,10 +20,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.instamealmobile.ui.ButtonArea
-import com.instamealmobile.ui.MealsArea
+import com.instamealmobile.ui.pages.HomePage
 import com.instamealmobile.ui.pages.ItemConfirmationDialog
 import com.instamealmobile.ui.pages.RecipeDialog
 import com.instamealmobile.ui.pages.SheetPages
@@ -70,17 +70,18 @@ class MainActivity : ComponentActivity() {
                 ) {
                     Scaffold(
                         floatingActionButton = {
-                            LargeFloatingActionButton(onClick = {
+                            LargeFloatingActionButton(modifier = Modifier.clip(CircleShape)
+                                , onClick = {
                                 setShowSheet(OpenSheet.ShoppingList)
                             }) {
-                                Icon(Icons.Default.ShoppingCart, contentDescription = "Shopping List")
+                                Icon(painter = painterResource(R.drawable.shoppinglisticon), contentDescription = "Shopping List")
                             }
                         },
                         snackbarHost = {
                             SnackbarHost(snackbarHostState)
                         }
                     ) { innerPadding ->
-                        MealsArea({meal ->
+                        HomePage({meal ->
                             alertOpen = true
                             pickedRecipe = meal
                         }, {meal ->
@@ -117,7 +118,7 @@ fun Preview() {
             modifier = Modifier.fillMaxSize(),
             color = colorResource(R.color.board)
         ) {
-            MealsArea({},{})
+            HomePage({},{})
             ButtonArea(setShowSheet)
 
         }
