@@ -24,7 +24,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.instamealmobile.ui.ButtonArea
 import com.instamealmobile.ui.pages.HomePage
 import com.instamealmobile.ui.pages.ItemConfirmationDialog
 import com.instamealmobile.ui.pages.RecipeDialog
@@ -62,7 +61,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            SheetPages(showSheet, setShowSheet)
+            SheetPages(showSheet, setShowSheet, pickedRecipe)
             InstamealMobileTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -82,7 +81,7 @@ class MainActivity : ComponentActivity() {
                         }
                     ) { innerPadding ->
                         HomePage({meal ->
-                            alertOpen = true
+                            setShowSheet(OpenSheet.PreviewRecipe)
                             pickedRecipe = meal
                         }, {meal ->
                             recipeDialogOpen = true
@@ -119,7 +118,6 @@ fun Preview() {
             color = colorResource(R.color.board)
         ) {
             HomePage({},{})
-            ButtonArea(setShowSheet)
 
         }
     }
