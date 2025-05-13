@@ -1,8 +1,8 @@
 package com.instamealmobile.ui.pages
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -25,7 +25,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.instamealmobile.makeLongList
 import com.instamealmobile.ui.CheckItem
 import com.instamealmobile.viewModels.ShoppingListViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -40,7 +39,6 @@ fun ShoppingListPage(onDismiss : () -> Unit) {
     var newItemText by remember { mutableStateOf("") }
     val viewModel: ShoppingListViewModel =  viewModel()
     val shoppingListState by viewModel.shoppingList.observeAsState()
-    val height = 350.dp
 
     LaunchedEffect(Unit) {
         viewModel.fetchShoppingList()
@@ -48,7 +46,8 @@ fun ShoppingListPage(onDismiss : () -> Unit) {
 
     ModalBottomSheet(onDismissRequest = { onDismiss() },
         sheetState = sheetState,
-        dragHandle = { BottomSheetDefaults.DragHandle()}
+        dragHandle = { BottomSheetDefaults.DragHandle()},
+        modifier = Modifier.fillMaxHeight()
     ) {
         Column {
             Card(
@@ -74,7 +73,6 @@ fun ShoppingListPage(onDismiss : () -> Unit) {
                     val shoppingList = (shoppingListState as ApiState.Success<List<String>>).data
                     LazyColumn(
                         modifier = Modifier
-                            .height(height)
                             .fillMaxWidth()
                     ) {
                         items(shoppingList) { item ->
