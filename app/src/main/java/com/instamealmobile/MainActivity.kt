@@ -76,6 +76,8 @@ class MainActivity : ComponentActivity() {
                         }, {meal ->
                             recipeDialogOpen = true
                             pickedRecipe = meal
+                        }, {
+                            setShowSheet(OpenSheet.AddRecipeToFeed)
                         },Modifier.padding(innerPadding))
 
                     }
@@ -107,7 +109,7 @@ fun Preview() {
             modifier = Modifier.fillMaxSize(),
             color = colorResource(R.color.board)
         ) {
-            HomePage({},{})
+            HomePage({},{}, {})
 
         }
     }

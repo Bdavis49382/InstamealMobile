@@ -16,14 +16,14 @@ fun doSomething() : Unit {
 }
 
 @Composable
-fun HomePage(openConfirmation: (meal : String) -> Unit, openRecipe: (meal : String) -> Unit, modifier : Modifier = Modifier) {
+fun HomePage(openConfirmation: (meal : String) -> Unit, openRecipe: (meal : String) -> Unit, openAddRecipe: () -> Unit, modifier : Modifier = Modifier) {
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
             Header()
             Menu(openRecipe)
-            Feed(openConfirmation)
+            Feed(openConfirmation, openAddRecipe)
         }
         SearchBar()
     }

@@ -10,7 +10,7 @@ fun SheetPages(showSheet: OpenSheet, setShowSheet: (OpenSheet) -> Unit, pickedRe
         OpenSheet.PreviewRecipe -> PreviewRecipe(onDismiss, {setShowSheet(OpenSheet.AddRecipeToMenu)}, pickedRecipe)
         OpenSheet.ShoppingList -> ShoppingListPage(onDismiss)
         OpenSheet.AddRecipeToMenu -> AddRecipeToMenu(onDismiss, {onDismiss()}, pickedRecipe)
-        OpenSheet.AddRecipeToFeed -> SharePage(onDismiss)
+        OpenSheet.AddRecipeToFeed -> AddRecipeToFeed(onDismiss, {setShowSheet(OpenSheet.PreviewRecipe)})
         OpenSheet.Household -> SharePage(onDismiss)
         OpenSheet.ViewRecipe -> SharePage(onDismiss)
         OpenSheet.None -> Unit // Do Nothing

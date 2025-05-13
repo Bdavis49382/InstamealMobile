@@ -24,12 +24,9 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.instamealmobile.makeLongList
 
-fun openAddRecipePage() {
-
-}
 
 @Composable
-fun Feed(openConfirmation : (String) -> Unit) {
+fun Feed(openConfirmation : (String) -> Unit, openAddRecipe : () -> Unit) {
     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
         FeedItem("Cheeseburger", openConfirmation, modifier = Modifier.padding(10.dp))
         LazyVerticalStaggeredGrid(columns = StaggeredGridCells.Adaptive(minSize = 180.dp),
@@ -41,7 +38,7 @@ fun Feed(openConfirmation : (String) -> Unit) {
                 .height(700.dp)
         ) {
             item {
-                AddRecipeButton(::openAddRecipePage)
+                AddRecipeButton(openAddRecipe)
             }
             items(makeLongList(10)) {item ->
                 FeedItem(item, openConfirmation)
