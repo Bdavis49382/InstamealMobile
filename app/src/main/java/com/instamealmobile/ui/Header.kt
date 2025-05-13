@@ -16,7 +16,7 @@ import com.instamealmobile.R
 import com.instamealmobile.ui.pages.doSomething
 
 @Composable
-fun Header() {
+fun Header(openHousehold : () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -27,7 +27,7 @@ fun Header() {
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(horizontal = 10.dp).weight(1f)
         )
-        Button(onClick = ::doSomething, modifier = Modifier.padding(horizontal = 5.dp)) {
+        Button(onClick = openHousehold, modifier = Modifier.padding(horizontal = 5.dp)) {
             Icon(painter = painterResource(R.drawable.household__2_), "Household")
         }
     }

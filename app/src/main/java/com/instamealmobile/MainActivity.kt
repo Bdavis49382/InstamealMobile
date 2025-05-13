@@ -17,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,10 +24,11 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.instamealmobile.ui.pages.HomePage
+import com.instamealmobile.ui.pages.InviteToHousehold
+import com.instamealmobile.ui.pages.JoinHousehold
 import com.instamealmobile.ui.pages.SheetPages
 import com.instamealmobile.ui.theme.InstamealMobileTheme
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -36,22 +36,25 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val (showSheet, setShowSheet) = remember { mutableStateOf(OpenSheet.None)}
-            var alertOpen by remember { mutableStateOf(false) }
+            var (openAlert, setAlert) = remember { mutableStateOf(OpenAlert.None) }
             var recipeDialogOpen by remember { mutableStateOf(false)}
             var pickedRecipe by remember { mutableStateOf("") }
 //            val scope = rememberCoroutineScope()
             val snackbarHostState = remember { SnackbarHostState() }
 
-            if (alertOpen) {
+            if (openAlert == OpenAlert.Join) {
+                JoinHousehold { setAlert(OpenAlert.None) }
 //                ItemConfirmationDialog(pickedRecipe,snackbarHostState) {
 //                    alertOpen = false
 //                    scope.launch {
 //                        snackbarHostState.showSnackbar("Added items to shopping list.")
 //                    }
 //                }
+            } else if (openAlert == OpenAlert.Invite) {
+                InviteToHousehold { setAlert(OpenAlert.None) }
             }
 
-            SheetPages(showSheet, setShowSheet, pickedRecipe)
+            SheetPages(showSheet, setShowSheet, setAlert, pickedRecipe)
             InstamealMobileTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -74,10 +77,12 @@ class MainActivity : ComponentActivity() {
                             setShowSheet(OpenSheet.PreviewRecipe)
                             pickedRecipe = meal
                         }, {meal ->
-                            recipeDialogOpen = true
+                            setShowSheet(OpenSheet.ViewRecipe)
                             pickedRecipe = meal
                         }, {
                             setShowSheet(OpenSheet.AddRecipeToFeed)
+                        }, {
+                            setShowSheet(OpenSheet.Household)
                         },Modifier.padding(innerPadding))
 
                     }
@@ -96,21 +101,4 @@ fun makeLongList(num : Int = 2) : MutableList<String> {
         meals.add("bla")
     }
     return meals
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun Preview() {
-    val (showSheet, setShowSheet) = remember { mutableStateOf(OpenSheet.None)}
-
-    SheetPages(showSheet, setShowSheet)
-    InstamealMobileTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = colorResource(R.color.board)
-        ) {
-            HomePage({},{}, {})
-
-        }
-    }
 }

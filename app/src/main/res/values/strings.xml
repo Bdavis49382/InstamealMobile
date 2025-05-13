@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">InstamealMobile</string>
+    <string name="household_description">Every member of the household has access to the same personal recipes, menu, and shopping list. only share with those you make meals with.</string>
+    <string name="household_not_started_message">You are not a member of a household. Join one or invite someone to start your own!</string>
+    <string name="household_code_message">Share this code with someone to let them join your household. This code will change regularly.</string>
     <string name="chalkboard_title">Meals</string>
 </resources>
