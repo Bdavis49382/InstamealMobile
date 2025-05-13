@@ -46,7 +46,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.instamealmobile.data.ApiState
 import com.instamealmobile.makeLongList
-import com.instamealmobile.ui.CheckItem
 import com.instamealmobile.viewModels.ShoppingListViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)

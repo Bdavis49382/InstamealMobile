@@ -25,8 +25,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.instamealmobile.ui.pages.HomePage
-import com.instamealmobile.ui.pages.ItemConfirmationDialog
-import com.instamealmobile.ui.pages.RecipeDialog
 import com.instamealmobile.ui.pages.SheetPages
 import com.instamealmobile.ui.theme.InstamealMobileTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -41,24 +39,16 @@ class MainActivity : ComponentActivity() {
             var alertOpen by remember { mutableStateOf(false) }
             var recipeDialogOpen by remember { mutableStateOf(false)}
             var pickedRecipe by remember { mutableStateOf("") }
-            val scope = rememberCoroutineScope()
+//            val scope = rememberCoroutineScope()
             val snackbarHostState = remember { SnackbarHostState() }
 
             if (alertOpen) {
-                ItemConfirmationDialog(pickedRecipe,snackbarHostState) {
-                    alertOpen = false
-                    scope.launch {
-                        snackbarHostState.showSnackbar("Added items to shopping list.")
-                    }
-                }
-            }
-            else if (recipeDialogOpen) {
-                RecipeDialog(pickedRecipe = pickedRecipe) {
-                    recipeDialogOpen = false
-                    scope.launch {
-                        snackbarHostState.showSnackbar("${pickedRecipe} cooked and removed from My Meals.")
-                    }
-                }
+//                ItemConfirmationDialog(pickedRecipe,snackbarHostState) {
+//                    alertOpen = false
+//                    scope.launch {
+//                        snackbarHostState.showSnackbar("Added items to shopping list.")
+//                    }
+//                }
             }
 
             SheetPages(showSheet, setShowSheet, pickedRecipe)
