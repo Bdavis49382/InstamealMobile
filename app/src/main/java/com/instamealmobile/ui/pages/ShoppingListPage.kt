@@ -5,7 +5,9 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -30,7 +32,10 @@ import com.instamealmobile.viewModels.ShoppingListViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.text.input.ImeAction
 import com.instamealmobile.data.ApiState
+import com.instamealmobile.data.ShoppingItem
+import com.instamealmobile.data.SmallShoppingItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,6 +65,11 @@ fun ShoppingListPage(onDismiss : () -> Unit) {
                     onValueChange = {newItemText = it},
                     label = { Text("Add Item") },
                     placeholder = { Text("New item for list...") },
+                    keyboardOptions = KeyboardOptions(imeAction= ImeAction.Done),
+                    keyboardActions = KeyboardActions(onDone = {
+                        viewModel.addItemToList(newItemText)
+                        newItemText = ""
+                    }),
                     singleLine = true,
                     textStyle = TextStyle(color = Color.Black, fontSize = 20.sp),
                     modifier = Modifier.fillMaxWidth()
@@ -70,13 +80,25 @@ fun ShoppingListPage(onDismiss : () -> Unit) {
                     CircularProgressIndicator()
                 }
                 is ApiState.Success<*> -> {
-                    val shoppingList = (shoppingListState as ApiState.Success<List<String>>).data
+                    val shoppingList = (shoppingListState as ApiState.Success<List<ShoppingItem>>).data
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .padding(bottom = 20.dp)
                     ) {
-                        items(shoppingList) { item ->
-                            CheckItem(name = item, color = Color.Black, FontFamily.Default)
+                        itemsIndexed(shoppingList.reversed()) { index,item ->
+                            CheckItem(shoppingItem = item,
+                                color = Color.Black,
+                                fontFamily = FontFamily.Default,
+                                editMethod = fun(text: String){
+                                    val newShoppingItem = SmallShoppingItem(item)
+                                    newShoppingItem.name = text
+                                    viewModel.editItem(shoppingList.size - index - 1, newShoppingItem)
+                                },
+                                checkMethod = {
+                                    viewModel.checkItem(shoppingList.size - index - 1)
+                                }
+                            )
                         }
                     }
                 }

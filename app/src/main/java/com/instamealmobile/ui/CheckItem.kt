@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Checkbox
@@ -26,10 +27,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.instamealmobile.data.ShoppingItem
 
 @Composable
-fun CheckItem(name: String, color: Color, fontFamily: FontFamily, modifier: Modifier = Modifier) {
-    var checked by remember { mutableStateOf(false) }
+fun CheckItem(shoppingItem: ShoppingItem, color: Color, fontFamily: FontFamily, editMethod: (String) -> Unit, checkMethod: () -> Unit) {
+    var checked by remember { mutableStateOf(shoppingItem.checked) }
     Row (
         modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -38,22 +40,35 @@ fun CheckItem(name: String, color: Color, fontFamily: FontFamily, modifier: Modi
         Row(verticalAlignment = Alignment.CenterVertically,modifier = Modifier
             .padding(start = 10.dp)
         ) {
-            Text("B", textAlign = TextAlign.Center, modifier = Modifier
+            Text(text=shoppingItem.user_initial, textAlign = TextAlign.Center, modifier = Modifier
                 .background(MaterialTheme.colorScheme.primaryContainer, shape = CircleShape)
                 .size(40.dp)
                 .wrapContentHeight(align = Alignment.CenterVertically)
             )
             Column {
+                if (checked) {
+                    Text(
+                        text = shoppingItem.name,
+                        color = color,
+                        fontSize = 20.sp,
+                        maxLines = 2,
+                        modifier = Modifier
+                            .padding(start = 10.dp)
+                            .width(300.dp),
+                        fontFamily = fontFamily,
+                        textDecoration = TextDecoration.LineThrough
+                    )
+                }
+                else {
+                    EditableText(modifier = Modifier
+                        .padding(start = 10.dp)
+                        .width(300.dp),
+                        text = shoppingItem.name,
+                        editMethod
+                    )
+                }
                 Text(
-                    text = name,
-                    color = color,
-                    fontSize = 20.sp,
-                    modifier = Modifier.padding(start = 10.dp),
-                    fontFamily = fontFamily,
-                    textDecoration = if (checked) TextDecoration.LineThrough else TextDecoration.None
-                )
-                Text(
-                    text= "Good Hamburger",
+                    text= shoppingItem.recipe_title,
                     color = color,
                     fontSize = 10.sp,
                     fontStyle = FontStyle.Italic,
@@ -64,6 +79,7 @@ fun CheckItem(name: String, color: Color, fontFamily: FontFamily, modifier: Modi
 
         }
         Checkbox(checked = checked, modifier = Modifier.size(30.dp).padding(end = 200.dp), onCheckedChange = {
+            checkMethod()
             checked = it
         })
     }

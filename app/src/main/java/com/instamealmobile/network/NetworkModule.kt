@@ -22,7 +22,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://instamealbackend.onrender.com")
+            .baseUrl("https://easymealsbackend.onrender.com")
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -30,7 +30,12 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideApiService(retrofit: Retrofit): BackendApiService {
-        return retrofit.create(BackendApiService::class.java)
+    fun provideShoppingListService(retrofit: Retrofit): ShoppingListService {
+        return retrofit.create(ShoppingListService::class.java)
+    }
+    @Provides
+    @Singleton
+    fun provideFeedService(retrofit: Retrofit): FeedService {
+        return retrofit.create(FeedService::class.java)
     }
 }
