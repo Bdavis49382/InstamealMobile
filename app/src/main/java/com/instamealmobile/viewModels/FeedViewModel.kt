@@ -28,4 +28,14 @@ class FeedViewModel @Inject constructor(private val apiService: FeedService): Vi
         }
     }
 
+    fun searchFeed(query: String) {
+        viewModelScope.launch {
+            try {
+                val response = apiService.searchFeed(householdId, query)
+                _feed.value = ApiState.Success(response)
+            } catch (e: Exception) {
+                _feed.value = ApiState.Error("Failed to fetch data: ${e.message}")
+            }
+        }
+    }
 }

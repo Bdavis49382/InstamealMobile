@@ -43,7 +43,7 @@ fun FeedItem(recipe: Recipe, openConfirmation: (String) -> Unit, modifier: Modif
             )
             Box(contentAlignment = Alignment.TopEnd) {
                 AsyncImage(
-                    model = recipe.img_link,
+                    model = if (recipe.img_link.isNotEmpty()) recipe.img_link else "https://recipe-graphics.grocerywebsite.com/0_GraphicsRecipes/4589_4k.jpg",
                     modifier = Modifier
                         .fillMaxWidth()
                         .aspectRatio(1f)
@@ -51,27 +51,27 @@ fun FeedItem(recipe: Recipe, openConfirmation: (String) -> Unit, modifier: Modif
                     contentDescription = null,
                     contentScale = ContentScale.Crop
                 )
-                Box(contentAlignment = Alignment.Center, modifier = Modifier
-                    .padding(10.dp)
-                    .background(MaterialTheme.colorScheme.background, RoundedCornerShape(5.dp))
-                    .graphicsLayer {
-                        this.alpha = 0.9f
-                    }
-                    .width(55.dp)
-                    .height(25.dp)
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically,modifier = Modifier
-                        .width(50.dp)
-                        .height(20.dp)
-                    ) {
-                        Text("2:45 ",
-                            fontSize = 13.sp,
-                            letterSpacing = 0.sp,
-                            modifier = Modifier
-                        )
-                        Icon(painter = painterResource(com.instamealmobile.R.drawable.history), contentDescription = "Clock Icon")
-                    }
-                }
+//                Box(contentAlignment = Alignment.Center, modifier = Modifier
+//                    .padding(10.dp)
+//                    .background(MaterialTheme.colorScheme.background, RoundedCornerShape(5.dp))
+//                    .graphicsLayer {
+//                        this.alpha = 0.9f
+//                    }
+//                    .width(55.dp)
+//                    .height(25.dp)
+//                ) {
+//                    Row(verticalAlignment = Alignment.CenterVertically,modifier = Modifier
+//                        .width(50.dp)
+//                        .height(20.dp)
+//                    ) {
+//                        Text("2:45 ",
+//                            fontSize = 13.sp,
+//                            letterSpacing = 0.sp,
+//                            modifier = Modifier
+//                        )
+//                        Icon(painter = painterResource(com.instamealmobile.R.drawable.history), contentDescription = "Clock Icon")
+//                    }
+//                }
             }
         }
     }

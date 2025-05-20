@@ -64,7 +64,7 @@ fun CheckItem(shoppingItem: ShoppingItem, color: Color, fontFamily: FontFamily, 
                         .padding(start = 10.dp)
                         .width(300.dp),
                         text = shoppingItem.name,
-                        editMethod
+                        onSubmit = editMethod
                     )
                 }
                 Text(

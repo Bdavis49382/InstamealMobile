@@ -5,11 +5,16 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.instamealmobile.ui.Feed
 import com.instamealmobile.ui.Header
 import com.instamealmobile.ui.Menu
 import com.instamealmobile.ui.SearchBar
+import com.instamealmobile.viewModels.FeedViewModel
 
 fun doSomething() : Unit {
     return
@@ -17,14 +22,20 @@ fun doSomething() : Unit {
 
 @Composable
 fun HomePage(openConfirmation: (meal : String) -> Unit, openRecipe: (meal : String) -> Unit, openAddRecipe: () -> Unit, openHousehold: () -> Unit, modifier : Modifier = Modifier) {
+    val viewModel: FeedViewModel =  viewModel()
+    val feedState by viewModel.feed.observeAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.fetchFeed()
+    }
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
             Header(openHousehold)
             Menu(openRecipe)
-            Feed(openConfirmation, openAddRecipe)
+            Feed(feedState, openConfirmation, openAddRecipe)
         }
-        SearchBar()
+        SearchBar(viewModel)
     }
 }

@@ -15,7 +15,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun EditableText(modifier : Modifier = Modifier,text : String = "", onSubmit : (String) -> Unit = {}) {
+fun EditableText(modifier : Modifier = Modifier,text : String = "", placeholder : String = "", maxLines : Int = 2, onSubmit : (String) -> Unit = {}) {
     var text by remember { mutableStateOf(text) }
     var isEditing by remember { mutableStateOf(false) }
 
@@ -24,8 +24,9 @@ fun EditableText(modifier : Modifier = Modifier,text : String = "", onSubmit : (
             value = text,
             onValueChange = { text = it },
             modifier = modifier,
+            placeholder = {Text(placeholder)},
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            maxLines = 2,
+            maxLines = maxLines,
             keyboardActions = KeyboardActions(
                 onDone = {
                     isEditing = false

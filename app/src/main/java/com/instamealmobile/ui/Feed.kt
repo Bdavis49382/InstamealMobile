@@ -26,14 +26,7 @@ import com.instamealmobile.viewModels.FeedViewModel
 
 
 @Composable
-fun Feed(openConfirmation : (String) -> Unit, openAddRecipe : () -> Unit) {
-    val viewModel: FeedViewModel =  viewModel()
-    val feedState by viewModel.feed.observeAsState()
-
-    LaunchedEffect(Unit) {
-        viewModel.fetchFeed()
-    }
-
+fun Feed(feedState:  ApiState<List<Recipe>>?,openConfirmation : (String) -> Unit, openAddRecipe : () -> Unit) {
     when (feedState) {
         is ApiState.Loading -> {
             CircularProgressIndicator()

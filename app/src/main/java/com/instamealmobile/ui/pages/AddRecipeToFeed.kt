@@ -5,14 +5,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -32,6 +36,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,41 +44,40 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.instamealmobile.data.ApiState
 import com.instamealmobile.makeLongList
-import com.instamealmobile.viewModels.ShoppingListViewModel
+import com.instamealmobile.ui.EditableText
+import com.instamealmobile.viewModels.AddRecipeToFeedViewModel
+import com.instamealmobile.viewModels.FeedViewModel
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddRecipeToFeed(onDismiss : () -> Unit, confirm: () -> Unit) {
-    val sheetState = rememberModalBottomSheetState()
-    var titleText by remember { mutableStateOf("") }
-    val viewModel: ShoppingListViewModel =  viewModel()
-    val shoppingListState by viewModel.shoppingList.observeAsState()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val viewModel: AddRecipeToFeedViewModel =  viewModel()
 
-    LaunchedEffect(Unit) {
-        viewModel.fetchShoppingList()
-    }
 
     ModalBottomSheet(onDismissRequest = { onDismiss() },
         sheetState = sheetState,
         modifier = Modifier.fillMaxHeight(),
         dragHandle = { BottomSheetDefaults.DragHandle()}
     ) {
-        Box(contentAlignment = Alignment.CenterEnd) {
+        Box(contentAlignment = Alignment.TopStart, modifier = Modifier.fillMaxSize()) {
             Column(modifier = Modifier
                 .padding(20.dp)
             ) {
                 Row(modifier = Modifier.height(150.dp)) {
                     Column(modifier = Modifier.width(200.dp).fillMaxHeight(), verticalArrangement = Arrangement.Center) {
                         TextField(
-                            value = titleText,
+                            value = viewModel.title,
                             placeholder = {Text("Title")},
-                            onValueChange = {titleText = it},
+                            onValueChange = {viewModel.title = it},
                             singleLine = true,
                             textStyle = TextStyle(color = Color.Black, fontSize = 13.sp),
                             modifier = Modifier
@@ -81,9 +85,9 @@ fun AddRecipeToFeed(onDismiss : () -> Unit, confirm: () -> Unit) {
                                 .clip(RoundedCornerShape(20.dp))
                         )
                         TextField(
-                            value = "",
+                            value = viewModel.source,
                             placeholder = {Text("Source")},
-                            onValueChange = {titleText = it},
+                            onValueChange = {viewModel.source = it},
                             singleLine = true,
                             textStyle = TextStyle(color = Color.Black, fontSize = 12.sp),
                             modifier = Modifier
@@ -101,89 +105,105 @@ fun AddRecipeToFeed(onDismiss : () -> Unit, confirm: () -> Unit) {
 
                     }
                 }
-                when (shoppingListState) {
-                    is ApiState.Loading -> {
-                        CircularProgressIndicator()
-                    }
-                    is ApiState.Success<*> -> {
-                        val shoppingList = (shoppingListState as ApiState.Success<List<String>>).data
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        ) {
-                            item {
-                                Text(
-                                    text = "Ingredients",
-                                    style = TextStyle(color = Color.Black, fontSize = 25.sp),
-                                    modifier = Modifier.fillMaxWidth().padding(bottom = 5.dp)
-                                )
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    item {
+                        Text(
+                            text = "Ingredients",
+                            style = TextStyle(color = Color.Black, fontSize = 25.sp),
+                            modifier = Modifier.fillMaxWidth().padding(bottom = 5.dp)
+                        )
 
+                    }
+                    itemsIndexed(viewModel.ingredients) { index,item ->
+                        Row {
+                            EditableText(text = item, placeholder = "Ingredient", modifier = Modifier
+                                .width(270.dp)
+                                .padding(end = 5.dp, bottom = 5.dp)
+                                .clip(RoundedCornerShape(20.dp))
+                            ) {
+                                viewModel.ingredients[index] = it
                             }
-                            items(shoppingList) { item ->
-                                Row {
-                                    TextField(
-                                        value = titleText,
-                                        placeholder = {Text("Amount")},
-                                        onValueChange = {titleText = it},
-                                        singleLine = true,
-                                        textStyle = TextStyle(color = Color.Black, fontSize = 8.sp),
-                                        modifier = Modifier
-                                            .width(100.dp)
-                                            .padding(end = 5.dp, bottom = 5.dp)
-                                            .clip(RoundedCornerShape(20.dp))
-                                    )
-                                    TextField(
-                                        value = titleText,
-                                        placeholder = {Text("Ingredient")},
-                                        onValueChange = {titleText = it},
-                                        singleLine = true,
-                                        textStyle = TextStyle(color = Color.Black, fontSize = 12.sp),
-                                        modifier = Modifier
-                                            .width(170.dp)
-                                            .padding(end = 5.dp, bottom = 5.dp)
-                                            .clip(RoundedCornerShape(20.dp))
-                                    )
-                                    Button({}, shape = CircleShape, modifier = Modifier.padding(horizontal = 5.dp)) {
-                                        Icon(Icons.Default.Delete, contentDescription = "Remove")
-                                    }
-                                }
-                            }
-                            item {
-                                Text(text="Steps",
-                                    style = TextStyle(color = Color.Black, fontSize = 25.sp),
-                                    modifier = Modifier.padding(vertical = 5.dp)
-                                )
-                            }
-                            items(makeLongList(10)) { item ->
-                                Row {
-                                    TextField(
-                                        value = titleText,
-                                        placeholder = {Text("Step")},
-                                        onValueChange = {titleText = it},
-                                        textStyle = TextStyle(color = Color.Black, fontSize = 12.sp),
-                                        modifier = Modifier
-                                            .padding(end = 5.dp, bottom = 5.dp)
-                                            .width(270.dp)
-                                            .clip(RoundedCornerShape(20.dp))
-                                    )
-                                    Button({}, shape = CircleShape) {
-                                        Icon(Icons.Default.Delete, contentDescription = "Remove")
-                                    }
-                                }
+                            Button({viewModel.ingredients.removeAt(index)}, shape = CircleShape, modifier = Modifier.padding(horizontal = 5.dp)) {
+                                Icon(Icons.Default.Delete, contentDescription = "Remove")
                             }
                         }
+                    }
+                    item {
+                        TextField(
+                            value = viewModel.newIngredient,
+                            placeholder = {Text("Ingredient")},
+                            onValueChange = {viewModel.newIngredient = it},
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                    viewModel.ingredients.add(viewModel.newIngredient)
+                                    viewModel.newIngredient = ""
+                                }
+                            ),
+                            singleLine = true,
+                            textStyle = TextStyle(color = Color.Black, fontSize = 12.sp),
+                            modifier = Modifier
+                                .width(270.dp)
+                                .padding(end = 5.dp, bottom = 5.dp)
+                                .clip(RoundedCornerShape(20.dp))
+                        )
 
                     }
-                    is ApiState.Error -> {
-                        val error = (shoppingListState as ApiState.Error).message
-                        Text(error)
+                    item {
+                        Text(text="Steps",
+                            style = TextStyle(color = Color.Black, fontSize = 25.sp),
+                            modifier = Modifier.padding(vertical = 5.dp)
+                        )
                     }
+                    itemsIndexed(viewModel.steps) { index,item ->
+                        Row {
+                            EditableText(text = item, placeholder = "Step", modifier = Modifier
+                                .width(270.dp)
+                                .padding(end = 5.dp, bottom = 5.dp)
+                                .clip(RoundedCornerShape(20.dp))
+                            ) {
+                                viewModel.steps[index] = it
+                            }
+                            Button({viewModel.steps.removeAt(index)}, shape = CircleShape) {
+                                Icon(Icons.Default.Delete, contentDescription = "Remove")
+                            }
+                        }
+                    }
+                    item {
+                        TextField(
+                            value = viewModel.newStep,
+                            placeholder = {Text("Step")},
+                            onValueChange = {viewModel.newStep = it},
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                    viewModel.steps.add(viewModel.newStep)
+                                    viewModel.newStep = ""
+                                }
+                            ),
+                            singleLine = true,
+                            textStyle = TextStyle(color = Color.Black, fontSize = 12.sp),
+                            modifier = Modifier
+                                .width(270.dp)
+                                .padding(end = 5.dp, bottom = 5.dp)
+                                .clip(RoundedCornerShape(20.dp))
+                        )
 
-                    null -> TODO()
+                    }
                 }
+
             }
-            Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(5.dp)) {
-                Button(confirm, shape = RoundedCornerShape(10.dp), modifier = Modifier
+            Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier
+                .fillMaxSize()
+                .padding(vertical = 100.dp, horizontal = 20.dp)
+            ) {
+                Button({
+                    viewModel.submitRecipe()
+//                    confirm()
+                       }, shape = RoundedCornerShape(10.dp), modifier = Modifier
                     .padding(horizontal = 30.dp, vertical = 5.dp)
                 ) {
                     Text("Add to Menu")
