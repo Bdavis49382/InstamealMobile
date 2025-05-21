@@ -206,7 +206,7 @@ fun AddRecipeToFeed(onDismiss : () -> Unit, confirm: () -> Unit) {
                        }, shape = RoundedCornerShape(10.dp), modifier = Modifier
                     .padding(horizontal = 30.dp, vertical = 5.dp)
                 ) {
-                    Text("Add to Menu")
+                    Text("Save")
                 }
             }
         }

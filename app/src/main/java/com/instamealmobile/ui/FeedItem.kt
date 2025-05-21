@@ -27,10 +27,10 @@ import coil.compose.AsyncImage
 import com.instamealmobile.data.Recipe
 
 @Composable
-fun FeedItem(recipe: Recipe, openConfirmation: (String) -> Unit, modifier: Modifier = Modifier) {
+fun FeedItem(recipe: Recipe, openConfirmation: (Recipe) -> Unit, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
-            .clickable { openConfirmation(recipe.title) }
+            .clickable { openConfirmation(recipe) }
     ) {
         Column {
             Text(text=recipe.title,
@@ -43,7 +43,7 @@ fun FeedItem(recipe: Recipe, openConfirmation: (String) -> Unit, modifier: Modif
             )
             Box(contentAlignment = Alignment.TopEnd) {
                 AsyncImage(
-                    model = if (recipe.img_link.isNotEmpty()) recipe.img_link else "https://recipe-graphics.grocerywebsite.com/0_GraphicsRecipes/4589_4k.jpg",
+                    model = if (!recipe.img_link.isNullOrEmpty()) recipe.img_link else "https://recipe-graphics.grocerywebsite.com/0_GraphicsRecipes/4589_4k.jpg",
                     modifier = Modifier
                         .fillMaxWidth()
                         .aspectRatio(1f)

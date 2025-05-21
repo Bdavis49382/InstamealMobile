@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -32,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -46,20 +49,19 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.instamealmobile.data.ApiState
+import com.instamealmobile.data.Recipe
+import com.instamealmobile.viewModels.AddRecipeToFeedViewModel
+import com.instamealmobile.viewModels.AddRecipeToMenuViewModel
 import com.instamealmobile.viewModels.ShoppingListViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddRecipeToMenu(onDismiss : () -> Unit, confirm: () -> Unit, recipe : String) {
+fun AddRecipeToMenu(onDismiss : () -> Unit, confirm: () -> Unit, recipe : Recipe) {
     val sheetState = rememberModalBottomSheetState()
-    var newItemText by remember { mutableStateOf("") }
-    val viewModel: ShoppingListViewModel =  viewModel()
-    val shoppingListState by viewModel.shoppingList.observeAsState()
-    var noteText by remember { mutableStateOf("") }
-    val height = 350.dp
+    val viewModel: AddRecipeToMenuViewModel =  viewModel()
 
     LaunchedEffect(Unit) {
-        viewModel.fetchShoppingList()
+        viewModel.ingredients.addAll(recipe.ingredients)
     }
 
     ModalBottomSheet(onDismissRequest = { onDismiss() },
@@ -67,25 +69,31 @@ fun AddRecipeToMenu(onDismiss : () -> Unit, confirm: () -> Unit, recipe : String
         modifier = Modifier.fillMaxHeight(),
         dragHandle = { BottomSheetDefaults.DragHandle()}
     ) {
-        Box(contentAlignment = Alignment.CenterEnd) {
-            Column(modifier = Modifier
-                .padding(20.dp)
+        Box(contentAlignment = Alignment.TopStart, modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                    .padding(20.dp)
             ) {
                 Row(modifier = Modifier.height(100.dp)) {
-                    Column(modifier = Modifier.width(200.dp).fillMaxHeight(), verticalArrangement = Arrangement.Center) {
+                    Column(
+                        modifier = Modifier.width(200.dp).fillMaxHeight(),
+                        verticalArrangement = Arrangement.Center
+                    ) {
                         Text(
-                            text = recipe,
+                            text = recipe.title,
                             style = TextStyle(color = Color.Black, fontSize = 30.sp),
                             modifier = Modifier.fillMaxWidth()
                         )
-                        Text(text = "From AllRecipes.com",
+                        Text(
+                            text = recipe.src_name ?: "",
                             fontStyle = FontStyle.Italic,
                             fontSize = 12.sp,
-                            modifier = Modifier.padding(horizontal = 10.dp))
+                            modifier = Modifier.padding(horizontal = 10.dp)
+                        )
                     }
                     Box(modifier = Modifier.width(400.dp)) {
                         AsyncImage(
-                            model = "https://recipe-graphics.grocerywebsite.com/0_GraphicsRecipes/4589_4k.jpg",
+                            model = recipe.img_link ?: "https://recipe-graphics.grocerywebsite.com/0_GraphicsRecipes/4589_4k.jpg",
                             modifier = Modifier
                                 .clip(RoundedCornerShape(10.dp)),
                             contentDescription = null
@@ -99,8 +107,8 @@ fun AddRecipeToMenu(onDismiss : () -> Unit, confirm: () -> Unit, recipe : String
                     modifier = Modifier.fillMaxWidth()
                 )
                 TextField(
-                    value = "Dad's Night",
-                    onValueChange = {noteText = it},
+                    value = viewModel.note,
+                    onValueChange = { viewModel.note = it },
                     singleLine = true,
                     textStyle = TextStyle(color = Color.Black, fontSize = 13.sp),
                     modifier = Modifier
@@ -108,49 +116,50 @@ fun AddRecipeToMenu(onDismiss : () -> Unit, confirm: () -> Unit, recipe : String
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(20.dp))
                 )
-                when (shoppingListState) {
-                    is ApiState.Loading -> {
-                        CircularProgressIndicator()
-                    }
-                    is ApiState.Success<*> -> {
-                        val shoppingList = (shoppingListState as ApiState.Success<List<String>>).data
-                        LazyColumn(
-                            verticalArrangement = Arrangement.spacedBy(10.dp),
-                            modifier = Modifier
-                                .height(height)
-                                .fillMaxWidth()
-                        ) {
-                            items(shoppingList) { item ->
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Button(onClick={}, shape = CircleShape,
-                                        colors = ButtonDefaults.buttonColors(containerColor =
-                                        MaterialTheme.colorScheme.errorContainer
-                                        , contentColor = MaterialTheme.colorScheme.onErrorContainer),
-                                        modifier = Modifier
-                                            .size(60.dp)
-                                    ) {
-                                        Icon(Icons.Default.Close, contentDescription = "Remove Item", modifier = Modifier
-                                        )
-                                    }
-                                    Text(text = item,
-                                        fontSize = 14.sp,
-                                        modifier = Modifier
-                                            .padding(horizontal = 10.dp)
-                                    )
-                                }
+                Text(
+                    text = "Will Add Following Items to Shopping List:",
+                    style = TextStyle(color = Color.Black, fontSize = 15.sp),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                ) {
+                    itemsIndexed(viewModel.ingredients) { index,item ->
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Button(
+                                onClick = {viewModel.ingredients.removeAt(index)}, shape = CircleShape,
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor =
+                                        MaterialTheme.colorScheme.errorContainer,
+                                    contentColor = MaterialTheme.colorScheme.onErrorContainer
+                                ),
+                                modifier = Modifier
+                                    .size(60.dp)
+                            ) {
+                                Icon(
+                                    Icons.Default.Close,
+                                    contentDescription = "Remove Item",
+                                    modifier = Modifier
+                                )
                             }
+                            Text(
+                                text = item,
+                                fontSize = 14.sp,
+                                modifier = Modifier
+                                    .padding(horizontal = 10.dp)
+                            )
                         }
                     }
-                    is ApiState.Error -> {
-                        val error = (shoppingListState as ApiState.Error).message
-                        Text(error)
-                    }
-
-                    null -> TODO()
                 }
             }
-            Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(5.dp)) {
-                Button(confirm, shape = RoundedCornerShape(10.dp), modifier = Modifier
+            Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier
+                .fillMaxSize()
+                .padding(vertical = 100.dp, horizontal = 20.dp)
+            ) {
+                Button({viewModel.addRecipe(recipe)
+                    confirm()}, shape = RoundedCornerShape(10.dp), modifier = Modifier
                     .padding(horizontal = 30.dp, vertical = 5.dp)
                 ) {
                     Icon(Icons.Default.ArrowForward, contentDescription = "Edit")

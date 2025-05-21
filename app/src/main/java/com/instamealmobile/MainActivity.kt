@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.instamealmobile.data.Recipe
 import com.instamealmobile.ui.pages.HomePage
 import com.instamealmobile.ui.pages.InviteToHousehold
 import com.instamealmobile.ui.pages.JoinHousehold
@@ -38,7 +39,7 @@ class MainActivity : ComponentActivity() {
             val (showSheet, setShowSheet) = remember { mutableStateOf(OpenSheet.None)}
             var (openAlert, setAlert) = remember { mutableStateOf(OpenAlert.None) }
             var recipeDialogOpen by remember { mutableStateOf(false)}
-            var pickedRecipe by remember { mutableStateOf("") }
+            val (pickedRecipe, setPickedRecipe) = remember { mutableStateOf(Recipe(title="", img_link = "")) }
 //            val scope = rememberCoroutineScope()
             val snackbarHostState = remember { SnackbarHostState() }
 
@@ -54,7 +55,7 @@ class MainActivity : ComponentActivity() {
                 InviteToHousehold { setAlert(OpenAlert.None) }
             }
 
-            SheetPages(showSheet, setShowSheet, setAlert, pickedRecipe)
+            SheetPages(showSheet, setShowSheet, setAlert, pickedRecipe, setPickedRecipe)
             InstamealMobileTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -75,10 +76,10 @@ class MainActivity : ComponentActivity() {
                     ) { innerPadding ->
                         HomePage({meal ->
                             setShowSheet(OpenSheet.PreviewRecipe)
-                            pickedRecipe = meal
+                            setPickedRecipe(meal)
                         }, {meal ->
                             setShowSheet(OpenSheet.ViewRecipe)
-                            pickedRecipe = meal
+                            setPickedRecipe(meal)
                         }, {
                             setShowSheet(OpenSheet.AddRecipeToFeed)
                         }, {

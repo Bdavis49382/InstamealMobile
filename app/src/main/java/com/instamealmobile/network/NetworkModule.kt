@@ -38,4 +38,9 @@ object NetworkModule {
     fun provideFeedService(retrofit: Retrofit): FeedService {
         return retrofit.create(FeedService::class.java)
     }
+    @Provides
+    @Singleton
+    fun provideMenuService(retrofit: Retrofit): MenuService {
+        return retrofit.create(MenuService::class.java)
+    }
 }

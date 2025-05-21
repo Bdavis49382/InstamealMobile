@@ -14,9 +14,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.instamealmobile.data.Recipe
 
 @Composable
-fun MenuItem(recipe: String, openRecipe: (String) -> Unit) {
+fun MenuItem(recipe: Recipe, openRecipe: (Recipe) -> Unit) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text("today")
         AsyncImage(
@@ -29,6 +30,6 @@ fun MenuItem(recipe: String, openRecipe: (String) -> Unit) {
                 .clickable { openRecipe(recipe) },
             contentDescription = null
         )
-        Text(recipe)
+        Text(recipe.title)
     }
 }

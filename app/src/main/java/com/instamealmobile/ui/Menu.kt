@@ -29,10 +29,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.instamealmobile.R
+import com.instamealmobile.data.Recipe
 import com.instamealmobile.makeLongList
 
 @Composable
-fun Menu(openRecipe: (String) -> Unit) {
+fun Menu(openRecipe: (Recipe) -> Unit) {
     Box(modifier = Modifier
         .height(200.dp)
         .fillMaxWidth()
@@ -55,7 +56,7 @@ fun Menu(openRecipe: (String) -> Unit) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 items(makeLongList()) {
-                    MenuItem(it, openRecipe)
+                    MenuItem(Recipe(title=it, img_link = ""), openRecipe)
                 }
             }
         }
