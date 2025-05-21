@@ -20,5 +20,5 @@ data class Recipe(
 data class Record(
     val household_id: String,
     val timestamp: String,
-    val rating: Int?
+    val rating: Float?
 )

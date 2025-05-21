@@ -11,6 +11,8 @@ import retrofit2.http.Query
 import java.util.Dictionary
 
 interface MenuService {
+    @GET("menu/get")
+    suspend fun getMenu(@Header("householdId") token: String) : List<MenuItem>
     @GET("menu/get/recipe")
     suspend fun getRecipe(@Header("householdId") token: String,@Query("recipe_id") recipe_id: String) : Recipe
     @GET("menu/get/recipe-online")
@@ -20,4 +22,11 @@ interface MenuService {
         @Header("householdId") token: String,
         @Path("user_id") user_id: String,
         @Body menu_item: MenuItem) : Dictionary<String,String>
+    @POST("menu/finish")
+    suspend fun finishMeal(
+        @Header("householdId") token: String,
+        @Query("recipe_id") recipe_id: String,
+        @Query("user_id") user_id: String,
+        @Query("rating") rating: Float
+    ) : List<MenuItem>
 }

@@ -47,6 +47,7 @@ import coil.compose.AsyncImage
 import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.Recipe
 import com.instamealmobile.makeLongList
+import com.instamealmobile.viewModels.MenuViewModel
 import com.instamealmobile.viewModels.RecipeViewModel
 import com.instamealmobile.viewModels.ShoppingListViewModel
 
@@ -55,6 +56,7 @@ import com.instamealmobile.viewModels.ShoppingListViewModel
 fun ViewRecipe(onDismiss : () -> Unit, confirm: () -> Unit, recipe : Recipe) {
     val sheetState = rememberModalBottomSheetState()
     val viewModel: RecipeViewModel =  viewModel()
+    val menuViewModel: MenuViewModel = viewModel()
     val recipeState by viewModel.recipe.observeAsState()
 
     LaunchedEffect(Unit) {
@@ -66,7 +68,7 @@ fun ViewRecipe(onDismiss : () -> Unit, confirm: () -> Unit, recipe : Recipe) {
         modifier = Modifier.fillMaxHeight(),
         dragHandle = { BottomSheetDefaults.DragHandle()}
     ) {
-        Box(contentAlignment = Alignment.CenterEnd) {
+        Box(contentAlignment = Alignment.TopStart, modifier = Modifier.fillMaxSize()) {
             when (recipeState) {
                 is ApiState.Loading -> {
                     CircularProgressIndicator()
@@ -142,6 +144,17 @@ fun ViewRecipe(onDismiss : () -> Unit, confirm: () -> Unit, recipe : Recipe) {
                             }
                         }
                     }
+                    Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier
+                        .fillMaxSize()
+                        .padding(vertical = 100.dp, horizontal = 20.dp)
+                    ) {
+                        Button({ menuViewModel.finishMeal(recipeData.id ?: "",4.5f)
+                            confirm()}, shape = RoundedCornerShape(10.dp), modifier = Modifier
+                            .padding(horizontal = 30.dp, vertical = 5.dp)
+                        ) {
+                            Text("Finish")
+                        }
+                    }
                 }
                 is ApiState.Error -> {
                     val error = (recipeState as ApiState.Error).message
@@ -149,13 +162,6 @@ fun ViewRecipe(onDismiss : () -> Unit, confirm: () -> Unit, recipe : Recipe) {
                 }
 
                 null -> TODO()
-            }
-            Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(5.dp)) {
-                Button(confirm, shape = RoundedCornerShape(10.dp), modifier = Modifier
-                    .padding(horizontal = 30.dp, vertical = 5.dp)
-                ) {
-                    Text("Finish")
-                }
             }
         }
     }
