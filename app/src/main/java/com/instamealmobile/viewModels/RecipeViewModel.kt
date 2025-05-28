@@ -6,9 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.Recipe
-import com.instamealmobile.data.ShoppingItem
 import com.instamealmobile.network.MenuService
-import com.instamealmobile.network.ShoppingListService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

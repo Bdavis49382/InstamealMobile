@@ -1,66 +1,42 @@
 package com.instamealmobile.ui.pages
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.unit.FontScaling
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.AsyncImage
 import com.instamealmobile.data.ApiState
+import com.instamealmobile.data.MenuItem
 import com.instamealmobile.data.Recipe
-import com.instamealmobile.makeLongList
+import com.instamealmobile.ui.RecipeView
 import com.instamealmobile.viewModels.MenuViewModel
-import com.instamealmobile.viewModels.RecipeViewModel
-import com.instamealmobile.viewModels.ShoppingListViewModel
+import java.text.SimpleDateFormat
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ViewRecipe(onDismiss : () -> Unit, confirm: () -> Unit, recipe : Recipe) {
     val sheetState = rememberModalBottomSheetState()
-    val viewModel: RecipeViewModel =  viewModel()
     val menuViewModel: MenuViewModel = viewModel()
-    val recipeState by viewModel.recipe.observeAsState()
+    val menuItemState by menuViewModel.selected.observeAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.getRecipe(recipe)
+        menuViewModel.getRecipe(recipe.index)
     }
 
     ModalBottomSheet(onDismissRequest = { onDismiss() },
@@ -69,86 +45,26 @@ fun ViewRecipe(onDismiss : () -> Unit, confirm: () -> Unit, recipe : Recipe) {
         dragHandle = { BottomSheetDefaults.DragHandle()}
     ) {
         Box(contentAlignment = Alignment.TopStart, modifier = Modifier.fillMaxSize()) {
-            when (recipeState) {
+            when (menuItemState) {
                 is ApiState.Loading -> {
                     CircularProgressIndicator()
                 }
                 is ApiState.Success<*> -> {
-                    val recipeData = (recipeState as ApiState.Success<Recipe>).data
-                    Column(
-                        modifier = Modifier
-                            .padding(20.dp)
-                    ) {
-                        Row(modifier = Modifier.height(100.dp)) {
-                            Column(
-                                modifier = Modifier.width(200.dp).fillMaxHeight(),
-                                verticalArrangement = Arrangement.Center
-                            ) {
-                                Text(
-                                    text = recipeData.title,
-                                    style = TextStyle(color = Color.Black, fontSize = 30.sp),
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                                Text(
-                                    text = recipeData.src_name ?: "",
-                                    fontStyle = FontStyle.Italic,
-                                    fontSize = 12.sp,
-                                    modifier = Modifier.padding(horizontal = 10.dp)
-                                )
-                            }
-                            Box(modifier = Modifier.width(400.dp)) {
-                                AsyncImage(
-                                    model = recipeData.img_link
-                                        ?: "https://recipe-graphics.grocerywebsite.com/0_GraphicsRecipes/4589_4k.jpg",
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(10.dp)),
-                                    contentDescription = null
-                                )
-
-                            }
+                    val menuItem = (menuItemState as ApiState.Success<MenuItem>).data
+                    Column {
+                        if (menuItem.note.isNotEmpty()) {
+                            Text("Note: ${menuItem.note}")
                         }
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        ) {
-                            item {
-                                Text(
-                                    text = "Ingredients",
-                                    style = TextStyle(color = Color.Black, fontSize = 25.sp),
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-
-                            }
-                            items(recipeData.ingredients) { item ->
-                                Text(
-                                    text = item,
-                                    fontSize = 14.sp,
-                                    modifier = Modifier
-                                        .padding(horizontal = 10.dp)
-                                )
-                            }
-                            item {
-                                Text(
-                                    text = "Steps",
-                                    style = TextStyle(color = Color.Black, fontSize = 25.sp),
-                                    modifier = Modifier.padding(top = 5.dp)
-                                )
-                            }
-                            items(recipeData.instructions) { item ->
-                                Text(
-                                    text = item,
-                                    fontSize = 14.sp,
-                                    modifier = Modifier
-                                        .padding(horizontal = 10.dp)
-                                )
-                            }
+                        if (menuItem.date != null) {
+                            Text("Date: ${SimpleDateFormat("E, MMMM dd").format(menuItem.date)}")
                         }
+                        RecipeView(menuItem.recipe?: Recipe(title=""))
                     }
                     Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier
                         .fillMaxSize()
                         .padding(vertical = 100.dp, horizontal = 20.dp)
                     ) {
-                        Button({ menuViewModel.finishMeal(recipeData.id ?: "",4.5f)
+                        Button({ menuViewModel.finishMeal(menuItem.recipe?.id ?: "",4.5f)
                             confirm()}, shape = RoundedCornerShape(10.dp), modifier = Modifier
                             .padding(horizontal = 30.dp, vertical = 5.dp)
                         ) {
@@ -157,7 +73,7 @@ fun ViewRecipe(onDismiss : () -> Unit, confirm: () -> Unit, recipe : Recipe) {
                     }
                 }
                 is ApiState.Error -> {
-                    val error = (recipeState as ApiState.Error).message
+                    val error = (menuItemState as ApiState.Error).message
                     Text(error)
                 }
 

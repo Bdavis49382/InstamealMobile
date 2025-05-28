@@ -8,7 +8,6 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
-import java.util.Dictionary
 
 interface MenuService {
     @GET("menu/get")
@@ -17,11 +16,13 @@ interface MenuService {
     suspend fun getRecipe(@Header("householdId") token: String,@Query("recipe_id") recipe_id: String) : Recipe
     @GET("menu/get/recipe-online")
     suspend fun getRecipeOnline(@Header("householdId") token: String,@Query("link") link: String) : Recipe
+    @GET("menu/get/recipe/{index}")
+    suspend fun getRecipeByIndex(@Header("householdId") token: String, @Path("index") index: Int) : MenuItem
     @POST("menu/add/{user_id}")
     suspend fun addRecipe(
         @Header("householdId") token: String,
         @Path("user_id") user_id: String,
-        @Body menu_item: MenuItem) : Dictionary<String,String>
+        @Body menu_item: MenuItem) : List<MenuItem>
     @POST("menu/finish")
     suspend fun finishMeal(
         @Header("householdId") token: String,

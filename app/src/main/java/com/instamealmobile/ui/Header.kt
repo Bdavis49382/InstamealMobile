@@ -13,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.instamealmobile.R
-import com.instamealmobile.ui.pages.doSomething
 
 @Composable
 fun Header(openHousehold : () -> Unit) {

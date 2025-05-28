@@ -4,7 +4,7 @@ data class Recipe(
     val title: String,
     val img_link: String? = null,
     val src_name: String? = null,
-    val time_estimate: List<String>? = null,
+    val time_estimate: List<String> = mutableListOf<String>(),
     val permissions_required: String = "household",
     val instructions: List<String> = mutableListOf<String>(),
     val author_id: String? = null,
@@ -14,7 +14,8 @@ data class Recipe(
     val history: List<Record>? = null,
     val id: String? = null,
     val score: Int? = null,
-    val rate: Float? = null
+    val rate: Float? = null,
+    val index: Int = 0
 )
 
 data class Record(

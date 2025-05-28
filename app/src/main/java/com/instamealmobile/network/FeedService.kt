@@ -1,8 +1,6 @@
 package com.instamealmobile.network
 
 import com.instamealmobile.data.Recipe
-import com.instamealmobile.data.ShoppingListUpdateResponse
-import com.instamealmobile.data.SmallShoppingItem
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header

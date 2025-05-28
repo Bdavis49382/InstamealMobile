@@ -1,5 +1,6 @@
 package com.instamealmobile.network
 
+import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,13 +19,15 @@ object NetworkModule {
         return OkHttpClient.Builder().build()
     }
 
+
     @Provides
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
+        val gson = GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create()
         return Retrofit.Builder()
             .baseUrl("https://easymealsbackend.onrender.com")
             .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
     }
 
@@ -42,5 +45,10 @@ object NetworkModule {
     @Singleton
     fun provideMenuService(retrofit: Retrofit): MenuService {
         return retrofit.create(MenuService::class.java)
+    }
+    @Provides
+    @Singleton
+    fun provideHouseholdService(retrofit: Retrofit): HouseholdService {
+        return retrofit.create(HouseholdService::class.java)
     }
 }

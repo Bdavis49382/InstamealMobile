@@ -1,5 +1,7 @@
 package com.instamealmobile.ui.pages
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,35 +11,24 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,20 +39,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.Recipe
-import com.instamealmobile.viewModels.AddRecipeToFeedViewModel
-import com.instamealmobile.viewModels.AddRecipeToMenuViewModel
-import com.instamealmobile.viewModels.ShoppingListViewModel
+import com.instamealmobile.ui.DatePickerModal
+import com.instamealmobile.viewModels.MenuViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddRecipeToMenu(onDismiss : () -> Unit, confirm: () -> Unit, recipe : Recipe) {
     val sheetState = rememberModalBottomSheetState()
-    val viewModel: AddRecipeToMenuViewModel =  viewModel()
+    val viewModel: MenuViewModel =  viewModel()
 
     LaunchedEffect(Unit) {
         viewModel.ingredients.addAll(recipe.ingredients)
+    }
+    if (viewModel.datePickerOpen) {
+        DatePickerModal({viewModel.date = it ?: 0}) {viewModel.datePickerOpen = false }
     }
 
     ModalBottomSheet(onDismissRequest = { onDismiss() },
@@ -116,6 +108,9 @@ fun AddRecipeToMenu(onDismiss : () -> Unit, confirm: () -> Unit, recipe : Recipe
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(20.dp))
                 )
+                Button({viewModel.datePickerOpen = true}) {
+                    Text("Add Date (optional) ${viewModel.getDateString("MM/dd/yyyy")}")
+                }
                 Text(
                     text = "Will Add Following Items to Shopping List:",
                     style = TextStyle(color = Color.Black, fontSize = 15.sp),
@@ -128,15 +123,15 @@ fun AddRecipeToMenu(onDismiss : () -> Unit, confirm: () -> Unit, recipe : Recipe
                 ) {
                     itemsIndexed(viewModel.ingredients) { index,item ->
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Button(
-                                onClick = {viewModel.ingredients.removeAt(index)}, shape = CircleShape,
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor =
-                                        MaterialTheme.colorScheme.errorContainer,
-                                    contentColor = MaterialTheme.colorScheme.onErrorContainer
-                                ),
+                            Text(
+                                text = item,
+                                fontSize = 14.sp,
                                 modifier = Modifier
-                                    .size(60.dp)
+                                    .padding(horizontal = 10.dp)
+                                    .width(250.dp)
+                            )
+                            TextButton(
+                                onClick = {viewModel.ingredients.removeAt(index)}
                             ) {
                                 Icon(
                                     Icons.Default.Close,
@@ -144,12 +139,6 @@ fun AddRecipeToMenu(onDismiss : () -> Unit, confirm: () -> Unit, recipe : Recipe
                                     modifier = Modifier
                                 )
                             }
-                            Text(
-                                text = item,
-                                fontSize = 14.sp,
-                                modifier = Modifier
-                                    .padding(horizontal = 10.dp)
-                            )
                         }
                     }
                 }

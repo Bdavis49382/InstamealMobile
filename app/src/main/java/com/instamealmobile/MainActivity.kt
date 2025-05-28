@@ -13,22 +13,23 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.instamealmobile.data.Recipe
 import com.instamealmobile.ui.pages.HomePage
 import com.instamealmobile.ui.pages.InviteToHousehold
 import com.instamealmobile.ui.pages.JoinHousehold
 import com.instamealmobile.ui.pages.SheetPages
 import com.instamealmobile.ui.theme.InstamealMobileTheme
+import com.instamealmobile.viewModels.HouseholdViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -42,6 +43,12 @@ class MainActivity : ComponentActivity() {
             val (pickedRecipe, setPickedRecipe) = remember { mutableStateOf(Recipe(title="", img_link = "")) }
 //            val scope = rememberCoroutineScope()
             val snackbarHostState = remember { SnackbarHostState() }
+            val viewModel: HouseholdViewModel =  viewModel()
+            val householdIdState by viewModel.householdId.observeAsState()
+
+            LaunchedEffect(Unit) {
+                viewModel.getId()
+            }
 
             if (openAlert == OpenAlert.Join) {
                 JoinHousehold { setAlert(OpenAlert.None) }
@@ -54,6 +61,7 @@ class MainActivity : ComponentActivity() {
             } else if (openAlert == OpenAlert.Invite) {
                 InviteToHousehold { setAlert(OpenAlert.None) }
             }
+
 
             SheetPages(showSheet, setShowSheet, setAlert, pickedRecipe, setPickedRecipe)
             InstamealMobileTheme {
@@ -91,15 +99,4 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-}
-
-
-fun makeLongList(num : Int = 2) : MutableList<String> {
-    val meals = mutableListOf<String>()
-    meals.add("Hamburger");
-    meals.add("Double Cheeseburger")
-    for (i in 1..num) {
-        meals.add("bla")
-    }
-    return meals
 }

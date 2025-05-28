@@ -15,9 +15,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.instamealmobile.viewModels.HouseholdViewModel
 
 @Composable
 fun JoinHousehold(onDismiss: () -> Unit) {
+    val viewModel: HouseholdViewModel =  viewModel()
     Dialog(onDismissRequest = onDismiss) {
         Card(
             modifier = Modifier
@@ -29,11 +32,12 @@ fun JoinHousehold(onDismiss: () -> Unit) {
            Column(horizontalAlignment = Alignment.CenterHorizontally,modifier = Modifier.padding(30.dp)) {
                Text("Join by entering the code provided by the head of your household.", textAlign = TextAlign.Center)
                TextField(
-                   value = "",
-                   onValueChange = {},
+                   value = viewModel.codeEntry,
+                   onValueChange = {viewModel.codeEntry = it},
                    singleLine = true,
                )
-               Button({}) {
+               Button({viewModel.joinHousehold()
+               onDismiss()}) {
                    Text("Submit")
                }
            }

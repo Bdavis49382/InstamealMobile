@@ -17,10 +17,6 @@ import com.instamealmobile.ui.Menu
 import com.instamealmobile.ui.SearchBar
 import com.instamealmobile.viewModels.FeedViewModel
 
-fun doSomething() : Unit {
-    return
-}
-
 @Composable
 fun HomePage(openConfirmation: (meal : Recipe) -> Unit, openRecipe: (meal : Recipe) -> Unit, openAddRecipe: () -> Unit, openHousehold: () -> Unit, modifier : Modifier = Modifier) {
     val viewModel: FeedViewModel =  viewModel()
