@@ -40,7 +40,7 @@ fun RecipeView(recipe: Recipe) {
             ) {
                 Text(
                     text = recipe.title,
-                    style = TextStyle(color = Color.Black, fontSize = 30.sp),
+                    style = TextStyle( fontSize = 30.sp),
                     modifier = Modifier.fillMaxWidth()
                 )
                 if (recipe.src_link.isNullOrEmpty()) {
@@ -87,7 +87,7 @@ fun RecipeView(recipe: Recipe) {
             item {
                 Text(
                     text = "Ingredients",
-                    style = TextStyle(color = Color.Black, fontSize = 25.sp),
+                    style = TextStyle( fontSize = 25.sp),
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -103,7 +103,7 @@ fun RecipeView(recipe: Recipe) {
             item {
                 Text(
                     text = "Steps",
-                    style = TextStyle(color = Color.Black, fontSize = 25.sp),
+                    style = TextStyle(fontSize = 25.sp),
                     modifier = Modifier.padding(top = 5.dp)
                 )
             }

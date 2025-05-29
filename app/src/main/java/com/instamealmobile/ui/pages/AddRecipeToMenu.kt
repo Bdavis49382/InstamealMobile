@@ -46,7 +46,7 @@ import com.instamealmobile.viewModels.MenuViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddRecipeToMenu(onDismiss : () -> Unit, confirm: () -> Unit, recipe : Recipe) {
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val viewModel: MenuViewModel =  viewModel()
 
     LaunchedEffect(Unit) {
@@ -73,7 +73,7 @@ fun AddRecipeToMenu(onDismiss : () -> Unit, confirm: () -> Unit, recipe : Recipe
                     ) {
                         Text(
                             text = recipe.title,
-                            style = TextStyle(color = Color.Black, fontSize = 30.sp),
+                            style = TextStyle( fontSize = 30.sp),
                             modifier = Modifier.fillMaxWidth()
                         )
                         Text(
@@ -95,14 +95,14 @@ fun AddRecipeToMenu(onDismiss : () -> Unit, confirm: () -> Unit, recipe : Recipe
                 }
                 Text(
                     text = "Add a Note (optional)",
-                    style = TextStyle(color = Color.Black, fontSize = 15.sp),
+                    style = TextStyle(fontSize = 15.sp),
                     modifier = Modifier.fillMaxWidth()
                 )
                 TextField(
                     value = viewModel.note,
                     onValueChange = { viewModel.note = it },
                     singleLine = true,
-                    textStyle = TextStyle(color = Color.Black, fontSize = 13.sp),
+                    textStyle = TextStyle(fontSize = 13.sp),
                     modifier = Modifier
                         .padding(start = 5.dp, top = 15.dp, end = 120.dp, bottom = 30.dp)
                         .fillMaxWidth()
@@ -113,7 +113,7 @@ fun AddRecipeToMenu(onDismiss : () -> Unit, confirm: () -> Unit, recipe : Recipe
                 }
                 Text(
                     text = "Will Add Following Items to Shopping List:",
-                    style = TextStyle(color = Color.Black, fontSize = 15.sp),
+                    style = TextStyle(fontSize = 15.sp),
                     modifier = Modifier.fillMaxWidth()
                 )
                 LazyColumn(

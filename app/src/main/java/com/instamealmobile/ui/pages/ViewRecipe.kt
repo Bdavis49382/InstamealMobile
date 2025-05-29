@@ -31,7 +31,7 @@ import java.text.SimpleDateFormat
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ViewRecipe(onDismiss : () -> Unit, confirm: () -> Unit, recipe : Recipe) {
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val menuViewModel: MenuViewModel = viewModel()
     val menuItemState by menuViewModel.selected.observeAsState()
 

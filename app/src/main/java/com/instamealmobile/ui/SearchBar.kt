@@ -42,9 +42,9 @@ fun SearchBar(viewModel:  FeedViewModel) {
                 searchBoxText = ""
             }),
             singleLine = true,
-            textStyle = TextStyle(color = Color.Black, fontSize = 20.sp),
+            textStyle = TextStyle(fontSize = 20.sp),
             modifier = Modifier
-                .padding(start = 5.dp, top = 15.dp, end = 120.dp, bottom = 30.dp)
+                .padding(start = 5.dp, top = 15.dp, end = 120.dp, bottom = 60.dp)
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(20.dp))
         )

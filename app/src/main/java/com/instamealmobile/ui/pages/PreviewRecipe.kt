@@ -33,7 +33,7 @@ import com.instamealmobile.viewModels.RecipeViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PreviewRecipe(onDismiss : () -> Unit, confirm: (Recipe) -> Unit, recipe : Recipe) {
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val viewModel: RecipeViewModel =  viewModel()
     val recipeState by viewModel.recipe.observeAsState()
 

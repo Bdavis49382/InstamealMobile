@@ -13,7 +13,7 @@ data class Recipe(
     val ingredients: List<String> = mutableListOf<String>(),
     val history: List<Record>? = null,
     val id: String? = null,
-    val score: Int? = null,
+    val score: Float? = null,
     val rate: Float? = null,
     val index: Int = 0
 )

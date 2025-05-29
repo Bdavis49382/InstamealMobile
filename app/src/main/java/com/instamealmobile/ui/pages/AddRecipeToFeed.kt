@@ -1,5 +1,9 @@
 package com.instamealmobile.ui.pages
 
+import android.net.Uri
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
@@ -27,25 +32,51 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
+import com.instamealmobile.data.ApiState
+import com.instamealmobile.data.Recipe
 import com.instamealmobile.ui.EditableText
 import com.instamealmobile.viewModels.AddRecipeToFeedViewModel
+import java.io.File
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddRecipeToFeed(onDismiss : () -> Unit, confirm: () -> Unit) {
+fun AddRecipeToFeed(onDismiss : () -> Unit, confirm: (Recipe) -> Unit) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val viewModel: AddRecipeToFeedViewModel =  viewModel()
 
+    val imgLinkState by viewModel.img_link.observeAsState()
+    val context = LocalContext.current
+
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        uri?.let { viewModel.uploadImage(it, context)}
+    }
+
+    val cameraUri = remember { mutableStateOf<Uri?>(null) }
+    val cameraFile = File(context.cacheDir, "captured_image.jpg")
+    cameraUri.value = FileProvider.getUriForFile(context, "${context.packageName}.provider", cameraFile)
+    val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
+        success ->
+        if (success && cameraUri.value != null) {
+            viewModel.uploadImage(cameraUri.value!!, context)
+        }
+    }
 
     ModalBottomSheet(onDismissRequest = { onDismiss() },
         sheetState = sheetState,
@@ -63,7 +94,7 @@ fun AddRecipeToFeed(onDismiss : () -> Unit, confirm: () -> Unit) {
                             placeholder = {Text("Title")},
                             onValueChange = {viewModel.title = it},
                             singleLine = true,
-                            textStyle = TextStyle(color = Color.Black, fontSize = 13.sp),
+                            textStyle = TextStyle( fontSize = 13.sp),
                             modifier = Modifier
                                 .padding(vertical = 10.dp)
                                 .clip(RoundedCornerShape(20.dp))
@@ -73,20 +104,42 @@ fun AddRecipeToFeed(onDismiss : () -> Unit, confirm: () -> Unit) {
                             placeholder = {Text("Source")},
                             onValueChange = {viewModel.source = it},
                             singleLine = true,
-                            textStyle = TextStyle(color = Color.Black, fontSize = 12.sp),
+                            textStyle = TextStyle(fontSize = 12.sp),
                             modifier = Modifier
                                 .clip(RoundedCornerShape(20.dp))
                         )
                     }
                     Box(modifier = Modifier.width(400.dp)) {
 //                        Upload Image File
-//                        AsyncImage(
-//                            model = "https://placehold.co/200x200",
-//                            modifier = Modifier
-//                                .clip(RoundedCornerShape(10.dp)),
-//                            contentDescription = null
-//                        )
+                        when (imgLinkState) {
+                            is ApiState.Loading -> {
+                                CircularProgressIndicator()
+                            }
+                            is ApiState.Success -> {
+                                val img_link =(imgLinkState as ApiState.Success<String>).data
+                                AsyncImage(
+                                    model = img_link,
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(10.dp)),
+                                    contentDescription = null
+                                )
 
+                            }
+                            is ApiState.Error -> {
+                                val error = (imgLinkState as ApiState.Error).message
+                                Text(error)
+                            }
+                            null -> {
+                                Column(modifier = Modifier.padding(5.dp)) {
+                                    Button({ launcher.launch("image/*")}) {
+                                        Text("Upload Photo For Recipe")
+                                    }
+                                    Button({ cameraLauncher.launch(cameraUri.value!!)}) {
+                                        Text("Take Picture For Recipe")
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
                 LazyColumn(
@@ -96,7 +149,7 @@ fun AddRecipeToFeed(onDismiss : () -> Unit, confirm: () -> Unit) {
                     item {
                         Text(
                             text = "Ingredients",
-                            style = TextStyle(color = Color.Black, fontSize = 25.sp),
+                            style = TextStyle(fontSize = 25.sp),
                             modifier = Modifier.fillMaxWidth().padding(bottom = 5.dp)
                         )
 
@@ -128,7 +181,7 @@ fun AddRecipeToFeed(onDismiss : () -> Unit, confirm: () -> Unit) {
                                 }
                             ),
                             singleLine = true,
-                            textStyle = TextStyle(color = Color.Black, fontSize = 12.sp),
+                            textStyle = TextStyle(fontSize = 12.sp),
                             modifier = Modifier
                                 .width(270.dp)
                                 .padding(end = 5.dp, bottom = 5.dp)
@@ -138,7 +191,7 @@ fun AddRecipeToFeed(onDismiss : () -> Unit, confirm: () -> Unit) {
                     }
                     item {
                         Text(text="Steps",
-                            style = TextStyle(color = Color.Black, fontSize = 25.sp),
+                            style = TextStyle(fontSize = 25.sp),
                             modifier = Modifier.padding(vertical = 5.dp)
                         )
                     }
@@ -169,7 +222,7 @@ fun AddRecipeToFeed(onDismiss : () -> Unit, confirm: () -> Unit) {
                                 }
                             ),
                             singleLine = true,
-                            textStyle = TextStyle(color = Color.Black, fontSize = 12.sp),
+                            textStyle = TextStyle(fontSize = 12.sp),
                             modifier = Modifier
                                 .width(270.dp)
                                 .padding(end = 5.dp, bottom = 5.dp)
@@ -185,9 +238,7 @@ fun AddRecipeToFeed(onDismiss : () -> Unit, confirm: () -> Unit) {
                 .padding(vertical = 100.dp, horizontal = 20.dp)
             ) {
                 Button({
-                    viewModel.submitRecipe()
-//                    confirm()
-                       }, shape = RoundedCornerShape(10.dp), modifier = Modifier
+                    viewModel.submitRecipe(confirm) }, shape = RoundedCornerShape(10.dp), modifier = Modifier
                     .padding(horizontal = 30.dp, vertical = 5.dp)
                 ) {
                     Text("Save")
