@@ -11,6 +11,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.Text
+import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.Recipe
 import com.instamealmobile.network.FeedService
@@ -20,12 +24,15 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
+import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
 class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedService): ViewModel() {
     var ingredients = mutableStateListOf<String>()
-    var title by  mutableStateOf("")
+    var title =  mutableStateOf("")
+    var servings = mutableStateOf("")
+    var totalTime = mutableStateOf("")
     var source by mutableStateOf("")
     var newIngredient by mutableStateOf("")
     var newStep by mutableStateOf("")
@@ -40,7 +47,11 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
             try {
                 val response = apiService.addRecipe(householdId, "OKmkTNVx4TR6D6u9BjMJ", Recipe(
                     ingredients = ingredients,
-                    title = title,
+                    title = title.value,
+                    servings = try {
+                        servings.value.split(" ")[0].toFloat()
+                    } catch (e: Exception) { null},
+                    time_estimate = if (totalTime.value.isNotEmpty()) listOf(totalTime.value) else listOf(),
                     src_name = source,
                     img_link = if (img_link.value is ApiState.Success) {
                         (img_link.value as? ApiState.Success)?.data
@@ -73,6 +84,85 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
 
         } catch (e: Exception) {
             Log.e("FILE_UPLOAD","file wasn't able to be processed or uploaded: ${e.message} ${e.stackTrace}")
+        }
+    }
+
+    fun parseText(uri: Uri, context: Context, onceFinished: (String) -> Unit ) {
+        val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+        val image: InputImage
+        try {
+            image = InputImage.fromFilePath(context, uri)
+            recognizer.process(image)
+                .addOnSuccessListener { visionText ->
+                    textToRecipe(visionText)
+                    onceFinished(visionText.text)
+                }
+                .addOnFailureListener { e ->
+                    e.printStackTrace()
+                }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    fun textToRecipe(visionText: Text) {
+
+        var isIngredients = false
+        var isSteps = false
+        var titleFound = false
+        for (block in visionText.textBlocks) {
+                val words = block.text.split(' ')
+                if (!titleFound and words.all { it[0] == it.uppercase()[0] }) {
+                    title.value= block.text
+                    titleFound = true
+                    Log.i("TEXT_TRIGGER","title")
+                    continue
+                }
+                if (block.text.uppercase().contains("YIELD:")) {
+                    continue
+                }
+                if (block.text.uppercase().contains("PREP:")) {
+                    Log.i("TEXT_TRIGGER","other time")
+                    continue
+                }
+                else if (block.text.uppercase().contains("COOK:")) {
+                    Log.i("TEXT_TRIGGER","other time")
+                    continue
+                }
+                else if (block.text.uppercase().contains("TOTAL:")) {
+                    totalTime.value = block.text.uppercase().replace("TOTAL:","").lowercase()
+                    Log.i("TEXT_TRIGGER","total time")
+                    continue
+                }
+                else if (block.text.uppercase().contains("SERVINGS:")) {
+                    try {
+                        servings.value = block.text.uppercase().replace("SERVINGS:","").lowercase()
+                    } catch (e: Exception){
+                        Log.i("TEXT_WARNING",e.message?: "servings failed to convert to float")
+                    }
+                    Log.i("TEXT_TRIGGER","servings")
+                    continue
+                }
+                if (block.text.uppercase() == "INGREDIENTS") {
+                    isIngredients = true
+                    isSteps = false
+                    Log.i("TEXT_TRIGGER","ingredients")
+                    continue
+                }
+                else if (block.text.uppercase() == "DIRECTIONS" || block.text.uppercase() == "INSTRUCTIONS") {
+                    isIngredients = false
+                    isSteps = true
+                    Log.i("TEXT_TRIGGER","steps")
+                    continue
+                }
+                if (isIngredients) {
+                    Log.i("TEXT_INGREDIENT",block.text)
+                    ingredients.add(block.text)
+                }
+                else if (isSteps && !"STEP [1-9]{1,2}".toRegex().containsMatchIn(block.text.uppercase())) {
+                    Log.i("TEXT_STEP",block.text)
+                    steps.add(block.text)
+                }
         }
     }
 

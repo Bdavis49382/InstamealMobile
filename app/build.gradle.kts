@@ -78,6 +78,7 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     implementation("androidx.compose.runtime:runtime-livedata:1.0.0-beta01")
+    implementation("com.google.mlkit:text-recognition:16.0.1")
 }
 
 kapt {

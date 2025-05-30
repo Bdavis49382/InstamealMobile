@@ -39,7 +39,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -51,6 +50,7 @@ import coil.compose.AsyncImage
 import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.Recipe
 import com.instamealmobile.ui.EditableText
+import com.instamealmobile.ui.EditableTextState
 import com.instamealmobile.viewModels.AddRecipeToFeedViewModel
 import java.io.File
 
@@ -77,6 +77,14 @@ fun AddRecipeToFeed(onDismiss : () -> Unit, confirm: (Recipe) -> Unit) {
             viewModel.uploadImage(cameraUri.value!!, context)
         }
     }
+    val textCameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
+            success ->
+        if (success && cameraUri.value != null) {
+            viewModel.parseText(cameraUri.value!!, context) { recipe ->
+                Log.i("FULL_TEXT",recipe)
+            }
+        }
+    }
 
     ModalBottomSheet(onDismissRequest = { onDismiss() },
         sheetState = sheetState,
@@ -89,24 +97,22 @@ fun AddRecipeToFeed(onDismiss : () -> Unit, confirm: (Recipe) -> Unit) {
             ) {
                 Row(modifier = Modifier.height(150.dp)) {
                     Column(modifier = Modifier.width(200.dp).fillMaxHeight(), verticalArrangement = Arrangement.Center) {
-                        TextField(
-                            value = viewModel.title,
-                            placeholder = {Text("Title")},
-                            onValueChange = {viewModel.title = it},
-                            singleLine = true,
-                            textStyle = TextStyle( fontSize = 13.sp),
+                        EditableTextState(
+                            text = viewModel.title,
+                            placeholder = "title",
+                            onSubmit = {viewModel.title.value = it},
+                            maxLines = 1,
+                            fontSize = 13.sp,
                             modifier = Modifier
                                 .padding(vertical = 10.dp)
-                                .clip(RoundedCornerShape(20.dp))
                         )
-                        TextField(
-                            value = viewModel.source,
-                            placeholder = {Text("Source")},
-                            onValueChange = {viewModel.source = it},
-                            singleLine = true,
-                            textStyle = TextStyle(fontSize = 12.sp),
+                        EditableText(
+                            text = viewModel.source,
+                            placeholder = "Source",
+                            onSubmit = {viewModel.source = it},
+                            maxLines = 1,
+                            fontSize = 12.sp,
                             modifier = Modifier
-                                .clip(RoundedCornerShape(20.dp))
                         )
                     }
                     Box(modifier = Modifier.width(400.dp)) {
@@ -142,10 +148,39 @@ fun AddRecipeToFeed(onDismiss : () -> Unit, confirm: (Recipe) -> Unit) {
                         }
                     }
                 }
+                Button({ textCameraLauncher.launch(cameraUri.value!!)}) {
+                    Text("Take Picture of Recipe Text")
+                }
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
+                    item {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text("Servings:")
+                            EditableTextState(
+                                text = viewModel.servings,
+                                placeholder = "Servings",
+                                onSubmit = {viewModel.servings.value = it},
+                                maxLines = 1,
+                                fontSize = 13.sp,
+                                modifier = Modifier
+                                    .padding(vertical = 10.dp)
+                            )
+                        }
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text("Total Time:")
+                            EditableTextState(
+                                text = viewModel.totalTime,
+                                placeholder = "Total Time",
+                                onSubmit = {viewModel.totalTime.value = it},
+                                maxLines = 1,
+                                fontSize = 13.sp,
+                                modifier = Modifier
+                                    .padding(vertical = 10.dp)
+                            )
+                        }
+                    }
                     item {
                         Text(
                             text = "Ingredients",
@@ -156,10 +191,9 @@ fun AddRecipeToFeed(onDismiss : () -> Unit, confirm: (Recipe) -> Unit) {
                     }
                     itemsIndexed(viewModel.ingredients) { index,item ->
                         Row {
-                            EditableText(text = item, placeholder = "Ingredient", modifier = Modifier
+                            EditableText(text = item, maxLines = 4, placeholder = "Ingredient", modifier = Modifier
                                 .width(270.dp)
                                 .padding(end = 5.dp, bottom = 5.dp)
-                                .clip(RoundedCornerShape(20.dp))
                             ) {
                                 viewModel.ingredients[index] = it
                             }
@@ -197,10 +231,9 @@ fun AddRecipeToFeed(onDismiss : () -> Unit, confirm: (Recipe) -> Unit) {
                     }
                     itemsIndexed(viewModel.steps) { index,item ->
                         Row {
-                            EditableText(text = item, placeholder = "Step", modifier = Modifier
+                            EditableText(text = item, placeholder = "Step", maxLines = 50, modifier = Modifier
                                 .width(270.dp)
                                 .padding(end = 5.dp, bottom = 5.dp)
-                                .clip(RoundedCornerShape(20.dp))
                             ) {
                                 viewModel.steps[index] = it
                             }
