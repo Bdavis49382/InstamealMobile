@@ -1,5 +1,8 @@
 package com.instamealmobile.viewModels
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -15,6 +18,7 @@ import javax.inject.Inject
 class FeedViewModel @Inject constructor(private val apiService: FeedService): ViewModel() {
     private val _feed = MutableLiveData<ApiState<List<Recipe>>>(ApiState.Loading)
     val feed: LiveData<ApiState<List<Recipe>>> = _feed
+    var isRefreshing by mutableStateOf(false)
     val householdId = "3hPKx3PwkPkPPlCVs53q"
 
     fun fetchFeed() {
@@ -22,10 +26,15 @@ class FeedViewModel @Inject constructor(private val apiService: FeedService): Vi
             try {
                 val response = apiService.getFeed(householdId)
                 _feed.value = ApiState.Success(response)
+                isRefreshing = false
             } catch (e: Exception) {
                 _feed.value = ApiState.Error("Failed to fetch data: ${e.message}")
             }
         }
+    }
+    fun refreshFeed() {
+        isRefreshing = true
+        fetchFeed()
     }
 
     fun searchFeed(query: String) {

@@ -4,6 +4,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -17,10 +20,12 @@ import com.instamealmobile.ui.Menu
 import com.instamealmobile.ui.SearchBar
 import com.instamealmobile.viewModels.FeedViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomePage(openConfirmation: (meal : Recipe) -> Unit, openRecipe: (meal : Recipe) -> Unit, openAddRecipe: () -> Unit, openHousehold: () -> Unit, modifier : Modifier = Modifier) {
     val viewModel: FeedViewModel =  viewModel()
     val feedState by viewModel.feed.observeAsState()
+    val pullToRefreshState = rememberPullToRefreshState()
 
     LaunchedEffect(Unit) {
         viewModel.fetchFeed()
@@ -31,7 +36,14 @@ fun HomePage(openConfirmation: (meal : Recipe) -> Unit, openRecipe: (meal : Reci
         ) {
             Header(openHousehold)
             Menu(openRecipe)
-            Feed(feedState, openConfirmation, openAddRecipe)
+            PullToRefreshBox(
+                state = pullToRefreshState,
+                isRefreshing = viewModel.isRefreshing,
+                onRefresh = viewModel::refreshFeed
+            ) {
+                Feed(feedState, openConfirmation, openAddRecipe)
+
+            }
         }
         SearchBar(viewModel)
     }
