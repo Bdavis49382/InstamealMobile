@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -30,6 +29,7 @@ import com.instamealmobile.R
 import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.MenuItem
 import com.instamealmobile.data.Recipe
+import com.instamealmobile.ui.placeholders.MenuPlaceholder
 import com.instamealmobile.viewModels.MenuViewModel
 
 @Composable
@@ -42,7 +42,7 @@ fun Menu(openRecipe: (Recipe) -> Unit) {
     }
     when (menuState) {
         is ApiState.Loading -> {
-            CircularProgressIndicator()
+            MenuPlaceholder()
         }
         is ApiState.Success<*> -> {
             val menu = (menuState as ApiState.Success<List<MenuItem>>).data

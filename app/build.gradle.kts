@@ -79,6 +79,7 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     implementation("androidx.compose.runtime:runtime-livedata:1.0.0-beta01")
     implementation("com.google.mlkit:text-recognition:16.0.1")
+    implementation("com.valentinilk.shimmer:compose-shimmer:1.3.3")
 }
 
 kapt {

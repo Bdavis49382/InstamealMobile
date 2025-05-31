@@ -59,7 +59,7 @@ fun HouseholdPage(onDismiss : () -> Unit, join : () -> Unit, invite: () -> Unit)
         dragHandle = { BottomSheetDefaults.DragHandle()},
         modifier = Modifier.fillMaxHeight()
     ) {
-        Column(modifier = Modifier.padding(10.dp)) {
+        Column(modifier = Modifier.padding(10.dp).fillMaxWidth()) {
             Text(
                 text = "Manage Household",
                 style = TextStyle(color = Color.Black, fontSize = 30.sp),
@@ -124,7 +124,10 @@ fun HouseholdPage(onDismiss : () -> Unit, join : () -> Unit, invite: () -> Unit)
                     Text(error)
                 }
                 is ApiState.Loading -> {
-                    CircularProgressIndicator()
+                    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth().height(200.dp)) {
+                        CircularProgressIndicator()
+
+                    }
                 }
                 null -> {}
             }

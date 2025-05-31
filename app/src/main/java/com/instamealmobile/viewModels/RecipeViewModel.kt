@@ -18,6 +18,7 @@ class RecipeViewModel @Inject constructor(private val apiService: MenuService): 
     val householdId = "3hPKx3PwkPkPPlCVs53q"
 
     fun getRecipe(recipe: Recipe) {
+        _recipe.value = ApiState.Loading
         viewModelScope.launch {
             try {
 

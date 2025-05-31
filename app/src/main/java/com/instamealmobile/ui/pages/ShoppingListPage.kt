@@ -36,6 +36,7 @@ import androidx.compose.ui.text.input.ImeAction
 import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.ShoppingItem
 import com.instamealmobile.data.SmallShoppingItem
+import com.instamealmobile.ui.placeholders.ShoppingListPlaceholder
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,7 +78,7 @@ fun ShoppingListPage(onDismiss : () -> Unit) {
             }
             when (shoppingListState) {
                 is ApiState.Loading -> {
-                    CircularProgressIndicator()
+                    ShoppingListPlaceholder()
                 }
                 is ApiState.Success<*> -> {
                     val shoppingList = (shoppingListState as ApiState.Success<List<ShoppingItem>>).data

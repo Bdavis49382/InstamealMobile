@@ -25,6 +25,7 @@ import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.MenuItem
 import com.instamealmobile.data.Recipe
 import com.instamealmobile.ui.RecipeView
+import com.instamealmobile.ui.placeholders.RecipeViewPlaceholder
 import com.instamealmobile.viewModels.MenuViewModel
 import java.text.SimpleDateFormat
 
@@ -47,7 +48,7 @@ fun ViewRecipe(onDismiss : () -> Unit, confirm: () -> Unit, recipe : Recipe) {
         Box(contentAlignment = Alignment.TopStart, modifier = Modifier.fillMaxSize()) {
             when (menuItemState) {
                 is ApiState.Loading -> {
-                    CircularProgressIndicator()
+                    RecipeViewPlaceholder()
                 }
                 is ApiState.Success<*> -> {
                     val menuItem = (menuItemState as ApiState.Success<MenuItem>).data

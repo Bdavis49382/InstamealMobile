@@ -93,6 +93,7 @@ class MenuViewModel @Inject constructor(private val apiService: MenuService): Vi
     }
 
     fun getRecipe(index: Int) {
+        _selected.value = ApiState.Loading
         viewModelScope.launch {
             try {
                 val response = apiService.getRecipeByIndex(householdId,index)

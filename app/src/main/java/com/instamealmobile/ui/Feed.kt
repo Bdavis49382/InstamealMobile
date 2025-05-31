@@ -11,20 +11,20 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.Recipe
+import com.instamealmobile.ui.placeholders.FeedPlaceholder
 
 
 @Composable
 fun Feed(feedState:  ApiState<List<Recipe>>?,openConfirmation : (Recipe) -> Unit, openAddRecipe : () -> Unit) {
     when (feedState) {
         is ApiState.Loading -> {
-            CircularProgressIndicator()
+            FeedPlaceholder(openAddRecipe)
         }
         is ApiState.Success<*> -> {
             val feed = (feedState as ApiState.Success<List<Recipe>>).data
@@ -52,7 +52,7 @@ fun Feed(feedState:  ApiState<List<Recipe>>?,openConfirmation : (Recipe) -> Unit
 
         }
         is ApiState.Error -> {
-            val error = (feedState as ApiState.Error).message
+            val error = feedState.message
             Text(error)
         }
 

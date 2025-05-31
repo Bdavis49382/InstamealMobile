@@ -38,6 +38,7 @@ class FeedViewModel @Inject constructor(private val apiService: FeedService): Vi
     }
 
     fun searchFeed(query: String) {
+        _feed.value = ApiState.Loading
         viewModelScope.launch {
             try {
                 val response = apiService.searchFeed(householdId, query)

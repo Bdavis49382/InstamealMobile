@@ -28,6 +28,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.Recipe
 import com.instamealmobile.ui.RecipeView
+import com.instamealmobile.ui.placeholders.RecipeViewPlaceholder
 import com.instamealmobile.viewModels.RecipeViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,7 +50,7 @@ fun PreviewRecipe(onDismiss : () -> Unit, confirm: (Recipe) -> Unit, recipe : Re
         Box(contentAlignment = Alignment.TopStart, modifier = Modifier.fillMaxSize()) {
             when (recipeState) {
                 is ApiState.Loading -> {
-                    CircularProgressIndicator()
+                    RecipeViewPlaceholder()
                 }
 
                 is ApiState.Success<*> -> {
