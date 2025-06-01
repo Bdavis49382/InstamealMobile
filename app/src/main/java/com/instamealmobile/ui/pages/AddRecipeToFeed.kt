@@ -23,15 +23,11 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -56,10 +52,8 @@ import com.instamealmobile.viewModels.AddRecipeToFeedViewModel
 import java.io.File
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddRecipeToFeed(onDismiss : () -> Unit, confirm: (Recipe) -> Unit) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+fun AddRecipeToFeed(confirm: (Recipe) -> Unit) {
     val viewModel: AddRecipeToFeedViewModel =  viewModel()
 
     val imgLinkState by viewModel.img_link.observeAsState()
@@ -90,196 +84,190 @@ fun AddRecipeToFeed(onDismiss : () -> Unit, confirm: (Recipe) -> Unit) {
         }
     }
 
-    ModalBottomSheet(onDismissRequest = { onDismiss() },
-        sheetState = sheetState,
-        modifier = Modifier.fillMaxHeight(),
-        dragHandle = { BottomSheetDefaults.DragHandle()}
-    ) {
-        Box(contentAlignment = Alignment.TopStart, modifier = Modifier.fillMaxSize()) {
-            Column(modifier = Modifier
-                .padding(20.dp)
+    Box(contentAlignment = Alignment.TopStart, modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier
+            .padding(20.dp)
+        ) {
+            Row(modifier = Modifier.height(150.dp)) {
+                Column(modifier = Modifier.width(200.dp).fillMaxHeight(), verticalArrangement = Arrangement.Center) {
+                    EditableTextState(
+                        text = viewModel.title,
+                        placeholder = "title",
+                        onSubmit = {viewModel.title.value = it},
+                        maxLines = 1,
+                        fontSize = 13.sp,
+                        modifier = Modifier
+                            .padding(vertical = 10.dp)
+                    )
+                    EditableText(
+                        text = viewModel.source,
+                        placeholder = "Source",
+                        onSubmit = {viewModel.source = it},
+                        maxLines = 1,
+                        fontSize = 12.sp,
+                        modifier = Modifier
+                    )
+                }
+                Box(modifier = Modifier.width(400.dp), contentAlignment = Alignment.Center) {
+//                        Upload Image File
+                    when (imgLinkState) {
+                        is ApiState.Loading -> {
+                            CircularProgressIndicator()
+                        }
+                        is ApiState.Success -> {
+                            val img_link =(imgLinkState as ApiState.Success<String>).data
+                            AsyncImage(
+                                model = img_link,
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(10.dp)),
+                                contentDescription = null
+                            )
+
+                        }
+                        is ApiState.Error -> {
+                            val error = (imgLinkState as ApiState.Error).message
+                            Text(error)
+                        }
+                        null -> {
+                            Column(modifier = Modifier.padding(5.dp)) {
+                                Button({ launcher.launch("image/*")}) {
+                                    Text("Upload Photo For Recipe")
+                                }
+                                Button({ cameraLauncher.launch(cameraUri.value!!)}) {
+                                    Text("Take Picture For Recipe")
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            Button({ textCameraLauncher.launch(cameraUri.value!!)}) {
+                Text("Take Picture of Recipe Text")
+            }
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
             ) {
-                Row(modifier = Modifier.height(150.dp)) {
-                    Column(modifier = Modifier.width(200.dp).fillMaxHeight(), verticalArrangement = Arrangement.Center) {
+                item {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text("Servings:")
                         EditableTextState(
-                            text = viewModel.title,
-                            placeholder = "title",
-                            onSubmit = {viewModel.title.value = it},
+                            text = viewModel.servings,
+                            placeholder = "Servings",
+                            onSubmit = {viewModel.servings.value = it},
                             maxLines = 1,
                             fontSize = 13.sp,
                             modifier = Modifier
                                 .padding(vertical = 10.dp)
                         )
-                        EditableText(
-                            text = viewModel.source,
-                            placeholder = "Source",
-                            onSubmit = {viewModel.source = it},
+                    }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text("Total Time:")
+                        EditableTextState(
+                            text = viewModel.totalTime,
+                            placeholder = "Total Time",
+                            onSubmit = {viewModel.totalTime.value = it},
                             maxLines = 1,
-                            fontSize = 12.sp,
+                            fontSize = 13.sp,
                             modifier = Modifier
+                                .padding(vertical = 10.dp)
                         )
                     }
-                    Box(modifier = Modifier.width(400.dp), contentAlignment = Alignment.Center) {
-//                        Upload Image File
-                        when (imgLinkState) {
-                            is ApiState.Loading -> {
-                                CircularProgressIndicator()
-                            }
-                            is ApiState.Success -> {
-                                val img_link =(imgLinkState as ApiState.Success<String>).data
-                                AsyncImage(
-                                    model = img_link,
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(10.dp)),
-                                    contentDescription = null
-                                )
+                }
+                item {
+                    Text(
+                        text = "Ingredients",
+                        style = TextStyle(fontSize = 25.sp),
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 5.dp)
+                    )
 
-                            }
-                            is ApiState.Error -> {
-                                val error = (imgLinkState as ApiState.Error).message
-                                Text(error)
-                            }
-                            null -> {
-                                Column(modifier = Modifier.padding(5.dp)) {
-                                    Button({ launcher.launch("image/*")}) {
-                                        Text("Upload Photo For Recipe")
-                                    }
-                                    Button({ cameraLauncher.launch(cameraUri.value!!)}) {
-                                        Text("Take Picture For Recipe")
-                                    }
-                                }
-                            }
+                }
+                itemsIndexed(viewModel.ingredients) { index,item ->
+                    Row {
+                        EditableText(text = item, maxLines = 4, placeholder = "Ingredient", modifier = Modifier
+                            .width(270.dp)
+                            .padding(end = 5.dp, bottom = 5.dp)
+                        ) {
+                            viewModel.ingredients[index] = it
+                        }
+                        Button({viewModel.ingredients.removeAt(index)}, shape = CircleShape, modifier = Modifier.padding(horizontal = 5.dp)) {
+                            Icon(Icons.Default.Delete, contentDescription = "Remove")
                         }
                     }
                 }
-                Button({ textCameraLauncher.launch(cameraUri.value!!)}) {
-                    Text("Take Picture of Recipe Text")
+                item {
+                    TextField(
+                        value = viewModel.newIngredient,
+                        placeholder = {Text("Ingredient")},
+                        onValueChange = {viewModel.newIngredient = it},
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                viewModel.ingredients.add(viewModel.newIngredient)
+                                viewModel.newIngredient = ""
+                            }
+                        ),
+                        singleLine = true,
+                        textStyle = TextStyle(fontSize = 12.sp),
+                        modifier = Modifier
+                            .width(270.dp)
+                            .padding(end = 5.dp, bottom = 5.dp)
+                            .clip(RoundedCornerShape(20.dp))
+                    )
+
                 }
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    item {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text("Servings:")
-                            EditableTextState(
-                                text = viewModel.servings,
-                                placeholder = "Servings",
-                                onSubmit = {viewModel.servings.value = it},
-                                maxLines = 1,
-                                fontSize = 13.sp,
-                                modifier = Modifier
-                                    .padding(vertical = 10.dp)
-                            )
+                item {
+                    Text(text="Steps",
+                        style = TextStyle(fontSize = 25.sp),
+                        modifier = Modifier.padding(vertical = 5.dp)
+                    )
+                }
+                itemsIndexed(viewModel.steps) { index,item ->
+                    Row {
+                        EditableText(text = item, placeholder = "Step", maxLines = 50, modifier = Modifier
+                            .width(270.dp)
+                            .padding(end = 5.dp, bottom = 5.dp)
+                        ) {
+                            viewModel.steps[index] = it
                         }
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text("Total Time:")
-                            EditableTextState(
-                                text = viewModel.totalTime,
-                                placeholder = "Total Time",
-                                onSubmit = {viewModel.totalTime.value = it},
-                                maxLines = 1,
-                                fontSize = 13.sp,
-                                modifier = Modifier
-                                    .padding(vertical = 10.dp)
-                            )
+                        Button({viewModel.steps.removeAt(index)}, shape = CircleShape) {
+                            Icon(Icons.Default.Delete, contentDescription = "Remove")
                         }
-                    }
-                    item {
-                        Text(
-                            text = "Ingredients",
-                            style = TextStyle(fontSize = 25.sp),
-                            modifier = Modifier.fillMaxWidth().padding(bottom = 5.dp)
-                        )
-
-                    }
-                    itemsIndexed(viewModel.ingredients) { index,item ->
-                        Row {
-                            EditableText(text = item, maxLines = 4, placeholder = "Ingredient", modifier = Modifier
-                                .width(270.dp)
-                                .padding(end = 5.dp, bottom = 5.dp)
-                            ) {
-                                viewModel.ingredients[index] = it
-                            }
-                            Button({viewModel.ingredients.removeAt(index)}, shape = CircleShape, modifier = Modifier.padding(horizontal = 5.dp)) {
-                                Icon(Icons.Default.Delete, contentDescription = "Remove")
-                            }
-                        }
-                    }
-                    item {
-                        TextField(
-                            value = viewModel.newIngredient,
-                            placeholder = {Text("Ingredient")},
-                            onValueChange = {viewModel.newIngredient = it},
-                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                            keyboardActions = KeyboardActions(
-                                onDone = {
-                                    viewModel.ingredients.add(viewModel.newIngredient)
-                                    viewModel.newIngredient = ""
-                                }
-                            ),
-                            singleLine = true,
-                            textStyle = TextStyle(fontSize = 12.sp),
-                            modifier = Modifier
-                                .width(270.dp)
-                                .padding(end = 5.dp, bottom = 5.dp)
-                                .clip(RoundedCornerShape(20.dp))
-                        )
-
-                    }
-                    item {
-                        Text(text="Steps",
-                            style = TextStyle(fontSize = 25.sp),
-                            modifier = Modifier.padding(vertical = 5.dp)
-                        )
-                    }
-                    itemsIndexed(viewModel.steps) { index,item ->
-                        Row {
-                            EditableText(text = item, placeholder = "Step", maxLines = 50, modifier = Modifier
-                                .width(270.dp)
-                                .padding(end = 5.dp, bottom = 5.dp)
-                            ) {
-                                viewModel.steps[index] = it
-                            }
-                            Button({viewModel.steps.removeAt(index)}, shape = CircleShape) {
-                                Icon(Icons.Default.Delete, contentDescription = "Remove")
-                            }
-                        }
-                    }
-                    item {
-                        TextField(
-                            value = viewModel.newStep,
-                            placeholder = {Text("Step")},
-                            onValueChange = {viewModel.newStep = it},
-                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                            keyboardActions = KeyboardActions(
-                                onDone = {
-                                    viewModel.steps.add(viewModel.newStep)
-                                    viewModel.newStep = ""
-                                }
-                            ),
-                            singleLine = true,
-                            textStyle = TextStyle(fontSize = 12.sp),
-                            modifier = Modifier
-                                .width(270.dp)
-                                .padding(end = 5.dp, bottom = 5.dp)
-                                .clip(RoundedCornerShape(20.dp))
-                        )
-
                     }
                 }
+                item {
+                    TextField(
+                        value = viewModel.newStep,
+                        placeholder = {Text("Step")},
+                        onValueChange = {viewModel.newStep = it},
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                viewModel.steps.add(viewModel.newStep)
+                                viewModel.newStep = ""
+                            }
+                        ),
+                        singleLine = true,
+                        textStyle = TextStyle(fontSize = 12.sp),
+                        modifier = Modifier
+                            .width(270.dp)
+                            .padding(end = 5.dp, bottom = 5.dp)
+                            .clip(RoundedCornerShape(20.dp))
+                    )
 
+                }
             }
-            Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier
-                .fillMaxSize()
-                .padding(vertical = 100.dp, horizontal = 20.dp)
+
+        }
+        Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier
+            .fillMaxSize()
+            .padding(vertical = 100.dp, horizontal = 20.dp)
+        ) {
+            Button({
+                viewModel.submitRecipe(confirm) }, shape = RoundedCornerShape(10.dp), modifier = Modifier
+                .padding(horizontal = 30.dp, vertical = 5.dp)
             ) {
-                Button({
-                    viewModel.submitRecipe(confirm) }, shape = RoundedCornerShape(10.dp), modifier = Modifier
-                    .padding(horizontal = 30.dp, vertical = 5.dp)
-                ) {
-                    Text("Save")
-                }
+                Text("Save")
             }
         }
     }
