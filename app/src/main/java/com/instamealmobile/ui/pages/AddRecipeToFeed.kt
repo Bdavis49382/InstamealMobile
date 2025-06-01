@@ -2,6 +2,7 @@ package com.instamealmobile.ui.pages
 
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -66,6 +67,7 @@ fun AddRecipeToFeed(onDismiss : () -> Unit, confirm: (Recipe) -> Unit) {
 
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri?.let { viewModel.uploadImage(it, context)}
+        Toast.makeText(context, "Image Uploaded Successfully", Toast.LENGTH_SHORT).show()
     }
 
     val cameraUri = remember { mutableStateOf<Uri?>(null) }
@@ -75,6 +77,7 @@ fun AddRecipeToFeed(onDismiss : () -> Unit, confirm: (Recipe) -> Unit) {
         success ->
         if (success && cameraUri.value != null) {
             viewModel.uploadImage(cameraUri.value!!, context)
+            Toast.makeText(context, "Image Uploaded Successfully", Toast.LENGTH_LONG).show()
         }
     }
     val textCameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
@@ -82,6 +85,7 @@ fun AddRecipeToFeed(onDismiss : () -> Unit, confirm: (Recipe) -> Unit) {
         if (success && cameraUri.value != null) {
             viewModel.parseText(cameraUri.value!!, context) { recipe ->
                 Log.i("FULL_TEXT",recipe)
+                Toast.makeText(context, "Grabbed Recipe From Image - Check For Accuracy", Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -115,7 +119,7 @@ fun AddRecipeToFeed(onDismiss : () -> Unit, confirm: (Recipe) -> Unit) {
                             modifier = Modifier
                         )
                     }
-                    Box(modifier = Modifier.width(400.dp)) {
+                    Box(modifier = Modifier.width(400.dp), contentAlignment = Alignment.Center) {
 //                        Upload Image File
                         when (imgLinkState) {
                             is ApiState.Loading -> {

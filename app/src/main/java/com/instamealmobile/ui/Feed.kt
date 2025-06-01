@@ -11,17 +11,21 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.Recipe
 import com.instamealmobile.ui.placeholders.FeedPlaceholder
+import com.instamealmobile.viewModels.FeedViewModel
 
 
 @Composable
 fun Feed(feedState:  ApiState<List<Recipe>>?,openConfirmation : (Recipe) -> Unit, openAddRecipe : () -> Unit) {
+    val viewModel : FeedViewModel = viewModel()
     when (feedState) {
         is ApiState.Loading -> {
             FeedPlaceholder(openAddRecipe)
@@ -54,6 +58,9 @@ fun Feed(feedState:  ApiState<List<Recipe>>?,openConfirmation : (Recipe) -> Unit
         is ApiState.Error -> {
             val error = feedState.message
             Text(error)
+            Button(viewModel::fetchFeed) {
+                Text("Try Again")
+            }
         }
 
         null -> TODO()

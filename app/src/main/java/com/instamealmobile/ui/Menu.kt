@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -77,6 +78,9 @@ fun Menu(openRecipe: (Recipe) -> Unit) {
         is ApiState.Error -> {
             val error = (menuState as ApiState.Error).message
             Text(error)
+            Button(viewModel::getMenu) {
+                Text("Try Again")
+            }
         }
 
         null -> TODO()
