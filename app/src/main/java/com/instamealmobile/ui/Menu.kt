@@ -78,7 +78,9 @@ fun Menu(openRecipe: (Recipe) -> Unit) {
         is ApiState.Error -> {
             val error = (menuState as ApiState.Error).message
             Text(error)
-            Button(viewModel::getMenu) {
+            Button({
+                viewModel::getMenu
+            }) {
                 Text("Try Again")
             }
         }

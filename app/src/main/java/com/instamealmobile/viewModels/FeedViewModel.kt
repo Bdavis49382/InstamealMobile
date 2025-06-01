@@ -33,6 +33,7 @@ class FeedViewModel @Inject constructor(private val apiService: FeedService): Vi
         }
     }
     fun refreshFeed() {
+        _feed.value = ApiState.Loading
         isRefreshing = true
         fetchFeed()
     }

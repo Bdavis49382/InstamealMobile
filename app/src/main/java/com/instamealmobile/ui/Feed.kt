@@ -58,7 +58,7 @@ fun Feed(feedState:  ApiState<List<Recipe>>?,openConfirmation : (Recipe) -> Unit
         is ApiState.Error -> {
             val error = feedState.message
             Text(error)
-            Button(viewModel::fetchFeed) {
+            Button(viewModel::refreshFeed) {
                 Text("Try Again")
             }
         }
