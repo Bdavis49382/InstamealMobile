@@ -70,9 +70,9 @@ class MenuViewModel @Inject constructor(private val apiService: MenuService): Vi
     }
 
     fun getMenu() {
-        _menu.value = ApiState.Loading
         viewModelScope.launch {
             try {
+                _menu.value = ApiState.Loading
                 val response = apiService.getMenu(householdId)
                 _menu.value = ApiState.Success(response)
             } catch (e: Exception) {

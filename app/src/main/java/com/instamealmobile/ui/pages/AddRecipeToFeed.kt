@@ -48,6 +48,7 @@ import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.Recipe
 import com.instamealmobile.ui.EditableText
 import com.instamealmobile.ui.EditableTextState
+import com.instamealmobile.ui.SideButton
 import com.instamealmobile.viewModels.AddRecipeToFeedViewModel
 import java.io.File
 
@@ -261,11 +262,10 @@ fun AddRecipeToFeed(confirm: (Recipe) -> Unit) {
         }
         Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier
             .fillMaxSize()
-            .padding(vertical = 100.dp, horizontal = 20.dp)
+            .padding(vertical = 200.dp)
         ) {
-            Button({
-                viewModel.submitRecipe(confirm) }, shape = RoundedCornerShape(10.dp), modifier = Modifier
-                .padding(horizontal = 30.dp, vertical = 5.dp)
+            SideButton({
+                viewModel.submitRecipe(confirm) }
             ) {
                 Text("Save")
             }

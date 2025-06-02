@@ -24,6 +24,7 @@ class FeedViewModel @Inject constructor(private val apiService: FeedService): Vi
     fun fetchFeed() {
         viewModelScope.launch {
             try {
+                _feed.value = ApiState.Loading
                 val response = apiService.getFeed(householdId)
                 _feed.value = ApiState.Success(response)
                 isRefreshing = false
@@ -33,7 +34,6 @@ class FeedViewModel @Inject constructor(private val apiService: FeedService): Vi
         }
     }
     fun refreshFeed() {
-        _feed.value = ApiState.Loading
         isRefreshing = true
         fetchFeed()
     }

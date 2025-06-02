@@ -5,10 +5,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,11 +21,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.Recipe
 import com.instamealmobile.ui.RecipeView
+import com.instamealmobile.ui.SideButton
 import com.instamealmobile.ui.placeholders.RecipeViewPlaceholder
 import com.instamealmobile.viewModels.RecipeViewModel
 
 @Composable
-fun PreviewRecipe(closeSheet : () -> Unit, recipe: Recipe,  confirm: (Recipe) -> Unit) {
+fun PreviewRecipe(lazyListState: LazyListState,closeSheet : () -> Unit, recipe: Recipe,  confirm: (Recipe) -> Unit) {
     val viewModel: RecipeViewModel =  viewModel()
     val recipeState by viewModel.recipe.observeAsState()
 
@@ -41,24 +41,24 @@ fun PreviewRecipe(closeSheet : () -> Unit, recipe: Recipe,  confirm: (Recipe) ->
 
             is ApiState.Success<*> -> {
                 val recipeData = (recipeState as ApiState.Success<Recipe>).data
-                RecipeView(recipeData)
+                RecipeView(lazyListState, recipeData)
                 Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier
                     .fillMaxSize()
-                    .padding(vertical = 100.dp, horizontal = 20.dp)
+                    .padding(vertical = 200.dp)
                 ) {
                     Column(
                         horizontalAlignment = Alignment.End,
                         verticalArrangement = Arrangement.spacedBy(5.dp)
                     ) {
-                        Button(
-                            {confirm(recipeData)}, shape = RoundedCornerShape(10.dp), modifier = Modifier
-                                .padding(horizontal = 30.dp, vertical = 5.dp)
+                        SideButton(
+                            {confirm(recipeData)}, modifier = Modifier
+                                .padding(vertical = 5.dp)
                         ) {
                             Text("Add to Menu")
                         }
-                        Button(
-                            closeSheet, shape = RoundedCornerShape(10.dp), modifier = Modifier
-                                .padding(horizontal = 30.dp, vertical = 5.dp)
+                        SideButton(
+                            closeSheet, modifier = Modifier
+                                .padding(vertical = 5.dp)
                         ) {
                             Icon(Icons.Default.Edit, contentDescription = "Edit")
                         }

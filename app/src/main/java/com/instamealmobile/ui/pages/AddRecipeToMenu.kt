@@ -34,6 +34,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.instamealmobile.data.Recipe
 import com.instamealmobile.ui.DatePickerModal
+import com.instamealmobile.ui.SideButton
 import com.instamealmobile.viewModels.MenuViewModel
 
 @Composable
@@ -131,11 +132,10 @@ fun AddRecipeToMenu(recipe : Recipe, confirm: () -> Unit) {
         }
         Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier
             .fillMaxSize()
-            .padding(vertical = 100.dp, horizontal = 20.dp)
+            .padding(vertical = 200.dp)
         ) {
-            Button({viewModel.addRecipe(recipe)
-                confirm()}, shape = RoundedCornerShape(10.dp), modifier = Modifier
-                .padding(horizontal = 30.dp, vertical = 5.dp)
+            SideButton({viewModel.addRecipe(recipe)
+                confirm()}
             ) {
                 Icon(Icons.Default.ArrowForward, contentDescription = "Edit")
             }

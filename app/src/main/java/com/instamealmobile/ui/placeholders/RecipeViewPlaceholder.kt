@@ -17,39 +17,28 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun RecipeViewPlaceholder() {
     Column(
+        verticalArrangement = Arrangement.spacedBy(10.dp),
         modifier = Modifier
             .padding(20.dp)
     ) {
-        Row(modifier = Modifier) {
-            Column(
-                modifier = Modifier.width(200.dp),
-                verticalArrangement = Arrangement.Center
-            ) {
-                ShimmerBox(fillmaxWidth = true, height = 15.dp, modifier = Modifier
-                    .padding(10.dp)
-                )
-                ShimmerBox(fillmaxWidth = true, height = 10.dp, modifier = Modifier
-                    .padding(horizontal = 10.dp)
-                )
-            }
-            ShimmerBox(width = 400.dp, height = 200.dp, modifier = Modifier
-                .clip(RoundedCornerShape(10.dp))
+        ShimmerBox(width = 300.dp, height = 25.dp)
+        ShimmerBox(width = 100.dp, height = 10.dp)
+        ShimmerBox(fillmaxWidth = true, height = 300.dp, modifier = Modifier
+            .clip(RoundedCornerShape(10.dp))
 
-            )
+        )
+        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp)) {
+            ShimmerBox(width=50.dp, height=15.dp)
+            ShimmerBox(width=50.dp, height=15.dp)
         }
-        ShimmerBox(width=50.dp, height=10.dp, modifier = Modifier
-            .padding(5.dp)
-        )
-        ShimmerBox(width=50.dp, height=10.dp, modifier = Modifier
-            .padding(5.dp)
-        )
         LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(10.dp),
             modifier = Modifier
                 .fillMaxWidth()
         ) {
             item {
                 ShimmerBox(width=100.dp,height=20.dp,
-                    modifier = Modifier.padding(top = 5.dp, bottom = 5.dp)
+                    modifier = Modifier.padding(top = 5.dp)
                 )
 
             }
@@ -62,7 +51,7 @@ fun RecipeViewPlaceholder() {
             item {
                 ShimmerBox(width=100.dp,height=20.dp,
                     modifier = Modifier
-                        .padding(horizontal = 10.dp, vertical = 5.dp)
+                        .padding(vertical = 5.dp)
                 )
             }
             items(listOf(1,1,1,1,1,1,1)) { item ->

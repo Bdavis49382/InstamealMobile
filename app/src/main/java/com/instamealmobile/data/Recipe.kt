@@ -8,7 +8,7 @@ data class Recipe(
     val permissions_required: String = "household",
     val instructions: List<String> = mutableListOf<String>(),
     val author_id: String? = null,
-    val servings: Float? = null,
+    val servings: String? = null,
     val src_link: String? = null,
     val ingredients: List<String> = mutableListOf<String>(),
     val history: List<Record>? = null,

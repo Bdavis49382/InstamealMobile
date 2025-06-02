@@ -48,9 +48,7 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
                 val response = apiService.addRecipe(householdId, "OKmkTNVx4TR6D6u9BjMJ", Recipe(
                     ingredients = ingredients,
                     title = title.value,
-                    servings = try {
-                        servings.value.split(" ")[0].toFloat()
-                    } catch (e: Exception) { null},
+                    servings = servings.value,
                     time_estimate = if (totalTime.value.isNotEmpty()) listOf(totalTime.value) else listOf(),
                     src_name = source,
                     img_link = if (img_link.value is ApiState.Success) {

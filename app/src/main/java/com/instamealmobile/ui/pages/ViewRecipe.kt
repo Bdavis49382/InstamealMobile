@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -24,7 +25,7 @@ import com.instamealmobile.viewModels.MenuViewModel
 import java.text.SimpleDateFormat
 
 @Composable
-fun ViewRecipe(recipe: Recipe, confirm: () -> Unit) {
+fun ViewRecipe(lazyListState: LazyListState,recipe: Recipe, confirm: () -> Unit) {
     val menuViewModel: MenuViewModel = viewModel()
     val menuItemState by menuViewModel.selected.observeAsState()
 
@@ -40,13 +41,16 @@ fun ViewRecipe(recipe: Recipe, confirm: () -> Unit) {
             is ApiState.Success<*> -> {
                 val menuItem = (menuItemState as ApiState.Success<MenuItem>).data
                 Column {
-                    if (menuItem.note.isNotEmpty()) {
-                        Text("Note: ${menuItem.note}")
+                    Column(modifier = Modifier.padding(horizontal = 20.dp)) {
+                        if (menuItem.note.isNotEmpty()) {
+                            Text(menuItem.note)
+                        }
+                        if (menuItem.date != null) {
+                            Text(SimpleDateFormat("E, MMMM dd").format(menuItem.date))
+                        }
+
                     }
-                    if (menuItem.date != null) {
-                        Text("Date: ${SimpleDateFormat("E, MMMM dd").format(menuItem.date)}")
-                    }
-                    RecipeView(menuItem.recipe?: Recipe(title=""))
+                    RecipeView(lazyListState, menuItem.recipe?: Recipe(title=""))
                 }
                 Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier
                     .fillMaxSize()
