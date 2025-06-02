@@ -9,7 +9,6 @@ import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
-import java.util.Dictionary
 
 interface FeedService {
     @GET("feed/get")
@@ -20,6 +19,12 @@ interface FeedService {
     suspend fun addRecipe(
         @Header("householdId") token: String,
         @Path("user_id") userId: String,
+        @Body recipe: Recipe
+    ) : String
+    @POST("feed/update/{user_id}/{recipe_id}")
+    suspend fun updateRecipe(
+        @Path("user_id") userId: String,
+        @Path("recipe_id") recipeId: String,
         @Body recipe: Recipe
     ) : String
     @Multipart

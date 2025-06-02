@@ -63,7 +63,7 @@ fun Feed(feedState:  ApiState<List<Recipe>>?,openConfirmation : (Recipe) -> Unit
             }
         }
 
-        null -> TODO()
+        else -> {}
 
     }
 }

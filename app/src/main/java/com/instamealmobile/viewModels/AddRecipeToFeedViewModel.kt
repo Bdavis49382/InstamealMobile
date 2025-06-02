@@ -36,26 +36,64 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
     var source by mutableStateOf("")
     var newIngredient by mutableStateOf("")
     var newStep by mutableStateOf("")
-    private val _img_link = MutableLiveData<ApiState<String>>(null)
+    private val _img_link = MutableLiveData<ApiState<String>>(ApiState.Resting)
     val img_link: LiveData<ApiState<String>> = _img_link
     var steps = mutableStateListOf<String>()
     val householdId = "3hPKx3PwkPkPPlCVs53q"
 
+    fun setRecipe(recipe: Recipe) {
+        if (recipe.id.isNullOrEmpty()) {
+            ingredients.clear()
+            title.value = ""
+            servings.value = ""
+            totalTime.value = ""
+            source = ""
+            _img_link.value = ApiState.Resting
+            steps.clear()
 
-    fun submitRecipe(confirm: (Recipe) -> Unit) {
+        } else {
+            ingredients.clear()
+            ingredients.addAll(recipe.ingredients)
+            title.value = recipe.title
+            servings.value = recipe.servings?: ""
+            totalTime.value = recipe.servings?: ""
+            source = recipe.src_name?: ""
+            _img_link.value = ApiState.Success(recipe.img_link?:"")
+            steps.clear()
+            steps.addAll(recipe.instructions)
+
+        }
+    }
+
+    fun submitRecipe(id: String?, confirm: (Recipe) -> Unit) {
         viewModelScope.launch {
             try {
-                val response = apiService.addRecipe(householdId, "OKmkTNVx4TR6D6u9BjMJ", Recipe(
-                    ingredients = ingredients,
-                    title = title.value,
-                    servings = servings.value,
-                    time_estimate = if (totalTime.value.isNotEmpty()) listOf(totalTime.value) else listOf(),
-                    src_name = source,
-                    img_link = if (img_link.value is ApiState.Success) {
-                        (img_link.value as? ApiState.Success)?.data
-                    } else "",
-                    instructions = steps
-                ))
+                val response = if (id.isNullOrEmpty()) {
+                    apiService.addRecipe(householdId, "OKmkTNVx4TR6D6u9BjMJ", Recipe(
+                        ingredients = ingredients,
+                        title = title.value,
+                        servings = servings.value,
+                        time_estimate = if (totalTime.value.isNotEmpty()) listOf(totalTime.value) else listOf(),
+                        src_name = source,
+                        img_link = if (img_link.value is ApiState.Success) {
+                            (img_link.value as? ApiState.Success)?.data
+                        } else "",
+                        instructions = steps
+                    ))
+                } else {
+                    apiService.updateRecipe("OKmkTNVx4TR6D6u9BjMJ", id, Recipe(
+                        ingredients = ingredients,
+                        title = title.value,
+                        servings = servings.value,
+                        time_estimate = if (totalTime.value.isNotEmpty()) listOf(totalTime.value) else listOf(),
+                        src_name = source,
+                        img_link = if (img_link.value is ApiState.Success) {
+                            (img_link.value as? ApiState.Success)?.data
+                        } else "",
+                        instructions = steps
+                    ))
+
+                }
                 confirm(Recipe(title="",id=response))
             } catch (e: Exception) {
                 // TODO: Add logging so something can be logged here

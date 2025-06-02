@@ -117,7 +117,7 @@ fun HouseholdPage(join : () -> Unit, invite: () -> Unit) {
 
                 }
             }
-            null -> {}
+            else -> {}
         }
 
     }

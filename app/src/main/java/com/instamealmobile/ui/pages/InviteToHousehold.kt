@@ -54,7 +54,7 @@ fun InviteToHousehold(onDismiss: () -> Unit) {
                     is ApiState.Error -> {
 
                     }
-                    null -> {
+                    else -> {
 
                     }
                 }

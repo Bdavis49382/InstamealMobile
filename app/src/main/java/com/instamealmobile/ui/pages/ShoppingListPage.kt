@@ -95,7 +95,7 @@ fun ShoppingListPage() {
                 Text(error)
             }
 
-            null -> TODO()
+            else -> {}
         }
 
 

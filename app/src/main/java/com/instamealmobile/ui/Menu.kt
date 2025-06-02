@@ -85,6 +85,6 @@ fun Menu(openRecipe: (Recipe) -> Unit) {
             }
         }
 
-        null -> TODO()
+        else -> {}
     }
 }

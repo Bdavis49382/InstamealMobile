@@ -26,7 +26,7 @@ import com.instamealmobile.ui.placeholders.RecipeViewPlaceholder
 import com.instamealmobile.viewModels.RecipeViewModel
 
 @Composable
-fun PreviewRecipe(lazyListState: LazyListState,closeSheet : () -> Unit, recipe: Recipe,  confirm: (Recipe) -> Unit) {
+fun PreviewRecipe(lazyListState: LazyListState,editRecipe : (Recipe) -> Unit, recipe: Recipe,  confirm: (Recipe) -> Unit) {
     val viewModel: RecipeViewModel =  viewModel()
     val recipeState by viewModel.recipe.observeAsState()
 
@@ -56,11 +56,14 @@ fun PreviewRecipe(lazyListState: LazyListState,closeSheet : () -> Unit, recipe: 
                         ) {
                             Text("Add to Menu")
                         }
-                        SideButton(
-                            closeSheet, modifier = Modifier
-                                .padding(vertical = 5.dp)
-                        ) {
-                            Icon(Icons.Default.Edit, contentDescription = "Edit")
+                        if (!recipeData.id.isNullOrEmpty()) {
+                            SideButton(
+                                {editRecipe(recipeData)}, modifier = Modifier
+                                    .padding(vertical = 5.dp)
+                            ) {
+                                Icon(Icons.Default.Edit, contentDescription = "Edit")
+                            }
+
                         }
                     }
                 }
@@ -71,7 +74,7 @@ fun PreviewRecipe(lazyListState: LazyListState,closeSheet : () -> Unit, recipe: 
                 Text(error)
             }
 
-            null -> TODO()
+            else -> {}
         }
     }
 }

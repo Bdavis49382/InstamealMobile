@@ -44,7 +44,10 @@ fun SheetPages(showSheet: OpenSheet, setShowSheet: (OpenSheet) -> Unit, setAlert
         dragHandle = { BottomSheetDefaults.DragHandle()}
     ) {
         when (showSheet) {
-            OpenSheet.PreviewRecipe -> PreviewRecipe(lazyListState, closeSheet, pickedRecipe) {
+            OpenSheet.PreviewRecipe -> PreviewRecipe(lazyListState, { recipe ->
+                setPickedRecipe(recipe)
+                setShowSheet(OpenSheet.AddRecipeToFeed)
+            }, pickedRecipe) {
                 setShowSheet(OpenSheet.AddRecipeToMenu)
                 setPickedRecipe(it)
             }
@@ -53,10 +56,9 @@ fun SheetPages(showSheet: OpenSheet, setShowSheet: (OpenSheet) -> Unit, setAlert
                 Toast.makeText(context, "Recipe Added to Menu", Toast.LENGTH_SHORT).show()
                 closeSheet()
             }
-            OpenSheet.AddRecipeToFeed -> AddRecipeToFeed {
+            OpenSheet.AddRecipeToFeed -> AddRecipeToFeed(pickedRecipe) {
                 setPickedRecipe(it)
                 setShowSheet(OpenSheet.PreviewRecipe)
-                Toast.makeText(context, "Recipe Added to My Recipes", Toast.LENGTH_SHORT).show()
             }
             OpenSheet.Household -> HouseholdPage(
                 { setAlert(OpenAlert.Join) },

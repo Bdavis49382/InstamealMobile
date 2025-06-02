@@ -90,6 +90,7 @@ class MainActivity : ComponentActivity() {
                             setPickedRecipe(meal)
                         }, {
                             setShowSheet(OpenSheet.AddRecipeToFeed)
+                            setPickedRecipe(Recipe(title=""))
                         }, {
                             setShowSheet(OpenSheet.Household)
                         },Modifier.padding(innerPadding))

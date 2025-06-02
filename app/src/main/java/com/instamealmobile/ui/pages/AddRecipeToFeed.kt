@@ -5,6 +5,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +30,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -54,7 +56,7 @@ import java.io.File
 
 
 @Composable
-fun AddRecipeToFeed(confirm: (Recipe) -> Unit) {
+fun AddRecipeToFeed(recipe: Recipe,confirm: (Recipe) -> Unit) {
     val viewModel: AddRecipeToFeedViewModel =  viewModel()
 
     val imgLinkState by viewModel.img_link.observeAsState()
@@ -83,6 +85,9 @@ fun AddRecipeToFeed(confirm: (Recipe) -> Unit) {
                 Toast.makeText(context, "Grabbed Recipe From Image - Check For Accuracy", Toast.LENGTH_LONG).show()
             }
         }
+    }
+    LaunchedEffect(Unit) {
+        viewModel.setRecipe(recipe)
     }
 
     Box(contentAlignment = Alignment.TopStart, modifier = Modifier.fillMaxSize()) {
@@ -120,6 +125,7 @@ fun AddRecipeToFeed(confirm: (Recipe) -> Unit) {
                             AsyncImage(
                                 model = img_link,
                                 modifier = Modifier
+                                    .clickable { launcher.launch("image/*")}
                                     .clip(RoundedCornerShape(10.dp)),
                                 contentDescription = null
                             )
@@ -129,7 +135,7 @@ fun AddRecipeToFeed(confirm: (Recipe) -> Unit) {
                             val error = (imgLinkState as ApiState.Error).message
                             Text(error)
                         }
-                        null -> {
+                        is ApiState.Resting -> {
                             Column(modifier = Modifier.padding(5.dp)) {
                                 Button({ launcher.launch("image/*")}) {
                                     Text("Upload Photo For Recipe")
@@ -139,6 +145,7 @@ fun AddRecipeToFeed(confirm: (Recipe) -> Unit) {
                                 }
                             }
                         }
+                        else -> {}
                     }
                 }
             }
@@ -265,7 +272,9 @@ fun AddRecipeToFeed(confirm: (Recipe) -> Unit) {
             .padding(vertical = 200.dp)
         ) {
             SideButton({
-                viewModel.submitRecipe(confirm) }
+
+                Toast.makeText(context, if (recipe.id == null)"Recipe Added to My Recipes" else "Updated Recipe", Toast.LENGTH_SHORT).show()
+                viewModel.submitRecipe(recipe.id,confirm) }
             ) {
                 Text("Save")
             }

@@ -69,7 +69,7 @@ fun ViewRecipe(lazyListState: LazyListState,recipe: Recipe, confirm: () -> Unit)
                 Text(error)
             }
 
-            null -> TODO()
+            else -> {}
         }
     }
 }
