@@ -4,6 +4,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -12,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.instamealmobile.data.MenuItem
@@ -23,12 +25,10 @@ import java.util.Locale
 @Composable
 fun MenuItemView(menuItem: MenuItem, openRecipe: (Recipe) -> Unit, index: Int) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        if (menuItem.date != null) {
-            val day = menuItem.date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().dayOfWeek.getDisplayName(
+        Text(if (menuItem.date != null) {
+            menuItem.date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().dayOfWeek.getDisplayName(
                 TextStyle.FULL,Locale.getDefault())
-
-            Text(day)
-        }
+        } else "")
         AsyncImage(
             model = menuItem.img_link ?: "https://recipe-graphics.grocerywebsite.com/0_GraphicsRecipes/4589_4k.jpg",
             contentScale = ContentScale.Crop,
@@ -39,8 +39,8 @@ fun MenuItemView(menuItem: MenuItem, openRecipe: (Recipe) -> Unit, index: Int) {
                 .clickable { openRecipe(Recipe(title="",id=menuItem.recipe_id,index=index)) },
             contentDescription = null
         )
-        Text(menuItem.title,
-//            modifier = Modifier.width(150.dp)
+        Text(menuItem.title,overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.width(200.dp)
         )
     }
 }

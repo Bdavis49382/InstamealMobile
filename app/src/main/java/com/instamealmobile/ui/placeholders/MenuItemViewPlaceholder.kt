@@ -22,27 +22,15 @@ import com.valentinilk.shimmer.shimmer
 @Composable
 fun MenuItemViewPlaceholder() {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Box(modifier = Modifier
-            .shimmer()
-            .background(Color.LightGray)
-            .width(30.dp)
-            .height(10.dp)
-        )
-        Box(
+        ShimmerBox(width=30.dp,height = 10.dp)
+        ShimmerBox(
             modifier = Modifier
                 .size(120.dp)
                 .padding(10.dp)
-                .shimmer()
                 .clip(CircleShape)
-                .background(Color.LightGray)
                 .border(3.dp, MaterialTheme.colorScheme.primary, CircleShape)
         )
-        Box(modifier = Modifier
-            .shimmer()
-            .background(Color.LightGray)
-            .width(140.dp)
-            .height(10.dp)
-        )
+        ShimmerBox(width = 200.dp, height = 15.dp)
     }
 
 }

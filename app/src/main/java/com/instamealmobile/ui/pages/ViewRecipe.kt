@@ -20,6 +20,7 @@ import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.MenuItem
 import com.instamealmobile.data.Recipe
 import com.instamealmobile.ui.RecipeView
+import com.instamealmobile.ui.SideButton
 import com.instamealmobile.ui.placeholders.RecipeViewPlaceholder
 import com.instamealmobile.viewModels.MenuViewModel
 import java.text.SimpleDateFormat
@@ -54,11 +55,12 @@ fun ViewRecipe(lazyListState: LazyListState,recipe: Recipe, confirm: () -> Unit)
                 }
                 Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier
                     .fillMaxSize()
-                    .padding(vertical = 100.dp, horizontal = 20.dp)
+                    .padding(vertical = 200.dp)
                 ) {
-                    Button({ menuViewModel.finishMeal(menuItem.recipe?.id ?: "",4.5f)
-                        confirm()}, shape = RoundedCornerShape(10.dp), modifier = Modifier
-                        .padding(horizontal = 30.dp, vertical = 5.dp)
+                    SideButton({
+                        menuViewModel.finishMeal(menuItem.recipe?.id ?: "",4.5f)
+                        confirm()
+                    }
                     ) {
                         Text("Finish")
                     }
