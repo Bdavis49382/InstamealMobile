@@ -28,6 +28,6 @@ interface MenuService {
         @Header("householdId") token: String,
         @Query("recipe_id") recipe_id: String,
         @Query("user_id") user_id: String,
-        @Query("rating") rating: Float
+        @Query("rating") rating: Float?
     ) : List<MenuItem>
 }

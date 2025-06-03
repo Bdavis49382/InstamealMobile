@@ -17,9 +17,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -50,7 +48,7 @@ fun HouseholdPage(join : () -> Unit, invite: () -> Unit) {
     Column(modifier = Modifier.padding(10.dp).fillMaxWidth()) {
         Text(
             text = "Manage Household",
-            style = TextStyle(color = Color.Black, fontSize = 30.sp),
+            fontSize = 30.sp,
             modifier = Modifier.fillMaxWidth()
         )
         Text(text = stringResource(R.string.household_description),

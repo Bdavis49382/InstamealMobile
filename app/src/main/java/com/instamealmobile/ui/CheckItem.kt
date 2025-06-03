@@ -20,8 +20,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
@@ -30,7 +28,7 @@ import androidx.compose.ui.unit.sp
 import com.instamealmobile.data.ShoppingItem
 
 @Composable
-fun CheckItem(shoppingItem: ShoppingItem, color: Color, fontFamily: FontFamily, editMethod: (String) -> Unit, checkMethod: () -> Unit) {
+fun CheckItem(shoppingItem: ShoppingItem, editMethod: (String) -> Unit, checkMethod: () -> Unit) {
     var checked by remember { mutableStateOf(shoppingItem.checked) }
     Row (
         modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
@@ -49,13 +47,11 @@ fun CheckItem(shoppingItem: ShoppingItem, color: Color, fontFamily: FontFamily, 
                 if (checked) {
                     Text(
                         text = shoppingItem.name,
-                        color = color,
-                        fontSize = 20.sp,
+                        fontSize = 18.sp,
                         maxLines = 2,
                         modifier = Modifier
                             .padding(start = 10.dp)
                             .width(300.dp),
-                        fontFamily = fontFamily,
                         textDecoration = TextDecoration.LineThrough
                     )
                 }
@@ -63,17 +59,16 @@ fun CheckItem(shoppingItem: ShoppingItem, color: Color, fontFamily: FontFamily, 
                     EditableText(modifier = Modifier
                         .padding(start = 10.dp)
                         .width(300.dp),
+                        fontSize = 18.sp,
                         text = shoppingItem.name,
                         onSubmit = editMethod
                     )
                 }
                 Text(
                     text= shoppingItem.recipe_title,
-                    color = color,
                     fontSize = 10.sp,
                     fontStyle = FontStyle.Italic,
                     modifier = Modifier.padding(start = 10.dp),
-                    fontFamily = fontFamily
                 )
             }
 

@@ -18,15 +18,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.instamealmobile.data.Recipe
+import com.instamealmobile.ui.pages.Alerts
 import com.instamealmobile.ui.pages.HomePage
-import com.instamealmobile.ui.pages.InviteToHousehold
-import com.instamealmobile.ui.pages.JoinHousehold
 import com.instamealmobile.ui.pages.SheetPages
 import com.instamealmobile.ui.theme.InstamealMobileTheme
 import com.instamealmobile.viewModels.HouseholdViewModel
@@ -39,9 +37,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val (showSheet, setShowSheet) = remember { mutableStateOf(OpenSheet.None)}
             var (openAlert, setAlert) = remember { mutableStateOf(OpenAlert.None) }
-            var recipeDialogOpen by remember { mutableStateOf(false)}
             val (pickedRecipe, setPickedRecipe) = remember { mutableStateOf(Recipe(title="", img_link = "")) }
-//            val scope = rememberCoroutineScope()
             val snackbarHostState = remember { SnackbarHostState() }
             val viewModel: HouseholdViewModel =  viewModel()
             val householdIdState by viewModel.householdId.observeAsState()
@@ -50,25 +46,14 @@ class MainActivity : ComponentActivity() {
                 viewModel.getId()
             }
 
-            if (openAlert == OpenAlert.Join) {
-                JoinHousehold { setAlert(OpenAlert.None) }
-//                ItemConfirmationDialog(pickedRecipe,snackbarHostState) {
-//                    alertOpen = false
-//                    scope.launch {
-//                        snackbarHostState.showSnackbar("Added items to shopping list.")
-//                    }
-//                }
-            } else if (openAlert == OpenAlert.Invite) {
-                InviteToHousehold { setAlert(OpenAlert.None) }
-            }
-
-
-            SheetPages(showSheet, setShowSheet, setAlert, pickedRecipe, setPickedRecipe)
             InstamealMobileTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+                    Alerts(openAlert, setAlert, pickedRecipe)
+
+                    SheetPages(showSheet, setShowSheet, setAlert, pickedRecipe, setPickedRecipe)
                     Scaffold(
                         floatingActionButton = {
                             LargeFloatingActionButton(modifier = Modifier.clip(CircleShape)

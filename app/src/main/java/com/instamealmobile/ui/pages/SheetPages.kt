@@ -12,19 +12,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.instamealmobile.OpenAlert
 import com.instamealmobile.OpenSheet
 import com.instamealmobile.data.Recipe
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SheetPages(showSheet: OpenSheet, setShowSheet: (OpenSheet) -> Unit, setAlert: (OpenAlert) -> Unit, pickedRecipe: Recipe = Recipe(title = "", img_link = ""), setPickedRecipe: (Recipe) -> Unit) {
     val fullyExpand = showSheet != OpenSheet.Household
     val lazyListState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
     val closeSheet = {
-        // set list state back if possible
+        coroutineScope.launch {
+            lazyListState.scrollToItem(0)
+        }
         setShowSheet(OpenSheet.None)}
     val isAtTop by remember {
         derivedStateOf { lazyListState.firstVisibleItemIndex == 0 }
@@ -64,8 +69,8 @@ fun SheetPages(showSheet: OpenSheet, setShowSheet: (OpenSheet) -> Unit, setAlert
                 { setAlert(OpenAlert.Join) },
                 { setAlert(OpenAlert.Invite) })
             OpenSheet.ViewRecipe -> ViewRecipe(lazyListState, pickedRecipe) {
-                Toast.makeText(context, "Recipe Finished", Toast.LENGTH_SHORT).show()
                 closeSheet()
+                setAlert(OpenAlert.Rating)
             }
             OpenSheet.None -> Unit // Do Nothing
         }

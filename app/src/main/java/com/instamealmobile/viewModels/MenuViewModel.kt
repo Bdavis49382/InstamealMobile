@@ -80,7 +80,7 @@ class MenuViewModel @Inject constructor(private val apiService: MenuService): Vi
             }
         }
     }
-    fun finishMeal(recipeId: String, rating: Float) {
+    fun finishMeal(recipeId: String, rating: Float?) {
         viewModelScope.launch {
             try {
 

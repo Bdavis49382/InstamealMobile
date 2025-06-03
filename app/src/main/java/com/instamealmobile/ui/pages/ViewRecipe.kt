@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -58,7 +56,6 @@ fun ViewRecipe(lazyListState: LazyListState,recipe: Recipe, confirm: () -> Unit)
                     .padding(vertical = 200.dp)
                 ) {
                     SideButton({
-                        menuViewModel.finishMeal(menuItem.recipe?.id ?: "",4.5f)
                         confirm()
                     }
                     ) {
