@@ -38,7 +38,7 @@ class MenuViewModel @Inject constructor(private val apiService: MenuService): Vi
 
     val offset = ZoneId.systemDefault().rules.getOffset(Instant.ofEpochMilli(date))
 
-    fun getDateString(format: String): String {
+    fun getDateString(date: Long, format: String): String {
         return if (date != 0L)
             SimpleDateFormat(format, Locale.getDefault()).format(date - offset.totalSeconds * 1000L)
         else ""
