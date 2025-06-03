@@ -3,6 +3,7 @@ package com.instamealmobile.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
@@ -69,7 +71,9 @@ fun RecipeView(lazyListState: LazyListState,recipe: Recipe) {
             item {
                 AsyncImage(
                     model = if (!recipe.img_link.isNullOrEmpty()) recipe.img_link else  "https://recipe-graphics.grocerywebsite.com/0_GraphicsRecipes/4589_4k.jpg",
+                    contentScale = ContentScale.Crop,
                     modifier = Modifier
+                        .aspectRatio(1f)
                         .clip(RoundedCornerShape(10.dp)),
                     contentDescription = null
                 )
