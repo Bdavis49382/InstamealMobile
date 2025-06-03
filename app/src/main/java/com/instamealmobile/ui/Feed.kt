@@ -14,7 +14,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.instamealmobile.data.ApiState
@@ -32,24 +34,29 @@ fun Feed(feedState:  ApiState<List<Recipe>>?,openConfirmation : (Recipe) -> Unit
         }
         is ApiState.Success<*> -> {
             val feed = (feedState as ApiState.Success<List<Recipe>>).data
-            if (feed.isEmpty()) {
-                return
-            }
-            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                FeedItem(feed[0], openConfirmation, modifier = Modifier.padding(10.dp))
-                LazyVerticalStaggeredGrid(columns = StaggeredGridCells.Adaptive(minSize = 180.dp),
-                    contentPadding = PaddingValues(horizontal = 15.dp, vertical = 0.dp),
-                    horizontalArrangement = Arrangement.spacedBy(15.dp),
-                    verticalItemSpacing = 15.dp,
-                    modifier = Modifier
-                        .padding(top = 10.dp)
-                        .height(700.dp)
-                ) {
-                    item {
-                        AddRecipeButton(openAddRecipe)
+            Column(modifier = Modifier.verticalScroll(rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally) {
+                if (feed.isEmpty()) {
+                    Text("No Recipes To Show", textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+                    Button({viewModel.refreshFeed()}) {
+                        Text("Refresh Feed")
                     }
-                    items(feed.subList(1,feed.size - 1)) {item ->
-                        FeedItem(item, openConfirmation, modifier = Modifier.fillMaxWidth())
+                }
+                else {
+                    FeedItem(feed[0], openConfirmation, modifier = Modifier.padding(10.dp))
+                    LazyVerticalStaggeredGrid(columns = StaggeredGridCells.Adaptive(minSize = 180.dp),
+                        contentPadding = PaddingValues(horizontal = 15.dp, vertical = 0.dp),
+                        horizontalArrangement = Arrangement.spacedBy(15.dp),
+                        verticalItemSpacing = 15.dp,
+                        modifier = Modifier
+                            .padding(top = 10.dp)
+                            .height(700.dp)
+                    ) {
+                        item {
+                            AddRecipeButton(openAddRecipe)
+                        }
+                        items(feed.subList(1,feed.size - 1)) {item ->
+                            FeedItem(item, openConfirmation, modifier = Modifier.fillMaxWidth())
+                        }
                     }
                 }
             }

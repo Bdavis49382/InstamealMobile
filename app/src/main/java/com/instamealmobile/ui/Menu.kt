@@ -61,15 +61,20 @@ fun Menu(openRecipe: (Recipe) -> Unit) {
                     ) {
                         Icon(painter= painterResource(R.drawable.menu),"Menu", modifier=Modifier.align(Alignment.Center))
                     }
-
                     LazyRow(
                         //                        reverseLayout = true,
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                         modifier = Modifier.fillMaxHeight(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        itemsIndexed(menu) { index,item ->
-                            MenuItemView(item, openRecipe,index)
+                        if (menu.isEmpty()) {
+                            item {
+                                Text("Add or Choose Recipes to Start Your Menu!", modifier = Modifier.padding(start = 10.dp))
+                            }
+                        } else {
+                            itemsIndexed(menu) { index,item ->
+                                MenuItemView(item, openRecipe,index)
+                            }
                         }
                     }
                 }
