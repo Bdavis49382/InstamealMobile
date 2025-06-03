@@ -56,7 +56,7 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
             ingredients.addAll(recipe.ingredients)
             title.value = recipe.title
             servings.value = recipe.servings?: ""
-            totalTime.value = recipe.servings?: ""
+            totalTime.value = if (recipe.time_estimate.size > 0) recipe.time_estimate[0] else ""
             source = recipe.src_name?: ""
             _img_link.value = ApiState.Success(recipe.img_link?:"")
             steps.clear()
@@ -96,23 +96,24 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
                 }
                 confirm(Recipe(title="",id=response))
             } catch (e: Exception) {
-                // TODO: Add logging so something can be logged here
+                Log.e("RECIPE_SUBMISSION",e.message?:"Issue with submitting a new recipe")
             }
         }
     }
 
-    fun uploadImage(uri: Uri, context: Context) {
+    fun uploadImage(uri: Uri, context: Context, after: () -> Unit) {
         try {
             val inputStream = context.contentResolver.openInputStream(uri)
 
             val requestBody = inputStream?.readBytes()?.toRequestBody("image/*".toMediaTypeOrNull())
-            val file = File(uri.path)
-            val multipartRequest = MultipartBody.Part.createFormData("file", file.name, requestBody!!)
+            val fileName = if (!uri.path.isNullOrEmpty()) File(uri.path).name else "Default_Image_Name"
+            val multipartRequest = MultipartBody.Part.createFormData("file", fileName, requestBody!!)
             viewModelScope.launch {
                 try {
                     _img_link.value = ApiState.Loading
                     val response = apiService.uploadImage(multipartRequest)
                     _img_link.value = ApiState.Success(response)
+                    after()
                 } catch (e: Exception) {
                     _img_link.value = ApiState.Error("Failed to fetch data: ${e.message}")
                 }
@@ -146,6 +147,8 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
         var isIngredients = false
         var isSteps = false
         var titleFound = false
+        ingredients.clear()
+        steps.clear()
         for (block in visionText.textBlocks) {
                 val words = block.text.split(' ')
                 if (!titleFound and words.all { it[0] == it.uppercase()[0] }) {

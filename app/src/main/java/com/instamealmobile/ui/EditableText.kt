@@ -21,13 +21,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun EditableText(modifier : Modifier = Modifier,text : String = "", placeholder : String = "", fontSize: TextUnit = 15.sp, maxLines : Int = 2, isEditing: Boolean=false, onSubmit : (String) -> Unit = {}) {
+fun EditableText(modifier : Modifier = Modifier,text : String = "", placeholder : String = "", fontSize: TextUnit = 15.sp, maxLines : Int = 2, isEditing: Boolean=false, precursor: String ="", onSubmit : (String) -> Unit = {}) {
     var textState = remember { mutableStateOf(text) }
-    EditableTextState(modifier,textState, placeholder,fontSize,maxLines, isEditing,onSubmit)
+    EditableTextState(modifier,textState, placeholder,fontSize,maxLines, isEditing,precursor,onSubmit)
 }
 
 @Composable
-fun EditableTextState(modifier : Modifier = Modifier,text : MutableState<String> = mutableStateOf(""), placeholder : String = "", fontSize: TextUnit = 15.sp, maxLines : Int = 2, isEditing: Boolean=false, onSubmit : (String) -> Unit = {}) {
+fun EditableTextState(modifier : Modifier = Modifier,text : MutableState<String> = mutableStateOf(""), placeholder : String = "", fontSize: TextUnit = 15.sp, maxLines : Int = 2, isEditing: Boolean=false, precursor: String="", onSubmit : (String) -> Unit = {}) {
     var isEditing by remember { mutableStateOf(isEditing) }
 
     if (isEditing || text.value.isEmpty()) {
@@ -53,7 +53,7 @@ fun EditableTextState(modifier : Modifier = Modifier,text : MutableState<String>
         )
     } else {
         Text(
-            text = text.value,
+            text = precursor + text.value,
             maxLines = maxLines,
             fontSize=fontSize,
             modifier = modifier
