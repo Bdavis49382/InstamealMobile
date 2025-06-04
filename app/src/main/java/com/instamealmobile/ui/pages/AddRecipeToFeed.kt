@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,8 +25,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -36,7 +37,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -56,13 +60,14 @@ import com.instamealmobile.viewModels.AddRecipeToFeedViewModel
 
 
 @Composable
-fun AddRecipeToFeed(recipe: Recipe,confirm: (Recipe) -> Unit) {
+fun AddRecipeToFeed(recipe: Recipe,lazyListState: LazyListState,confirm: (Recipe) -> Unit) {
     val viewModel: AddRecipeToFeedViewModel =  viewModel()
     val imgLinkState by viewModel.img_link.observeAsState()
     val context = LocalContext.current
 
     var imgPurpose by remember {mutableStateOf(ImagePurpose.ImageStoring)}
     var popupIsOn by remember {mutableStateOf(false)}
+    val focusManager = LocalFocusManager.current
     LaunchedEffect(Unit) {
         viewModel.setRecipe(recipe)
     }
@@ -73,13 +78,18 @@ fun AddRecipeToFeed(recipe: Recipe,confirm: (Recipe) -> Unit) {
         Column(modifier = Modifier
             .padding(20.dp)
         ) {
-            Row(modifier = Modifier.height(150.dp)) {
+            Row(modifier = Modifier.height(200.dp)) {
                 Column(modifier = Modifier.width(200.dp).fillMaxHeight(), verticalArrangement = Arrangement.Center) {
                     EditableTextState(
                         text = viewModel.title,
                         placeholder = "title",
-                        onSubmit = {viewModel.title.value = it},
+                        onSubmit = {
+                            viewModel.title.value = it
+                            focusManager.moveFocus(FocusDirection.Down)
+                           },
                         maxLines = 2,
+                        errorCondition = viewModel.validatorsActive.value && viewModel.title.value.isEmpty(),
+                        errorMessage = "A title is required.",
                         fontSize = 20.sp,
                         modifier = Modifier
                             .padding(vertical = 10.dp)
@@ -87,13 +97,16 @@ fun AddRecipeToFeed(recipe: Recipe,confirm: (Recipe) -> Unit) {
                     EditableText(
                         text = viewModel.source,
                         placeholder = "Source",
-                        onSubmit = {viewModel.source = it},
+                        onSubmit = {viewModel.source = it
+                            focusManager.moveFocus(FocusDirection.Down)
+                                   },
                         maxLines = 1,
                         fontSize = 12.sp,
                         modifier = Modifier
                     )
                 }
-                Box(modifier = Modifier.width(400.dp), contentAlignment = Alignment.Center) {
+                Box(modifier = Modifier.width(400.dp).focusProperties {canFocus = false}
+                    , contentAlignment = Alignment.Center) {
                     when (imgLinkState) {
                         is ApiState.Loading -> {
                             CircularProgressIndicator()
@@ -133,10 +146,11 @@ fun AddRecipeToFeed(recipe: Recipe,confirm: (Recipe) -> Unit) {
             Button({
                 imgPurpose = ImagePurpose.TextParsing
                 popupIsOn = true
-            }) {
+            }, modifier = Modifier.focusProperties { canFocus = false}) {
                 Text("Grab Recipe From Image")
             }
             LazyColumn(
+                state = lazyListState,
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
@@ -145,21 +159,29 @@ fun AddRecipeToFeed(recipe: Recipe,confirm: (Recipe) -> Unit) {
                         text = viewModel.servings,
                         placeholder = "Servings",
                         precursor = "Servings: ",
-                        onSubmit = {viewModel.servings.value = it},
+                        onSubmit = {
+                            viewModel.servings.value = it
+                            focusManager.moveFocus(FocusDirection.Down)
+                        },
                         maxLines = 1,
                         fontSize = 13.sp,
                         modifier = Modifier
-                            .padding(vertical = 10.dp)
+                            .padding(top = 10.dp)
                     )
+                }
+                item {
                     EditableTextState(
                         text = viewModel.totalTime,
                         placeholder = "Total Time",
                         precursor = "Total Time: ",
-                        onSubmit = {viewModel.totalTime.value = it},
+                        onSubmit = {
+                            viewModel.totalTime.value = it
+                            focusManager.moveFocus(FocusDirection.Down)
+                        },
                         maxLines = 1,
                         fontSize = 13.sp,
                         modifier = Modifier
-                            .padding(vertical = 10.dp)
+                            .padding(bottom = 10.dp)
                     )
                 }
                 item {
@@ -171,11 +193,17 @@ fun AddRecipeToFeed(recipe: Recipe,confirm: (Recipe) -> Unit) {
 
                 }
                 item {
-                    TextField(
+                    OutlinedTextField(
                         value = viewModel.newIngredient,
                         placeholder = {Text("New Ingredient")},
                         onValueChange = {viewModel.newIngredient = it},
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                        isError = viewModel.validatorsActive.value && viewModel.ingredients.isEmpty(),
+                        supportingText = {
+                            if (viewModel.validatorsActive.value && viewModel.ingredients.isEmpty()) {
+                                Text("At least one ingredient is required.")
+                            }
+                        },
                         keyboardActions = KeyboardActions(
                             onDone = {
                                 viewModel.ingredients.add(viewModel.newIngredient)
@@ -184,15 +212,15 @@ fun AddRecipeToFeed(recipe: Recipe,confirm: (Recipe) -> Unit) {
                         ),
                         singleLine = true,
                         textStyle = TextStyle(fontSize = 12.sp),
+                        shape = RoundedCornerShape(20.dp),
                         modifier = Modifier
                             .width(270.dp)
                             .padding(end = 5.dp, bottom = 5.dp)
-                            .clip(RoundedCornerShape(20.dp))
                     )
 
                 }
                 itemsIndexed(viewModel.ingredients) { index,item ->
-                    Row {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         EditableText(text = item, maxLines = 4, placeholder = "Ingredient", modifier = Modifier
                             .width(270.dp)
                             .padding(end = 5.dp, bottom = 5.dp)
@@ -211,9 +239,15 @@ fun AddRecipeToFeed(recipe: Recipe,confirm: (Recipe) -> Unit) {
                     )
                 }
                 item {
-                    TextField(
+                    OutlinedTextField(
                         value = viewModel.newStep,
                         placeholder = {Text("New Step")},
+                        isError = viewModel.validatorsActive.value && viewModel.steps.isEmpty(),
+                        supportingText = {
+                            if (viewModel.validatorsActive.value && viewModel.steps.isEmpty()) {
+                                Text("At least one step is required.")
+                            }
+                        },
                         onValueChange = {viewModel.newStep = it},
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                         keyboardActions = KeyboardActions(
@@ -224,10 +258,10 @@ fun AddRecipeToFeed(recipe: Recipe,confirm: (Recipe) -> Unit) {
                         ),
                         singleLine = true,
                         textStyle = TextStyle(fontSize = 12.sp),
+                        shape = RoundedCornerShape(20.dp),
                         modifier = Modifier
                             .width(270.dp)
                             .padding(end = 5.dp, bottom = 5.dp)
-                            .clip(RoundedCornerShape(20.dp))
                     )
 
                 }
@@ -252,9 +286,11 @@ fun AddRecipeToFeed(recipe: Recipe,confirm: (Recipe) -> Unit) {
             .padding(vertical = 200.dp)
         ) {
             SideButton({
-
-                Toast.makeText(context, if (recipe.id == null)"Recipe Added to My Recipes" else "Updated Recipe", Toast.LENGTH_SHORT).show()
-                viewModel.submitRecipe(recipe.id,confirm) }
+                if (!viewModel.submitRecipe(recipe.id,confirm)) {
+                    viewModel.validatorsActive.value = true
+                    Toast.makeText(context,"More Details Are Needed to Save Recipe", Toast.LENGTH_SHORT).show()
+                }
+            }
             ) {
                 Text("Save")
             }
