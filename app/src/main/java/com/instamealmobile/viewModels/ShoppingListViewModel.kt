@@ -34,6 +34,7 @@ class ShoppingListViewModel @Inject constructor(private val apiService: Shopping
     fun addItemToList(text: String) {
         viewModelScope.launch {
             try {
+                _shoppingList.value = ApiState.Loading
                 val response = apiService.postShoppingList(householdId, ShoppingItem(
                     name=text,
                     user_id = "OKmkTNVx4TR6D6u9BjMJ"))

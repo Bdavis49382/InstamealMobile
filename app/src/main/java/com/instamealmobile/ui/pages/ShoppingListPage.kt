@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -16,7 +17,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -32,7 +32,7 @@ import com.instamealmobile.data.SmallShoppingItem
 import com.instamealmobile.ui.placeholders.ShoppingListPlaceholder
 
 @Composable
-fun ShoppingListPage() {
+fun ShoppingListPage(lazyListState: LazyListState) {
     var newItemText by remember { mutableStateOf("") }
     val viewModel: ShoppingListViewModel =  viewModel()
     val shoppingListState by viewModel.shoppingList.observeAsState()
@@ -58,7 +58,7 @@ fun ShoppingListPage() {
                     newItemText = ""
                 }),
                 singleLine = true,
-                textStyle = TextStyle(color = Color.Black, fontSize = 20.sp),
+                textStyle = TextStyle(fontSize = 20.sp),
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -69,6 +69,7 @@ fun ShoppingListPage() {
             is ApiState.Success<*> -> {
                 val shoppingList = (shoppingListState as ApiState.Success<List<ShoppingItem>>).data
                 LazyColumn(
+                    state = lazyListState,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 20.dp)

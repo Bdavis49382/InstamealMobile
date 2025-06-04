@@ -56,7 +56,7 @@ fun SheetPages(showSheet: OpenSheet, setShowSheet: (OpenSheet) -> Unit, setAlert
                 setShowSheet(OpenSheet.AddRecipeToMenu)
                 setPickedRecipe(it)
             }
-            OpenSheet.ShoppingList -> ShoppingListPage()
+            OpenSheet.ShoppingList -> ShoppingListPage(lazyListState)
             OpenSheet.AddRecipeToMenu -> AddRecipeToMenu(pickedRecipe) {
                 Toast.makeText(context, "Recipe Added to Menu", Toast.LENGTH_SHORT).show()
                 closeSheet()
