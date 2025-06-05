@@ -37,6 +37,7 @@ fun SheetPages(showSheet: OpenSheet, setShowSheet: (OpenSheet) -> Unit, setAlert
         derivedStateOf { lazyListState.firstVisibleItemIndex == 0 }
     }
     val fullPages = listOf<OpenSheet>(OpenSheet.ShoppingList, OpenSheet.AddRecipeToFeed)
+    val halfPages = listOf<OpenSheet>(OpenSheet.Household)
     var oldValue by remember { mutableStateOf(SheetValue.Hidden)}
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = fullPages.contains(showSheet),
         confirmValueChange = {
@@ -54,7 +55,10 @@ fun SheetPages(showSheet: OpenSheet, setShowSheet: (OpenSheet) -> Unit, setAlert
         return
     }
     LaunchedEffect(sheetState.currentValue) {
-        if (oldValue == SheetValue.Hidden && sheetState.currentValue == SheetValue.PartiallyExpanded) {
+        if (oldValue == SheetValue.Hidden
+            && sheetState.currentValue == SheetValue.PartiallyExpanded
+            && !halfPages.contains(showSheet)
+            ) {
             sheetState.expand()
         }
         oldValue = sheetState.currentValue
