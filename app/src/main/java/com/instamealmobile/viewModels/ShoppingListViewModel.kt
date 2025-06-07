@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.ShoppingItem
 import com.instamealmobile.data.SmallShoppingItem
@@ -18,12 +20,12 @@ import javax.inject.Inject
 class ShoppingListViewModel @Inject constructor(private val apiService: ShoppingListService): ViewModel() {
     private val _shoppingList = MutableLiveData<ApiState<List<ShoppingItem>>>(ApiState.Loading)
     val shoppingList: LiveData<ApiState<List<ShoppingItem>>> = _shoppingList
-    val householdId = "3hPKx3PwkPkPPlCVs53q"
+    val user = Firebase.auth.currentUser
 
     fun fetchShoppingList() {
         viewModelScope.launch {
             try {
-                val response = apiService.getShoppingList(householdId)
+                val response = apiService.getShoppingList()
                 _shoppingList.value = ApiState.Success(response)
             } catch (e: Exception) {
                 _shoppingList.value = ApiState.Error("Failed to fetch data: ${e.message}")
@@ -35,9 +37,9 @@ class ShoppingListViewModel @Inject constructor(private val apiService: Shopping
         viewModelScope.launch {
             try {
                 _shoppingList.value = ApiState.Loading
-                val response = apiService.postShoppingList(householdId, ShoppingItem(
+                val response = apiService.postShoppingList(ShoppingItem(
                     name=text,
-                    user_id = "OKmkTNVx4TR6D6u9BjMJ"))
+                    user_id = user?.uid?:""))
                 _shoppingList.value = ApiState.Success(response.updated_list)
             } catch (e: Exception) {
                 _shoppingList.value = ApiState.Error("Failed to update shopping list: ${e.message}")
@@ -48,7 +50,7 @@ class ShoppingListViewModel @Inject constructor(private val apiService: Shopping
     fun checkItem(index: Int) {
         viewModelScope.launch {
             try {
-                val response = apiService.checkItem(householdId, index)
+                val response = apiService.checkItem(index)
                 _shoppingList.value = ApiState.Success(response.updated_list)
             } catch (e: Exception) {
                 _shoppingList.value = ApiState.Error("Failed to check item: ${e.message}")
@@ -59,7 +61,7 @@ class ShoppingListViewModel @Inject constructor(private val apiService: Shopping
     fun editItem(index: Int,item: SmallShoppingItem) {
         viewModelScope.launch {
             try {
-                val response = apiService.editItem(householdId, index, item)
+                val response = apiService.editItem(index, item)
                 _shoppingList.value = ApiState.Success(response.updated_list)
             } catch (e: Exception) {
                 _shoppingList.value = ApiState.Error("Failed to check item: ${e.message}")

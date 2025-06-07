@@ -11,6 +11,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognition
@@ -40,7 +42,7 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
     val img_link: LiveData<ApiState<String>> = _img_link
     var steps = mutableStateListOf<String>()
     var validatorsActive = mutableStateOf(false)
-    val householdId = "3hPKx3PwkPkPPlCVs53q"
+    val user = Firebase.auth.currentUser
 
     fun setRecipe(recipe: Recipe) {
         if (recipe.id.isNullOrEmpty()) {
@@ -77,7 +79,7 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
                 try {
                     val response = if (id.isNullOrEmpty()) {
                         apiService.addRecipe(
-                            householdId, "OKmkTNVx4TR6D6u9BjMJ", Recipe(
+                            user?.uid?:"", Recipe(
                                 ingredients = ingredients,
                                 title = title.value,
                                 servings = servings.value,
@@ -91,7 +93,7 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
                         )
                     } else {
                         apiService.updateRecipe(
-                            "OKmkTNVx4TR6D6u9BjMJ", id, Recipe(
+                            user?.uid?:"", id, Recipe(
                                 ingredients = ingredients,
                                 title = title.value,
                                 servings = servings.value,
@@ -120,7 +122,9 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
             val inputStream = context.contentResolver.openInputStream(uri)
 
             val requestBody = inputStream?.readBytes()?.toRequestBody("image/*".toMediaTypeOrNull())
-            val fileName = if (!uri.path.isNullOrEmpty()) File(uri.path).name else "Default_Image_Name"
+            val fileName = if (!uri.path.isNullOrEmpty()) {
+                File(uri.path).name
+            } else "Default_Image_Name"
             val multipartRequest = MultipartBody.Part.createFormData("file", fileName, requestBody!!)
             viewModelScope.launch {
                 try {

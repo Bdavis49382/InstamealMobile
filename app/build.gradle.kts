@@ -13,6 +13,7 @@ val localProperties = Properties().apply {
 }
 
 val googleClientId = localProperties["GOOGLE_SERVER_CLIENT_ID"] as String
+val backendURL = localProperties["BACKEND_URL"] as String
 
 android {
     namespace = "com.instamealmobile"
@@ -26,6 +27,7 @@ android {
         versionName = "1.0"
 
         buildConfigField("String", "GOOGLE_CLIENT_ID", "\"$googleClientId\"")
+        buildConfigField("String", "BACKEND_URL", "\"$backendURL\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

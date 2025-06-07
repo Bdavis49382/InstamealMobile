@@ -9,6 +9,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.MenuItem
 import com.instamealmobile.data.Recipe
@@ -28,13 +30,13 @@ class MenuViewModel @Inject constructor(private val apiService: MenuService): Vi
     val menu: LiveData<ApiState<List<MenuItem>>> = _menu
     private val _selected = MutableLiveData<ApiState<MenuItem>>(ApiState.Loading)
     val selected: LiveData<ApiState<MenuItem>> = _selected
+    val user = Firebase.auth.currentUser
 
     // Variables for adding a new item to menu
     var ingredients = mutableStateListOf<String>()
     var note by mutableStateOf("")
     var date by mutableLongStateOf(0L)
     var datePickerOpen by mutableStateOf(false)
-    val householdId = "3hPKx3PwkPkPPlCVs53q"
 
     val offset = ZoneId.systemDefault().rules.getOffset(Instant.ofEpochMilli(date))
 
@@ -53,7 +55,7 @@ class MenuViewModel @Inject constructor(private val apiService: MenuService): Vi
     fun addRecipe(recipe: Recipe) {
         viewModelScope.launch {
             try {
-                val response = apiService.addRecipe(householdId, "OKmkTNVx4TR6D6u9BjMJ", MenuItem(
+                val response = apiService.addRecipe(user?.uid?:"", MenuItem(
                     note = note,
                     date = getLocalDate(),
                     active_items = ingredients,
@@ -73,7 +75,7 @@ class MenuViewModel @Inject constructor(private val apiService: MenuService): Vi
         viewModelScope.launch {
             try {
                 _menu.value = ApiState.Loading
-                val response = apiService.getMenu(householdId)
+                val response = apiService.getMenu()
                 _menu.value = ApiState.Success(response)
             } catch (e: Exception) {
                 _menu.value = ApiState.Error("Failed to fetch data: ${e.message}")
@@ -84,7 +86,7 @@ class MenuViewModel @Inject constructor(private val apiService: MenuService): Vi
         viewModelScope.launch {
             try {
 
-                val response = apiService.finishMeal(householdId, recipeId,"OKmkTNVx4TR6D6u9BjMJ", rating)
+                val response = apiService.finishMeal(recipeId,user?.uid?:"", rating)
                 _menu.value = ApiState.Success(response)
             } catch (e: Exception) {
                 _menu.value = ApiState.Error("Failed to fetch data: ${e.message}")
@@ -97,12 +99,11 @@ class MenuViewModel @Inject constructor(private val apiService: MenuService): Vi
         _selected.value = ApiState.Loading
         viewModelScope.launch {
             try {
-                val response = apiService.getRecipeByIndex(householdId,index)
+                val response = apiService.getRecipeByIndex(index)
                 _selected.value = ApiState.Success(response)
             } catch (e: Exception) {
                 _selected.value = ApiState.Error("Failed to fetch data: ${e.message}")
             }
         }
-
     }
 }

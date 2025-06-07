@@ -1,6 +1,7 @@
 package com.instamealmobile.network
 
 import com.google.gson.GsonBuilder
+import com.instamealmobile.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,16 +17,17 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideOkHttpClient(): OkHttpClient {
-        return OkHttpClient.Builder().build()
+        return OkHttpClient.Builder()
+            .addInterceptor(FirebaseInterceptor())
+            .build()
     }
-
 
     @Provides
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         val gson = GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create()
         return Retrofit.Builder()
-            .baseUrl("https://easymealsbackend.onrender.com")
+            .baseUrl(BuildConfig.BACKEND_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()

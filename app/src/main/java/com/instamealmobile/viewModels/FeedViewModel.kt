@@ -19,13 +19,12 @@ class FeedViewModel @Inject constructor(private val apiService: FeedService): Vi
     private val _feed = MutableLiveData<ApiState<List<Recipe>>>(ApiState.Loading)
     val feed: LiveData<ApiState<List<Recipe>>> = _feed
     var isRefreshing by mutableStateOf(false)
-    val householdId = "3hPKx3PwkPkPPlCVs53q"
 
     fun fetchFeed() {
         viewModelScope.launch {
             try {
                 _feed.value = ApiState.Loading
-                val response = apiService.getFeed(householdId)
+                val response = apiService.getFeed()
                 _feed.value = ApiState.Success(response)
                 isRefreshing = false
             } catch (e: Exception) {
@@ -42,7 +41,7 @@ class FeedViewModel @Inject constructor(private val apiService: FeedService): Vi
         _feed.value = ApiState.Loading
         viewModelScope.launch {
             try {
-                val response = apiService.searchFeed(householdId, query)
+                val response = apiService.searchFeed(query)
                 _feed.value = ApiState.Success(response)
             } catch (e: Exception) {
                 _feed.value = ApiState.Error("Failed to fetch data: ${e.message}")

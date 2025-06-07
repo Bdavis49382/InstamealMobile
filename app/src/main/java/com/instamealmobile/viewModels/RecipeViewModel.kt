@@ -15,7 +15,6 @@ import javax.inject.Inject
 class RecipeViewModel @Inject constructor(private val apiService: MenuService): ViewModel() {
     private val _recipe = MutableLiveData<ApiState<Recipe>>(ApiState.Loading)
     val recipe: LiveData<ApiState<Recipe>> = _recipe
-    val householdId = "3hPKx3PwkPkPPlCVs53q"
 
     fun getRecipe(recipe: Recipe) {
         _recipe.value = ApiState.Loading
@@ -23,9 +22,9 @@ class RecipeViewModel @Inject constructor(private val apiService: MenuService): 
             try {
 
                 val response = if (recipe.id.isNullOrEmpty()) {
-                    apiService.getRecipeOnline(householdId, recipe.src_link ?: "")
+                    apiService.getRecipeOnline(recipe.src_link ?: "")
                 } else  {
-                    apiService.getRecipe(householdId, recipe.id)
+                    apiService.getRecipe(recipe.id)
                 }
                 _recipe.value = ApiState.Success(response)
             } catch (e: Exception) {

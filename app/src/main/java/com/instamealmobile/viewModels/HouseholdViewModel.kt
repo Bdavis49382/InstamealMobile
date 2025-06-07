@@ -8,6 +8,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.User
 import com.instamealmobile.network.HouseholdService
@@ -19,27 +21,15 @@ import javax.inject.Inject
 class HouseholdViewModel @Inject constructor(private val apiService: HouseholdService): ViewModel() {
     private val _users = MutableLiveData<ApiState<List<User>>>(ApiState.Loading)
     val users: LiveData<ApiState<List<User>>> = _users
-    val userId = "OKmkTNVx4TR6D6u9BjMJ"
-    private val _householdId = MutableLiveData<ApiState<String>>(ApiState.Loading)
-    val householdId: LiveData<ApiState<String>> = _householdId
+    val user = Firebase.auth.currentUser
     private val _code = MutableLiveData<ApiState<String>>(ApiState.Loading)
     val code: LiveData<ApiState<String>> = _code
     var codeEntry by mutableStateOf("")
 
-    fun getId() {
+    fun getUsers() {
         viewModelScope.launch {
             try {
-                val response = apiService.getHouseholdId(userId)
-                _householdId.value = ApiState.Success(response.household_id)
-            } catch (e: Exception) {
-                _householdId.value = ApiState.Error("Failed to fetch data: ${e.message}")
-            }
-        }
-    }
-    fun getUsers(householdId: String) {
-        viewModelScope.launch {
-            try {
-                val response = apiService.getHousehold(householdId)
+                val response = apiService.getHousehold()
                 _users.value = ApiState.Success(response)
             } catch (e: Exception) {
                 _users.value = ApiState.Error("Failed to fetch data: ${e.message}")
@@ -50,7 +40,7 @@ class HouseholdViewModel @Inject constructor(private val apiService: HouseholdSe
     fun getCode() {
         viewModelScope.launch {
             try {
-                val response = apiService.getHouseholdCode("3hPKx3PwkPkPPlCVs53q")
+                val response = apiService.getHouseholdCode()
                 _code.value = ApiState.Success(response)
             } catch (e: Exception) {
                 _code.value = ApiState.Error("Failed to fetch data: ${e.message}")
@@ -61,7 +51,7 @@ class HouseholdViewModel @Inject constructor(private val apiService: HouseholdSe
     fun joinHousehold() {
         viewModelScope.launch {
             try {
-                val response = apiService.joinHousehold("DIdcGPbP3Y2zJWS9sxqu",codeEntry)
+                val response = apiService.joinHousehold(user?.uid?:"",codeEntry)
                 _users.value = ApiState.Success(response)
             } catch (e: Exception) {
                 _users.value = ApiState.Error("Failed to fetch data: ${e.message}")
@@ -74,7 +64,7 @@ class HouseholdViewModel @Inject constructor(private val apiService: HouseholdSe
         viewModelScope.launch {
             try {
                 Log.i("Fun Fact","kicking user: $user_id")
-                val response = apiService.kickUser("3hPKx3PwkPkPPlCVs53q", user_id)
+                val response = apiService.kickUser(user?.uid?:"")
                 _users.value = ApiState.Success(response)
             } catch (e: Exception) {
                 _users.value = ApiState.Error("Failed to fetch data: ${e.message}")

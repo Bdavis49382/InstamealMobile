@@ -1,6 +1,5 @@
 package com.instamealmobile.ui.pages
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,18 +30,10 @@ import com.instamealmobile.viewModels.HouseholdViewModel
 @Composable
 fun HouseholdPage(join : () -> Unit, invite: () -> Unit) {
     val viewModel: HouseholdViewModel =  viewModel()
-    val householdIdState by viewModel.householdId.observeAsState()
     val householdState by viewModel.users.observeAsState()
 
     LaunchedEffect(Unit) {
-        if (householdIdState is ApiState.Success) {
-            val householdId = (householdIdState as ApiState.Success<String>).data
-            Log.i("Household ID:",householdId)
-            viewModel.getUsers("3hPKx3PwkPkPPlCVs53q")
-        } else if (householdIdState is ApiState.Error) {
-            val error = (householdIdState as ApiState.Error).message
-            Log.i("Household ID","didn't work: $error")
-        }
+        viewModel.getUsers()
     }
 
     Column(modifier = Modifier.padding(10.dp).fillMaxWidth()) {
