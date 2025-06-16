@@ -42,7 +42,6 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
     val img_link: LiveData<ApiState<String>> = _img_link
     var steps = mutableStateListOf<String>()
     var validatorsActive = mutableStateOf(false)
-    val user = Firebase.auth.currentUser
 
     fun setRecipe(recipe: Recipe) {
         if (recipe.id.isNullOrEmpty()) {
@@ -79,7 +78,7 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
                 try {
                     val response = if (id.isNullOrEmpty()) {
                         apiService.addRecipe(
-                            user?.uid?:"", Recipe(
+                            Recipe(
                                 ingredients = ingredients,
                                 title = title.value,
                                 servings = servings.value,
@@ -93,7 +92,7 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
                         )
                     } else {
                         apiService.updateRecipe(
-                            user?.uid?:"", id, Recipe(
+                            id, Recipe(
                                 ingredients = ingredients,
                                 title = title.value,
                                 servings = servings.value,

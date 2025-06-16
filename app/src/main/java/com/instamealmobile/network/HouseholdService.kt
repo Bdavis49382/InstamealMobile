@@ -7,7 +7,7 @@ import retrofit2.http.Path
 
 
 interface HouseholdService {
-    @GET("household/get")
+    @GET("household/users")
     suspend fun getHousehold() : List<User>
     @GET("household/code")
     suspend fun getHouseholdCode() : String

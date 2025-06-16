@@ -40,7 +40,7 @@ class ShoppingListViewModel @Inject constructor(private val apiService: Shopping
                 val response = apiService.postShoppingList(ShoppingItem(
                     name=text,
                     user_id = user?.uid?:""))
-                _shoppingList.value = ApiState.Success(response.updated_list)
+                _shoppingList.value = ApiState.Success(response)
             } catch (e: Exception) {
                 _shoppingList.value = ApiState.Error("Failed to update shopping list: ${e.message}")
             }
@@ -51,7 +51,7 @@ class ShoppingListViewModel @Inject constructor(private val apiService: Shopping
         viewModelScope.launch {
             try {
                 val response = apiService.checkItem(index)
-                _shoppingList.value = ApiState.Success(response.updated_list)
+                _shoppingList.value = ApiState.Success(response)
             } catch (e: Exception) {
                 _shoppingList.value = ApiState.Error("Failed to check item: ${e.message}")
             }
@@ -62,7 +62,7 @@ class ShoppingListViewModel @Inject constructor(private val apiService: Shopping
         viewModelScope.launch {
             try {
                 val response = apiService.editItem(index, item)
-                _shoppingList.value = ApiState.Success(response.updated_list)
+                _shoppingList.value = ApiState.Success(response)
             } catch (e: Exception) {
                 _shoppingList.value = ApiState.Error("Failed to check item: ${e.message}")
             }

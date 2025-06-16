@@ -13,6 +13,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.MenuItem
+import com.instamealmobile.data.MenuListItem
 import com.instamealmobile.data.Recipe
 import com.instamealmobile.network.MenuService
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,8 +27,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MenuViewModel @Inject constructor(private val apiService: MenuService): ViewModel() {
-    private val _menu = MutableLiveData<ApiState<List<MenuItem>>>(ApiState.Loading)
-    val menu: LiveData<ApiState<List<MenuItem>>> = _menu
+    private val _menu = MutableLiveData<ApiState<List<MenuListItem>>>(ApiState.Loading)
+    val menu: LiveData<ApiState<List<MenuListItem>>> = _menu
     private val _selected = MutableLiveData<ApiState<MenuItem>>(ApiState.Loading)
     val selected: LiveData<ApiState<MenuItem>> = _selected
     val user = Firebase.auth.currentUser
@@ -55,7 +56,7 @@ class MenuViewModel @Inject constructor(private val apiService: MenuService): Vi
     fun addRecipe(recipe: Recipe) {
         viewModelScope.launch {
             try {
-                val response = apiService.addRecipe(user?.uid?:"", MenuItem(
+                val response = apiService.addRecipe(MenuItem(
                     note = note,
                     date = getLocalDate(),
                     active_items = ingredients,
@@ -86,7 +87,7 @@ class MenuViewModel @Inject constructor(private val apiService: MenuService): Vi
         viewModelScope.launch {
             try {
 
-                val response = apiService.finishMeal(recipeId,user?.uid?:"", rating)
+                val response = apiService.finishMeal(recipeId,rating)
                 _menu.value = ApiState.Success(response)
             } catch (e: Exception) {
                 _menu.value = ApiState.Error("Failed to fetch data: ${e.message}")

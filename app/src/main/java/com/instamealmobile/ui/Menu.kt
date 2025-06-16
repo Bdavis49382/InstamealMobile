@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.instamealmobile.R
 import com.instamealmobile.data.ApiState
-import com.instamealmobile.data.MenuItem
+import com.instamealmobile.data.MenuListItem
 import com.instamealmobile.data.Recipe
 import com.instamealmobile.ui.placeholders.MenuPlaceholder
 import com.instamealmobile.viewModels.MenuViewModel
@@ -46,7 +46,7 @@ fun Menu(openRecipe: (Recipe) -> Unit) {
             MenuPlaceholder()
         }
         is ApiState.Success<*> -> {
-            val menu = (menuState as ApiState.Success<List<MenuItem>>).data
+            val menu = (menuState as ApiState.Success<List<MenuListItem>>).data
             Box(modifier = Modifier
                 .height(200.dp)
                 .fillMaxWidth()

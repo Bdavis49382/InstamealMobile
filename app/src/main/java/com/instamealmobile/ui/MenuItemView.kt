@@ -16,30 +16,30 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.instamealmobile.data.MenuItem
+import com.instamealmobile.data.MenuListItem
 import com.instamealmobile.data.Recipe
 import java.time.ZoneId
 import java.time.format.TextStyle
 import java.util.Locale
 
 @Composable
-fun MenuItemView(menuItem: MenuItem, openRecipe: (Recipe) -> Unit, index: Int) {
+fun MenuItemView(menuListItem: MenuListItem, openRecipe: (Recipe) -> Unit, index: Int) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(if (menuItem.date != null) {
-            menuItem.date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().dayOfWeek.getDisplayName(
+        Text(if (menuListItem.date != null) {
+            menuListItem.date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().dayOfWeek.getDisplayName(
                 TextStyle.FULL,Locale.getDefault())
         } else "")
         AsyncImage(
-            model = menuItem.img_link ?: "https://recipe-graphics.grocerywebsite.com/0_GraphicsRecipes/4589_4k.jpg",
+            model = menuListItem.img_link,
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .size(120.dp)
                 .clip(CircleShape)
                 .border(3.dp, MaterialTheme.colorScheme.primary, CircleShape)
-                .clickable { openRecipe(Recipe(title="",id=menuItem.recipe_id,index=index)) },
+                .clickable { openRecipe(Recipe(title="",id=menuListItem.recipe_id,index=index)) },
             contentDescription = null
         )
-        Text(menuItem.title,overflow = TextOverflow.Ellipsis,
+        Text(menuListItem.title,overflow = TextOverflow.Ellipsis,
             modifier = Modifier.width(200.dp)
         )
     }
