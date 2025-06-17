@@ -24,13 +24,14 @@ import com.instamealmobile.R
 import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.User
 import androidx.compose.foundation.lazy.items
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import com.instamealmobile.viewModels.HouseholdViewModel
 
 @Composable
 fun HouseholdPage(join : () -> Unit, invite: () -> Unit) {
     val viewModel: HouseholdViewModel =  viewModel()
-    val householdState by viewModel.users.observeAsState()
+    val householdState by viewModel.users.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.getUsers()

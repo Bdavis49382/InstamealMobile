@@ -9,8 +9,8 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.instamealmobile.data.Recipe
@@ -24,7 +24,7 @@ import com.instamealmobile.viewModels.FeedViewModel
 @Composable
 fun HomePage(openConfirmation: (meal : Recipe) -> Unit, openRecipe: (meal : Recipe) -> Unit, openAddRecipe: () -> Unit, openHousehold: () -> Unit, modifier : Modifier = Modifier) {
     val viewModel: FeedViewModel =  viewModel()
-    val feedState by viewModel.feed.observeAsState()
+    val feedState by viewModel.feed.collectAsState()
     val pullToRefreshState = rememberPullToRefreshState()
 
     LaunchedEffect(Unit) {

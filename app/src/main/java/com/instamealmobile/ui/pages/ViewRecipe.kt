@@ -8,8 +8,8 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -26,7 +26,7 @@ import java.text.SimpleDateFormat
 @Composable
 fun ViewRecipe(lazyListState: LazyListState,recipe: Recipe, confirm: () -> Unit) {
     val menuViewModel: MenuViewModel = viewModel()
-    val menuItemState by menuViewModel.selected.observeAsState()
+    val menuItemState by menuViewModel.selected.collectAsState()
 
     LaunchedEffect(Unit) {
         menuViewModel.getRecipe(recipe.index)

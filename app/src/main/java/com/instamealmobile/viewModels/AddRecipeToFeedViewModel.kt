@@ -21,6 +21,7 @@ import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.Recipe
 import com.instamealmobile.network.FeedService
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -38,10 +39,11 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
     var source by mutableStateOf("")
     var newIngredient by mutableStateOf("")
     var newStep by mutableStateOf("")
-    private val _img_link = MutableLiveData<ApiState<String>>(ApiState.Resting)
-    val img_link: LiveData<ApiState<String>> = _img_link
+    private val _img_link = MutableStateFlow<ApiState<String>>(ApiState.Resting)
+    val img_link: MutableStateFlow<ApiState<String>> = _img_link
     var steps = mutableStateListOf<String>()
     var validatorsActive = mutableStateOf(false)
+    var scope = viewModelScope
 
     fun setRecipe(recipe: Recipe) {
         if (recipe.id.isNullOrEmpty()) {
@@ -63,7 +65,6 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
             _img_link.value = ApiState.Success(recipe.img_link?:"")
             steps.clear()
             steps.addAll(recipe.instructions)
-
         }
     }
     fun validateRecipe() : Boolean {
@@ -74,7 +75,7 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
 
     fun submitRecipe(id: String?, confirm: (Recipe) -> Unit): Boolean {
         if (validateRecipe()) {
-            viewModelScope.launch {
+            scope.launch {
                 try {
                     val response = if (id.isNullOrEmpty()) {
                         apiService.addRecipe(
@@ -125,7 +126,7 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
                 File(uri.path).name
             } else "Default_Image_Name"
             val multipartRequest = MultipartBody.Part.createFormData("file", fileName, requestBody!!)
-            viewModelScope.launch {
+            scope.launch {
                 try {
                     _img_link.value = ApiState.Loading
                     val response = apiService.uploadImage(multipartRequest)
@@ -148,7 +149,8 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
             image = InputImage.fromFilePath(context, uri)
             recognizer.process(image)
                 .addOnSuccessListener { visionText ->
-                    textToRecipe(visionText)
+                    val stringBlocks = visionText.textBlocks.map {it.text}
+                    textToRecipe(stringBlocks)
                     onceFinished(visionText.text)
                 }
                 .addOnFailureListener { e ->
@@ -159,65 +161,56 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
         }
     }
 
-    fun textToRecipe(visionText: Text) {
+    fun textToRecipe(stringList: List<String>) {
 
         var isIngredients = false
         var isSteps = false
         var titleFound = false
         ingredients.clear()
         steps.clear()
-        for (block in visionText.textBlocks) {
-                val words = block.text.split(' ')
-                if (!titleFound and words.all { it[0] == it.uppercase()[0] }) {
-                    title.value= block.text
+        for (block in stringList) {
+                val words = block.trim().split(' ')
+                if (!titleFound and words.all { !it.isEmpty() && it[0].isUpperCase()}) {
+                    title.value= block.trim()
                     titleFound = true
-                    Log.i("TEXT_TRIGGER","title")
                     continue
                 }
-                if (block.text.uppercase().contains("YIELD:")) {
+                if (block.uppercase().contains("YIELD:")) {
                     continue
                 }
-                if (block.text.uppercase().contains("PREP:")) {
-                    Log.i("TEXT_TRIGGER","other time")
+                if (block.uppercase().contains("PREP:")) {
                     continue
                 }
-                else if (block.text.uppercase().contains("COOK:")) {
-                    Log.i("TEXT_TRIGGER","other time")
+                else if (block.uppercase().contains("COOK:")) {
                     continue
                 }
-                else if (block.text.uppercase().contains("TOTAL:")) {
-                    totalTime.value = block.text.uppercase().replace("TOTAL:","").lowercase()
-                    Log.i("TEXT_TRIGGER","total time")
+                else if (block.uppercase().contains("TOTAL:")) {
+                    totalTime.value = block.uppercase().replace("TOTAL:","").lowercase().trim()
                     continue
                 }
-                else if (block.text.uppercase().contains("SERVINGS:")) {
+                else if (block.uppercase().contains("SERVINGS:")) {
                     try {
-                        servings.value = block.text.uppercase().replace("SERVINGS:","").lowercase()
+                        servings.value = block.uppercase().replace("SERVINGS:","").lowercase().trim()
                     } catch (e: Exception){
                         Log.i("TEXT_WARNING",e.message?: "servings failed to convert to float")
                     }
-                    Log.i("TEXT_TRIGGER","servings")
                     continue
                 }
-                if (block.text.uppercase() == "INGREDIENTS") {
+                if (block.uppercase().contains("INGREDIENTS")) {
                     isIngredients = true
                     isSteps = false
-                    Log.i("TEXT_TRIGGER","ingredients")
                     continue
                 }
-                else if (block.text.uppercase() == "DIRECTIONS" || block.text.uppercase() == "INSTRUCTIONS") {
+                else if (block.uppercase().contains("DIRECTIONS") || block.uppercase().contains("INSTRUCTIONS")) {
                     isIngredients = false
                     isSteps = true
-                    Log.i("TEXT_TRIGGER","steps")
                     continue
                 }
                 if (isIngredients) {
-                    Log.i("TEXT_INGREDIENT",block.text)
-                    ingredients.add(block.text)
+                    ingredients.add(block.trim())
                 }
-                else if (isSteps && !"STEP [1-9]{1,2}".toRegex().containsMatchIn(block.text.uppercase())) {
-                    Log.i("TEXT_STEP",block.text)
-                    steps.add(block.text)
+                else if (isSteps && !"STEP [1-9]{1,2}".toRegex().containsMatchIn(block.uppercase())) {
+                    steps.add(block.trim())
                 }
         }
     }

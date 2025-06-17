@@ -30,21 +30,11 @@ class AuthViewModel @Inject constructor(): ViewModel() {
     private var auth: FirebaseAuth = Firebase.auth
     var uid: String? by mutableStateOf(null)
 
-    suspend fun logout(credentialManager: CredentialManager) {
-        credentialManager.clearCredentialState(ClearCredentialStateRequest())
-        auth.signOut()
-        uid = null
-    }
-
-    fun getToken(): String? {
-        val user = auth.currentUser
-        val tokenTask = user?.getIdToken(true)
-        var token: String? = null
-        tokenTask?.addOnSuccessListener { task ->
-            token = task.token
-        }
-        return token
-    }
+//    suspend fun logout(credentialManager: CredentialManager) {
+//        credentialManager.clearCredentialState(ClearCredentialStateRequest())
+//        auth.signOut()
+//        uid = null
+//    }
 
     fun login(coroutineScope: CoroutineScope, credentialManager : CredentialManager, context: Context) {
         val googleIdOption = GetSignInWithGoogleOption.Builder(
@@ -66,11 +56,11 @@ class AuthViewModel @Inject constructor(): ViewModel() {
             }
         }
     }
+
     fun checkLogin(): Boolean {
         if (auth.currentUser != null) {
             val user = auth.currentUser
             uid = user?.uid
-            Log.i("AUTH",uid ?: "uid not available")
             return true
         }
         return false
@@ -96,7 +86,6 @@ class AuthViewModel @Inject constructor(): ViewModel() {
         auth.signInWithCredential(credential)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Log.d("AUTH", "user logged in ")
                     checkLogin()
                 }
             }

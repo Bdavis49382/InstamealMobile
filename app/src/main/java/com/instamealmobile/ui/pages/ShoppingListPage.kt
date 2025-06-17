@@ -25,6 +25,7 @@ import com.instamealmobile.viewModels.ShoppingListViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.text.input.ImeAction
 import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.ShoppingItem
@@ -35,7 +36,7 @@ import com.instamealmobile.ui.placeholders.ShoppingListPlaceholder
 fun ShoppingListPage(lazyListState: LazyListState) {
     var newItemText by remember { mutableStateOf("") }
     val viewModel: ShoppingListViewModel =  viewModel()
-    val shoppingListState by viewModel.shoppingList.observeAsState()
+    val shoppingListState by viewModel.shoppingList.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.fetchShoppingList()

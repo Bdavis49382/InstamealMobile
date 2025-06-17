@@ -5,18 +5,15 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
 import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.MenuItem
 import com.instamealmobile.data.MenuListItem
 import com.instamealmobile.data.Recipe
 import com.instamealmobile.network.MenuService
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.Instant
@@ -27,11 +24,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MenuViewModel @Inject constructor(private val apiService: MenuService): ViewModel() {
-    private val _menu = MutableLiveData<ApiState<List<MenuListItem>>>(ApiState.Loading)
-    val menu: LiveData<ApiState<List<MenuListItem>>> = _menu
-    private val _selected = MutableLiveData<ApiState<MenuItem>>(ApiState.Loading)
-    val selected: LiveData<ApiState<MenuItem>> = _selected
-    val user = Firebase.auth.currentUser
+    private val _menu = MutableStateFlow<ApiState<List<MenuListItem>>>(ApiState.Loading)
+    val menu: MutableStateFlow<ApiState<List<MenuListItem>>> = _menu
+    private val _selected = MutableStateFlow<ApiState<MenuItem>>(ApiState.Loading)
+    val selected: MutableStateFlow<ApiState<MenuItem>> = _selected
+    var scope = viewModelScope
 
     // Variables for adding a new item to menu
     var ingredients = mutableStateListOf<String>()
@@ -54,7 +51,7 @@ class MenuViewModel @Inject constructor(private val apiService: MenuService): Vi
     }
 
     fun addRecipe(recipe: Recipe) {
-        viewModelScope.launch {
+        scope.launch {
             try {
                 val response = apiService.addRecipe(MenuItem(
                     note = note,
@@ -73,7 +70,7 @@ class MenuViewModel @Inject constructor(private val apiService: MenuService): Vi
     }
 
     fun getMenu() {
-        viewModelScope.launch {
+        scope.launch {
             try {
                 _menu.value = ApiState.Loading
                 val response = apiService.getMenu()
@@ -84,7 +81,7 @@ class MenuViewModel @Inject constructor(private val apiService: MenuService): Vi
         }
     }
     fun finishMeal(recipeId: String, rating: Float?) {
-        viewModelScope.launch {
+        scope.launch {
             try {
 
                 val response = apiService.finishMeal(recipeId,rating)
@@ -98,7 +95,7 @@ class MenuViewModel @Inject constructor(private val apiService: MenuService): Vi
 
     fun getRecipe(index: Int) {
         _selected.value = ApiState.Loading
-        viewModelScope.launch {
+        scope.launch {
             try {
                 val response = apiService.getRecipeByIndex(index)
                 _selected.value = ApiState.Success(response)

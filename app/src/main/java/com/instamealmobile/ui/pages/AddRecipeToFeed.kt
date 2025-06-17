@@ -29,8 +29,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -62,7 +62,7 @@ import com.instamealmobile.viewModels.AddRecipeToFeedViewModel
 @Composable
 fun AddRecipeToFeed(recipe: Recipe,lazyListState: LazyListState,confirm: (Recipe) -> Unit) {
     val viewModel: AddRecipeToFeedViewModel =  viewModel()
-    val imgLinkState by viewModel.img_link.observeAsState()
+    val imgLinkState by viewModel.img_link.collectAsState()
     val context = LocalContext.current
 
     var imgPurpose by remember {mutableStateOf(ImagePurpose.ImageStoring)}
@@ -139,7 +139,6 @@ fun AddRecipeToFeed(recipe: Recipe,lazyListState: LazyListState,confirm: (Recipe
                                 }
                             }
                         }
-                        else -> {}
                     }
                 }
             }

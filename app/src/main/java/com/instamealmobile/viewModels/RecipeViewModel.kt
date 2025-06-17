@@ -1,30 +1,30 @@
 package com.instamealmobile.viewModels
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.Recipe
+import com.instamealmobile.data.RecipeIdentifier
 import com.instamealmobile.network.MenuService
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class RecipeViewModel @Inject constructor(private val apiService: MenuService): ViewModel() {
-    private val _recipe = MutableLiveData<ApiState<Recipe>>(ApiState.Loading)
-    val recipe: LiveData<ApiState<Recipe>> = _recipe
+    private val _recipe = MutableStateFlow<ApiState<Recipe>>(ApiState.Loading)
+    val recipe: MutableStateFlow<ApiState<Recipe>> = _recipe
+    var scope = viewModelScope
 
-    fun getRecipe(recipe: Recipe) {
+    fun getRecipe(recipe: RecipeIdentifier) {
         _recipe.value = ApiState.Loading
-        viewModelScope.launch {
+        scope.launch {
             try {
 
-                val response = if (recipe.id.isNullOrEmpty()) {
-                    apiService.getRecipeOnline(recipe.src_link ?: "")
-                } else  {
-                    apiService.getRecipe(recipe.id)
+                val response = when (recipe) {
+                    is RecipeIdentifier.RecipeId -> apiService.getRecipe(recipe.id)
+                    is RecipeIdentifier.RecipeLink -> apiService.getRecipeOnline(recipe.link)
                 }
                 _recipe.value = ApiState.Success(response)
             } catch (e: Exception) {

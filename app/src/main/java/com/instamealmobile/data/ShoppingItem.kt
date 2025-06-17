@@ -1,7 +1,7 @@
 package com.instamealmobile.data
 
 data class ShoppingItem(
-    val user_id: String,
+    val user_id: String? = null,
     val checked: Boolean = false,
     val recipe_id: String? = null,
     val name: String,
@@ -16,7 +16,7 @@ data class SmallShoppingItem(
     var name: String
 ) {
     constructor(item: ShoppingItem) : this(
-        user_id = item.user_id,
+        user_id = item.user_id?: "",
         checked = item.checked,
         recipe_id = item.recipe_id,
         name = item.name

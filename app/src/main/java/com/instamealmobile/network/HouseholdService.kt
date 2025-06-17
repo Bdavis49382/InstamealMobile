@@ -11,8 +11,8 @@ interface HouseholdService {
     suspend fun getHousehold() : List<User>
     @GET("household/code")
     suspend fun getHouseholdCode() : String
-    @GET("household/join/{user_id}/{code}")
-    suspend fun joinHousehold(@Path("user_id") userId: String, @Path("code") code: String) : List<User>
+    @GET("household/join/{code}")
+    suspend fun joinHousehold(@Path("code") code: String) : List<User>
     @DELETE("household/kick/{user_id}")
     suspend fun kickUser(@Path("user_id") userId: String) : List<User>
 }

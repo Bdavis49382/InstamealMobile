@@ -15,6 +15,10 @@ val localProperties = Properties().apply {
 val googleClientId = localProperties["GOOGLE_SERVER_CLIENT_ID"] as String
 val backendURL = localProperties["BACKEND_URL"] as String
 
+tasks.withType<Test> {
+    useJUnitPlatform()
+}
+
 android {
     namespace = "com.instamealmobile"
     compileSdk = 35
@@ -45,11 +49,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
     buildFeatures {
         compose = true
@@ -78,7 +82,9 @@ dependencies {
     implementation(libs.coil.compose)
 // Retrofit with Scalar Converter
     implementation(libs.converter.scalars)
-    testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
