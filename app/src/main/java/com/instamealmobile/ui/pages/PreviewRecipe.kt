@@ -1,5 +1,6 @@
 package com.instamealmobile.ui.pages
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,47 +36,50 @@ fun PreviewRecipe(lazyListState: LazyListState,editRecipe : (Recipe) -> Unit, re
         viewModel.getRecipe(RecipeIdentifier.factory(recipe))
     }
     Box(contentAlignment = Alignment.TopStart, modifier = Modifier.fillMaxSize()) {
-        when (recipeState) {
-            is ApiState.Loading -> {
-                RecipeViewPlaceholder()
-            }
+        Crossfade(targetState = recipeState, label = "ContentSwitch") { screenState ->
+            when (screenState) {
+                is ApiState.Loading -> {
+                    RecipeViewPlaceholder()
+                }
 
-            is ApiState.Success<*> -> {
-                val recipeData = (recipeState as ApiState.Success<Recipe>).data
-                RecipeView(lazyListState, recipeData)
-                Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier
-                    .fillMaxSize()
-                    .padding(vertical = 200.dp)
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.End,
-                        verticalArrangement = Arrangement.spacedBy(5.dp)
+                is ApiState.Success<*> -> {
+                    val recipeData = (recipeState as ApiState.Success<Recipe>).data
+                    RecipeView(lazyListState, recipeData)
+                    Box(
+                        contentAlignment = Alignment.BottomEnd, modifier = Modifier
+                            .fillMaxSize()
+                            .padding(vertical = 200.dp)
                     ) {
-                        SideButton(
-                            {confirm(recipeData)}, modifier = Modifier
-                                .padding(vertical = 5.dp)
+                        Column(
+                            horizontalAlignment = Alignment.End,
+                            verticalArrangement = Arrangement.spacedBy(5.dp)
                         ) {
-                            Text("Add to Menu")
-                        }
-                        if (!recipeData.id.isNullOrEmpty()) {
                             SideButton(
-                                {editRecipe(recipeData)}, modifier = Modifier
+                                { confirm(recipeData) }, modifier = Modifier
                                     .padding(vertical = 5.dp)
                             ) {
-                                Icon(Icons.Default.Edit, contentDescription = "Edit")
+                                Text("Add to Menu")
                             }
+                            if (!recipeData.id.isNullOrEmpty()) {
+                                SideButton(
+                                    { editRecipe(recipeData) }, modifier = Modifier
+                                        .padding(vertical = 5.dp)
+                                ) {
+                                    Icon(Icons.Default.Edit, contentDescription = "Edit")
+                                }
 
+                            }
                         }
                     }
                 }
-            }
 
-            is ApiState.Error -> {
-                val error = (recipeState as ApiState.Error).message
-                Text(error)
-            }
+                is ApiState.Error -> {
+                    val error = (recipeState as ApiState.Error).message
+                    Text(error)
+                }
 
-            else -> {}
+                else -> {}
+            }
         }
     }
 }

@@ -20,6 +20,7 @@ class ShoppingListViewModel @Inject constructor(private val apiService: Shopping
     var scope = viewModelScope
 
     fun fetchShoppingList() {
+        _shoppingList.value = ApiState.Loading
         scope.launch {
             try {
                 val response = apiService.getShoppingList()

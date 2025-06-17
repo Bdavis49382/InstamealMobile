@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,9 +29,13 @@ fun Header(openHousehold : () -> Unit) {
         Text(
             text = "Easy Meals",
             style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
             modifier = Modifier.padding(horizontal = 10.dp).weight(1f)
         )
-        Button(onClick = openHousehold, modifier = Modifier.padding(horizontal = 5.dp)) {
+        Button(onClick = openHousehold, modifier = Modifier.padding(horizontal = 5.dp), colors = ButtonColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer, contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            disabledContentColor = MaterialTheme.colorScheme.onErrorContainer, disabledContainerColor = MaterialTheme.colorScheme.errorContainer
+        )) {
             Icon(painter = painterResource(R.drawable.household__2_), "Household")
         }
     }

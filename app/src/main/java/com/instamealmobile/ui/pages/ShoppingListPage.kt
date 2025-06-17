@@ -1,5 +1,6 @@
 package com.instamealmobile.ui.pages
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -63,40 +64,49 @@ fun ShoppingListPage(lazyListState: LazyListState) {
                 modifier = Modifier.fillMaxWidth()
             )
         }
-        when (shoppingListState) {
-            is ApiState.Loading -> {
-                ShoppingListPlaceholder()
-            }
-            is ApiState.Success<*> -> {
-                val shoppingList = (shoppingListState as ApiState.Success<List<ShoppingItem>>).data
-                LazyColumn(
-                    state = lazyListState,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 20.dp)
-                ) {
-                    itemsIndexed(shoppingList.reversed()) { index,item ->
-                        CheckItem(shoppingItem = item,
-                            editMethod = fun(text: String){
-                                val newShoppingItem = SmallShoppingItem(item)
-                                newShoppingItem.name = text
-                                viewModel.editItem(shoppingList.size - index - 1, newShoppingItem)
-                            },
-                            checkMethod = {
-                                viewModel.checkItem(shoppingList.size - index - 1)
+        Crossfade(targetState = shoppingListState, label = "ContentSwitch") { screenState ->
+            when (screenState) {
+                is ApiState.Loading -> {
+                    ShoppingListPlaceholder()
+                }
+
+                is ApiState.Success<*> -> {
+                    if (shoppingListState is ApiState.Success) {
+                        val shoppingList =
+                            (shoppingListState as ApiState.Success<List<ShoppingItem>>).data
+                        LazyColumn(
+                            state = lazyListState,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 20.dp)
+                        ) {
+                            itemsIndexed(shoppingList.reversed()) { index, item ->
+                                CheckItem(
+                                    shoppingItem = item,
+                                    editMethod = fun(text: String) {
+                                        val newShoppingItem = SmallShoppingItem(item)
+                                        newShoppingItem.name = text
+                                        viewModel.editItem(
+                                            shoppingList.size - index - 1,
+                                            newShoppingItem
+                                        )
+                                    },
+                                    checkMethod = {
+                                        viewModel.checkItem(shoppingList.size - index - 1)
+                                    }
+                                )
                             }
-                        )
+                        }
                     }
                 }
-            }
-            is ApiState.Error -> {
-                val error = (shoppingListState as ApiState.Error).message
-                Text(error)
-            }
 
-            else -> {}
+                is ApiState.Error -> {
+                    val error = (shoppingListState as ApiState.Error).message
+                    Text(error)
+                }
+
+                else -> {}
+            }
         }
-
-
     }
 }

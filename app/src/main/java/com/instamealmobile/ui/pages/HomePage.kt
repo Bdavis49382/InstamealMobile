@@ -24,7 +24,6 @@ import com.instamealmobile.viewModels.FeedViewModel
 @Composable
 fun HomePage(openConfirmation: (meal : Recipe) -> Unit, openRecipe: (meal : Recipe) -> Unit, openAddRecipe: () -> Unit, openHousehold: () -> Unit, modifier : Modifier = Modifier) {
     val viewModel: FeedViewModel =  viewModel()
-    val feedState by viewModel.feed.collectAsState()
     val pullToRefreshState = rememberPullToRefreshState()
 
     LaunchedEffect(Unit) {
@@ -41,7 +40,7 @@ fun HomePage(openConfirmation: (meal : Recipe) -> Unit, openRecipe: (meal : Reci
                 isRefreshing = viewModel.isRefreshing,
                 onRefresh = viewModel::refreshFeed
             ) {
-                Feed(feedState, openConfirmation, openAddRecipe)
+                Feed(openConfirmation, openAddRecipe)
 
             }
         }

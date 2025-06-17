@@ -13,12 +13,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.credentials.CredentialManager
@@ -50,40 +52,54 @@ class MainActivity : ComponentActivity() {
                     authViewModel.login(coroutineScope,credentialManager, context)
                 }
             }
+             val darkColors = darkColorScheme(
+//                primaryContainer = Color(0xFFC6F5D0),
+                 primaryContainer = Color(0xFFA5B97D),
+                onPrimaryContainer = Color.Black,
+                secondaryContainer = Color.White,
+                onSecondaryContainer = Color.Black,
+                 background = Color.Black,
+                 onBackground = Color.White,
+                 primary = Color(0xFF6E412F),
+                 onPrimary = Color.White
+            )
 
             InstamealMobileTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Alerts(openAlert, setAlert, pickedRecipe)
+                MaterialTheme(colorScheme = darkColors) {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+                        Alerts(openAlert, setAlert, pickedRecipe)
 
-                    SheetPages(showSheet, setShowSheet, setAlert, pickedRecipe, setPickedRecipe)
-                    Scaffold(
-                        floatingActionButton = {
-                            LargeFloatingActionButton(modifier = Modifier.clip(CircleShape)
-                                , onClick = {
-                                setShowSheet(OpenSheet.ShoppingList)
-                            }) {
-                                Icon(painter = painterResource(R.drawable.shoppinglisticon), contentDescription = "Shopping List")
+                        SheetPages(showSheet, setShowSheet, setAlert, pickedRecipe, setPickedRecipe)
+                        Scaffold(
+                            floatingActionButton = {
+                                LargeFloatingActionButton(modifier = Modifier.clip(CircleShape),
+                                    containerColor = MaterialTheme.colorScheme.primary
+                                    , onClick = {
+                                    setShowSheet(OpenSheet.ShoppingList)
+                                }) {
+                                    Icon(painter = painterResource(R.drawable.shoppinglisticon), contentDescription = "Shopping List")
+                                }
+                            },
+                            snackbarHost = {
+                                SnackbarHost(snackbarHostState)
                             }
-                        },
-                        snackbarHost = {
-                            SnackbarHost(snackbarHostState)
+                        ) { innerPadding ->
+                            HomePage({meal ->
+                                setShowSheet(OpenSheet.PreviewRecipe)
+                                setPickedRecipe(meal)
+                            }, {meal ->
+                                setShowSheet(OpenSheet.ViewRecipe)
+                                setPickedRecipe(meal)
+                            }, {
+                                setShowSheet(OpenSheet.AddRecipeToFeed)
+                                setPickedRecipe(Recipe(title=""))
+                            }, {
+                                setShowSheet(OpenSheet.Household)
+                            },Modifier.padding(innerPadding))
                         }
-                    ) { innerPadding ->
-                        HomePage({meal ->
-                            setShowSheet(OpenSheet.PreviewRecipe)
-                            setPickedRecipe(meal)
-                        }, {meal ->
-                            setShowSheet(OpenSheet.ViewRecipe)
-                            setPickedRecipe(meal)
-                        }, {
-                            setShowSheet(OpenSheet.AddRecipeToFeed)
-                            setPickedRecipe(Recipe(title=""))
-                        }, {
-                            setShowSheet(OpenSheet.Household)
-                        },Modifier.padding(innerPadding))
                     }
                 }
             }

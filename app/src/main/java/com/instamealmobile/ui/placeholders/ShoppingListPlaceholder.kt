@@ -15,7 +15,7 @@ fun ShoppingListPlaceholder() {
             .fillMaxWidth()
             .padding(bottom = 20.dp)
     ) {
-        itemsIndexed(listOf(1,1,1,1,1,1)) { index,item ->
+        itemsIndexed(List(15) {0}) { index,item ->
             CheckItemPlaceholder()
         }
     }

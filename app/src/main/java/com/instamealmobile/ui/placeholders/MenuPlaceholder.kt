@@ -36,7 +36,7 @@ fun MenuPlaceholder() {
                 .fillMaxHeight()
                 .width(40.dp)
             ) {
-                Icon(painter= painterResource(R.drawable.menu),"Menu", modifier=Modifier.align(Alignment.Center))
+                Icon(painter= painterResource(R.drawable.menu), contentDescription = "Menu", tint= MaterialTheme.colorScheme.onPrimaryContainer, modifier=Modifier.align(Alignment.Center))
             }
 
             LazyRow(

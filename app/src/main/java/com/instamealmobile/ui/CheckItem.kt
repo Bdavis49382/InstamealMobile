@@ -64,12 +64,14 @@ fun CheckItem(shoppingItem: ShoppingItem, editMethod: (String) -> Unit, checkMet
                         onSubmit = editMethod
                     )
                 }
-                Text(
-                    text= shoppingItem.recipe_title,
-                    fontSize = 10.sp,
-                    fontStyle = FontStyle.Italic,
-                    modifier = Modifier.padding(start = 10.dp),
-                )
+                if (shoppingItem.recipe_title.isNotEmpty()) {
+                    Text(
+                        text= shoppingItem.recipe_title,
+                        fontSize = 10.sp,
+                        fontStyle = FontStyle.Italic,
+                        modifier = Modifier.padding(start = 10.dp),
+                    )
+                }
             }
 
         }

@@ -10,8 +10,10 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,6 +39,13 @@ fun SearchBar(viewModel:  FeedViewModel) {
         TextField(
             value = searchBoxText,
             onValueChange = {searchBoxText = it},
+            colors = TextFieldDefaults.colors(
+               unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+               focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+               focusedTextColor = MaterialTheme.colorScheme.onSecondaryContainer,
+               unfocusedTextColor = MaterialTheme.colorScheme.onSecondaryContainer,
+               unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSecondaryContainer
+            ),
             leadingIcon = { Icon(Icons.Default.Search, "Search Icon") },
             placeholder = { Text("Search Recipes") },
             keyboardOptions = KeyboardOptions(imeAction= ImeAction.Done),
