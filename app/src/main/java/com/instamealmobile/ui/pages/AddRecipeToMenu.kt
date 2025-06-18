@@ -83,7 +83,7 @@ fun AddRecipeToMenu(recipe : Recipe, confirm: () -> Unit) {
                 }
                 Box(modifier = Modifier) {
                     AsyncImage(
-                        model = recipe.img_link ?: "https://recipe-graphics.grocerywebsite.com/0_GraphicsRecipes/4589_4k.jpg",
+                        model = if (!recipe.img_link.isNullOrEmpty()) recipe.img_link else  "https://placehold.co/600x400.png?text=${recipe.title}",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .aspectRatio(1f)

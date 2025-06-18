@@ -36,7 +36,7 @@ fun FeedItem(recipe: Recipe, openConfirmation: (Recipe) -> Unit, modifier: Modif
             )
             Box(contentAlignment = Alignment.TopEnd) {
                 AsyncImage(
-                    model = if (!recipe.img_link.isNullOrEmpty()) recipe.img_link else "https://recipe-graphics.grocerywebsite.com/0_GraphicsRecipes/4589_4k.jpg",
+                    model = if (!recipe.img_link.isNullOrEmpty()) recipe.img_link else  "https://placehold.co/600x400.png?text=${recipe.title}",
                     modifier = Modifier
                         .fillMaxWidth()
                         .aspectRatio(1f)

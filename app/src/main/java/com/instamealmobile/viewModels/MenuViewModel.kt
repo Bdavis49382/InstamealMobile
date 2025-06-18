@@ -62,6 +62,7 @@ class MenuViewModel @Inject constructor(private val apiService: MenuService): Vi
                     recipe_id = recipe.id,
                     img_link = recipe.img_link,
                 ))
+                response.forEachIndexed {index, value -> value.index  = index}
                 _menu.value = ApiState.Success(response)
             } catch (e: Exception) {
                 _menu.value = ApiState.Error("Failed to fetch data: ${e.message}")
@@ -86,6 +87,7 @@ class MenuViewModel @Inject constructor(private val apiService: MenuService): Vi
             try {
                 _menu.value = ApiState.Loading
                 val response = apiService.finishMeal(recipeId,rating)
+                response.forEachIndexed {index, value -> value.index  = index}
                 _menu.value = ApiState.Success(response)
             } catch (e: Exception) {
                 _menu.value = ApiState.Error("Failed to fetch data: ${e.message}")
