@@ -70,32 +70,30 @@ fun ShoppingListPage(lazyListState: LazyListState) {
                     ShoppingListPlaceholder()
                 }
 
-                is ApiState.Success<*> -> {
-                    if (shoppingListState is ApiState.Success) {
-                        val shoppingList =
-                            (shoppingListState as ApiState.Success<List<ShoppingItem>>).data
-                        LazyColumn(
-                            state = lazyListState,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 20.dp)
-                        ) {
-                            itemsIndexed(shoppingList.reversed()) { index, item ->
-                                CheckItem(
-                                    shoppingItem = item,
-                                    editMethod = fun(text: String) {
-                                        val newShoppingItem = SmallShoppingItem(item)
-                                        newShoppingItem.name = text
-                                        viewModel.editItem(
-                                            shoppingList.size - index - 1,
-                                            newShoppingItem
-                                        )
-                                    },
-                                    checkMethod = {
-                                        viewModel.checkItem(shoppingList.size - index - 1)
-                                    }
-                                )
-                            }
+                is ApiState.Success<*> -> if (shoppingListState is ApiState.Success){
+                    val shoppingList =
+                        (shoppingListState as ApiState.Success<List<ShoppingItem>>).data
+                    LazyColumn(
+                        state = lazyListState,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 20.dp)
+                    ) {
+                        itemsIndexed(shoppingList.reversed()) { index, item ->
+                            CheckItem(
+                                shoppingItem = item,
+                                editMethod = fun(text: String) {
+                                    val newShoppingItem = SmallShoppingItem(item)
+                                    newShoppingItem.name = text
+                                    viewModel.editItem(
+                                        shoppingList.size - index - 1,
+                                        newShoppingItem
+                                    )
+                                },
+                                checkMethod = {
+                                    viewModel.checkItem(shoppingList.size - index - 1)
+                                }
+                            )
                         }
                     }
                 }

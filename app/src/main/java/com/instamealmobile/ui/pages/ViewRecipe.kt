@@ -46,32 +46,30 @@ fun ViewRecipe(lazyListState: LazyListState,recipe: Recipe, confirm: () -> Unit)
                 ScreenState.Loading -> {
                     RecipeViewPlaceholder()
                 }
-                ScreenState.Success -> {
-                    if (menuItemState is ApiState.Success) {
-                        val menuItem = (menuItemState as ApiState.Success<MenuItem>).data
-                        Column {
-                            Column(modifier = Modifier.padding(horizontal = 20.dp)) {
-                                if (menuItem.note.isNotEmpty()) {
-                                    Text(menuItem.note)
-                                }
-                                if (menuItem.date != null) {
-                                    Text(SimpleDateFormat("E, MMMM dd").format(menuItem.date))
-                                }
+                ScreenState.Success -> if (menuItemState is ApiState.Success){
+                    val menuItem = (menuItemState as ApiState.Success<MenuItem>).data
+                    Column {
+                        Column(modifier = Modifier.padding(horizontal = 20.dp)) {
+                            if (menuItem.note.isNotEmpty()) {
+                                Text(menuItem.note)
+                            }
+                            if (menuItem.date != null) {
+                                Text(SimpleDateFormat("E, MMMM dd").format(menuItem.date))
+                            }
 
-                            }
-                            RecipeView(lazyListState, menuItem.recipe ?: Recipe(title = ""))
                         }
-                        Box(
-                            contentAlignment = Alignment.BottomEnd, modifier = Modifier
-                                .fillMaxSize()
-                                .padding(vertical = 200.dp)
+                        RecipeView(lazyListState, menuItem.recipe ?: Recipe(title = ""))
+                    }
+                    Box(
+                        contentAlignment = Alignment.BottomEnd, modifier = Modifier
+                            .fillMaxSize()
+                            .padding(vertical = 200.dp)
+                    ) {
+                        SideButton({
+                            confirm()
+                        }
                         ) {
-                            SideButton({
-                                confirm()
-                            }
-                            ) {
-                                Text("Finish")
-                            }
+                            Text("Finish")
                         }
                     }
                 }

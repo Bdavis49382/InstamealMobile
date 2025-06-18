@@ -42,7 +42,7 @@ fun PreviewRecipe(lazyListState: LazyListState,editRecipe : (Recipe) -> Unit, re
                     RecipeViewPlaceholder()
                 }
 
-                is ApiState.Success<*> -> {
+                is ApiState.Success<*> -> if (recipeState is ApiState.Success) {
                     val recipeData = (recipeState as ApiState.Success<Recipe>).data
                     RecipeView(lazyListState, recipeData)
                     Box(

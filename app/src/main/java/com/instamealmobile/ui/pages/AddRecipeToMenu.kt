@@ -46,6 +46,8 @@ fun AddRecipeToMenu(recipe : Recipe, confirm: () -> Unit) {
     LaunchedEffect(Unit) {
         viewModel.ingredients.clear()
         viewModel.ingredients.addAll(recipe.ingredients)
+        viewModel.date = 0L
+        viewModel.note = ""
     }
     if (viewModel.datePickerOpen) {
         DatePickerModal({viewModel.date = it ?: 0}) {viewModel.datePickerOpen = false }

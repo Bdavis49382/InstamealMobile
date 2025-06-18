@@ -38,7 +38,7 @@ fun SheetPages(showSheet: OpenSheet, setShowSheet: (OpenSheet) -> Unit, setAlert
     val isAtTop by remember {
         derivedStateOf { lazyListState.firstVisibleItemIndex == 0 }
     }
-    val fullPages = listOf<OpenSheet>(OpenSheet.ShoppingList, OpenSheet.AddRecipeToFeed)
+    val fullPages = listOf<OpenSheet>(OpenSheet.ShoppingList, OpenSheet.AddRecipeToFeed, OpenSheet.AddRecipeToMenu)
     val halfPages = listOf<OpenSheet>(OpenSheet.Household)
     var oldValue by remember { mutableStateOf(SheetValue.Hidden)}
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = fullPages.contains(showSheet),

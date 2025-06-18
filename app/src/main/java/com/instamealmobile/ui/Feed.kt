@@ -44,7 +44,7 @@ fun Feed(openConfirmation : (Recipe) -> Unit, openAddRecipe : () -> Unit) {
             ScreenState.Loading ->  {
                 FeedPlaceholder(openAddRecipe)
             }
-            ScreenState.Success -> {
+            ScreenState.Success -> if (feedState is ApiState.Success) {
                 val feed = (feedState as ApiState.Success<List<Recipe>>).data
                 Column(
                     modifier = Modifier.verticalScroll(rememberScrollState()),
@@ -73,8 +73,10 @@ fun Feed(openConfirmation : (Recipe) -> Unit, openAddRecipe : () -> Unit) {
                             item {
                                 AddRecipeButton(openAddRecipe)
                             }
-                            items(feed.subList(1, feed.size - 1)) { item ->
-                                FeedItem(item, openConfirmation, modifier = Modifier.fillMaxWidth())
+                            if (feed.size > 1) {
+                                items(feed.subList(1, feed.size - 1)) { item ->
+                                    FeedItem(item, openConfirmation, modifier = Modifier.fillMaxWidth())
+                                }
                             }
                         }
                     }
