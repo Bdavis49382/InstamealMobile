@@ -18,17 +18,23 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.instamealmobile.data.MenuListItem
 import com.instamealmobile.data.Recipe
+import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.TextStyle
 import java.util.Locale
 
 @Composable
-fun MenuItemView(menuListItem: MenuListItem, openRecipe: (Recipe) -> Unit, index: Int) {
+fun MenuItemView(menuListItem: MenuListItem, openRecipe: (Recipe) -> Unit) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(if (menuListItem.date != null) {
-            menuListItem.date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().dayOfWeek.getDisplayName(
-                TextStyle.FULL,Locale.getDefault())
-        } else "")
+        if (menuListItem.date != null) {
+            val localDate = menuListItem.date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+            if (localDate.equals(LocalDate.now())) {
+                Text("Today")
+            } else {
+                Text(localDate.dayOfWeek.getDisplayName(
+                    TextStyle.FULL,Locale.getDefault()))
+            }
+        }
         AsyncImage(
             model = menuListItem.img_link,
             contentScale = ContentScale.Crop,
@@ -36,7 +42,7 @@ fun MenuItemView(menuListItem: MenuListItem, openRecipe: (Recipe) -> Unit, index
                 .size(120.dp)
                 .clip(CircleShape)
                 .border(3.dp, MaterialTheme.colorScheme.primary, CircleShape)
-                .clickable { openRecipe(Recipe(title="",id=menuListItem.recipe_id,index=index)) },
+                .clickable { openRecipe(Recipe(title="",id=menuListItem.recipe_id,index=menuListItem.index?: 0)) },
             contentDescription = null
         )
         Text(menuListItem.title,overflow = TextOverflow.Ellipsis,

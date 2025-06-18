@@ -17,5 +17,6 @@ data class MenuListItem(
     val title: String,
     val note: String,
     val date: Date? = null,
-    val recipe_id: String
+    val recipe_id: String,
+    var index: Int? = null
 )

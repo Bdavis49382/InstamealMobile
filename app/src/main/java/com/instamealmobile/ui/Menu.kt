@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -86,8 +86,8 @@ fun Menu(openRecipe: (Recipe) -> Unit) {
                                     )
                                 }
                             } else {
-                                itemsIndexed(menu) { index, item ->
-                                    MenuItemView(item, openRecipe, index)
+                                items(menu.sortedBy { it.date?.time ?: Long.MAX_VALUE }) { item ->
+                                    MenuItemView(item, openRecipe)
                                 }
                             }
                         }
