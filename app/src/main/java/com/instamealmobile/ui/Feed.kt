@@ -7,14 +7,14 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -33,6 +33,11 @@ import com.instamealmobile.viewModels.FeedViewModel
 fun Feed(openConfirmation : (Recipe) -> Unit, openAddRecipe : () -> Unit) {
     val viewModel : FeedViewModel = viewModel()
     val feedState by viewModel.feed.collectAsState(ApiState.Loading)
+
+    LaunchedEffect(true) {
+        viewModel.fetchFeed()
+    }
+
     val screenState = when (feedState) {
         is ApiState.Loading -> ScreenState.Loading
         is ApiState.Success -> ScreenState.Success
@@ -47,7 +52,6 @@ fun Feed(openConfirmation : (Recipe) -> Unit, openAddRecipe : () -> Unit) {
             ScreenState.Success -> if (feedState is ApiState.Success) {
                 val feed = (feedState as ApiState.Success<List<Recipe>>).data
                 Column(
-                    modifier = Modifier.verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     if (feed.isEmpty()) {
@@ -60,16 +64,18 @@ fun Feed(openConfirmation : (Recipe) -> Unit, openAddRecipe : () -> Unit) {
                             Text("Refresh Feed")
                         }
                     } else {
-                        FeedItem(feed[0], openConfirmation, modifier = Modifier.padding(10.dp))
-                        LazyVerticalStaggeredGrid(
-                            columns = StaggeredGridCells.Adaptive(minSize = 180.dp),
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(2),
                             contentPadding = PaddingValues(horizontal = 15.dp, vertical = 0.dp),
                             horizontalArrangement = Arrangement.spacedBy(15.dp),
-                            verticalItemSpacing = 15.dp,
+                            verticalArrangement = Arrangement.spacedBy(10.dp),
                             modifier = Modifier
                                 .padding(top = 10.dp)
                                 .height(700.dp)
                         ) {
+                            item(span = { GridItemSpan(2)}) {
+                                FeedItem(feed[0], openConfirmation)
+                            }
                             item {
                                 AddRecipeButton(openAddRecipe)
                             }

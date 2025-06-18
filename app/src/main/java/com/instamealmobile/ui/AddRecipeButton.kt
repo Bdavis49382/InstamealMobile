@@ -28,7 +28,7 @@ import coil.compose.AsyncImage
 
 @Composable
 fun AddRecipeButton(openAddRecipePage: () -> Unit) {
-    ElevatedCard {
+    ElevatedCard(modifier = Modifier.padding(top = 10.dp)) {
         Box(
             contentAlignment = Alignment.BottomCenter,
             modifier = Modifier
