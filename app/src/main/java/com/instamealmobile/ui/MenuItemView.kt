@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -35,6 +36,9 @@ fun MenuItemView(menuListItem: MenuListItem, openRecipe: (Recipe) -> Unit) {
                     TextStyle.FULL,Locale.getDefault()))
             }
         }
+        else {
+            Text("")
+        }
         AsyncImage(
             model = menuListItem.img_link,
             contentScale = ContentScale.Crop,
@@ -46,6 +50,7 @@ fun MenuItemView(menuListItem: MenuListItem, openRecipe: (Recipe) -> Unit) {
             contentDescription = null
         )
         Text(menuListItem.title,overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center,
             modifier = Modifier.width(200.dp)
         )
     }
