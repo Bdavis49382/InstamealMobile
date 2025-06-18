@@ -84,7 +84,7 @@ class MenuViewModel @Inject constructor(private val apiService: MenuService): Vi
     fun finishMeal(recipeId: String, rating: Float?) {
         scope.launch {
             try {
-
+                _menu.value = ApiState.Loading
                 val response = apiService.finishMeal(recipeId,rating)
                 _menu.value = ApiState.Success(response)
             } catch (e: Exception) {

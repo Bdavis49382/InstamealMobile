@@ -17,7 +17,7 @@ fun MenuPlaceholder() {
         modifier = Modifier.fillMaxHeight(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        itemsIndexed(listOf(1,1,1)) { index,item ->
+        itemsIndexed(listOf(1,1)) { index,item ->
             MenuItemViewPlaceholder()
         }
     }
