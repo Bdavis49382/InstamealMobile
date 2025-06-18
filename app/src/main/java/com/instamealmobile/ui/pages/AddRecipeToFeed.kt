@@ -1,6 +1,7 @@
 package com.instamealmobile.ui.pages
 
 import android.widget.Toast
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -107,35 +108,47 @@ fun AddRecipeToFeed(recipe: Recipe,lazyListState: LazyListState,confirm: (Recipe
                 }
                 Box(modifier = Modifier.width(400.dp).focusProperties {canFocus = false}
                     , contentAlignment = Alignment.Center) {
-                    when (imgLinkState) {
-                        is ApiState.Loading -> {
-                            CircularProgressIndicator()
-                        }
-                        is ApiState.Success -> {
-                            val img_link =(imgLinkState as ApiState.Success<String>).data
-                            AsyncImage(
-                                model = img_link,
-                                modifier = Modifier
-                                    .clickable {
+                    Crossfade(targetState = imgLinkState, label = "ContentSwitch") { screenState ->
+                        when (screenState) {
+                            is ApiState.Loading -> {
+                                CircularProgressIndicator()
+                            }
+
+                            is ApiState.Success -> if (imgLinkState is ApiState.Success){
+                                val img_link = (imgLinkState as ApiState.Success<String>).data
+                                AsyncImage(
+                                    model = img_link,
+                                    modifier = Modifier
+                                        .clickable {
+                                            imgPurpose = ImagePurpose.ImageStoring
+                                            popupIsOn = true
+                                        }
+                                        .clip(RoundedCornerShape(10.dp)),
+                                    contentDescription = null
+                                )
+
+                            }
+
+                            is ApiState.Error -> if (imgLinkState is ApiState.Error) {
+                                val error = (imgLinkState as ApiState.Error).message
+                                Text(error)
+                            }
+
+                            is ApiState.Resting -> {
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center,
+                                    modifier = Modifier.padding(5.dp).fillMaxSize()
+                                ) {
+                                    OutlinedButton({
                                         imgPurpose = ImagePurpose.ImageStoring
                                         popupIsOn = true
+                                    }) {
+                                        Icon(
+                                            painter = painterResource(R.drawable.baseline_add_a_photo_24),
+                                            contentDescription = "Add Photo"
+                                        )
                                     }
-                                    .clip(RoundedCornerShape(10.dp)),
-                                contentDescription = null
-                            )
-
-                        }
-                        is ApiState.Error -> {
-                            val error = (imgLinkState as ApiState.Error).message
-                            Text(error)
-                        }
-                        is ApiState.Resting -> {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,modifier = Modifier.padding(5.dp).fillMaxSize()) {
-                                OutlinedButton({
-                                    imgPurpose = ImagePurpose.ImageStoring
-                                    popupIsOn = true
-                                }) {
-                                    Icon(painter = painterResource(R.drawable.baseline_add_a_photo_24),contentDescription="Add Photo")
                                 }
                             }
                         }

@@ -74,7 +74,7 @@ fun ViewRecipe(lazyListState: LazyListState,recipe: Recipe, confirm: () -> Unit)
                     }
                 }
 
-                ScreenState.Error -> {
+                ScreenState.Error -> if (menuItemState is ApiState.Error) {
                     val error = (menuItemState as ApiState.Error).message
                     Text(error)
                 }

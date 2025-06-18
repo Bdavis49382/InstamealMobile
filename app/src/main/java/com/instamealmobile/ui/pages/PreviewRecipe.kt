@@ -73,7 +73,7 @@ fun PreviewRecipe(lazyListState: LazyListState,editRecipe : (Recipe) -> Unit, re
                     }
                 }
 
-                is ApiState.Error -> {
+                is ApiState.Error -> if (recipeState is ApiState.Error) {
                     val error = (recipeState as ApiState.Error).message
                     Text(error)
                 }

@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.sp
 import com.instamealmobile.ui.CheckItem
 import com.instamealmobile.viewModels.ShoppingListViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.text.input.ImeAction
@@ -98,7 +97,7 @@ fun ShoppingListPage(lazyListState: LazyListState) {
                     }
                 }
 
-                is ApiState.Error -> {
+                is ApiState.Error -> if (shoppingListState is ApiState.Error){
                     val error = (shoppingListState as ApiState.Error).message
                     Text(error)
                 }

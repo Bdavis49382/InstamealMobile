@@ -83,11 +83,14 @@ fun Feed(openConfirmation : (Recipe) -> Unit, openAddRecipe : () -> Unit) {
                 }
 
             }
-            ScreenState.Error -> {
+            ScreenState.Error -> if (feedState is ApiState.Error) {
                 val error = (feedState as ApiState.Error).message
-                Text(error)
-                Button(viewModel::refreshFeed) {
-                    Text("Try Again")
+                Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(error)
+                    Button(viewModel::refreshFeed) {
+                        Text("Try Again")
+                    }
+
                 }
             }
 

@@ -4,8 +4,10 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -43,26 +45,33 @@ fun Menu(openRecipe: (Recipe) -> Unit) {
         viewModel.getMenu()
     }
     Crossfade(targetState = menuState) {menuState ->
-        when (menuState) {
-            is ApiState.Loading -> {
-                MenuPlaceholder()
-            }
-            is ApiState.Success<*> -> {
-                val menu = (menuState as ApiState.Success<List<MenuListItem>>).data
-                Box(modifier = Modifier
-                    .height(200.dp)
-                    .fillMaxWidth()
-                    .padding(vertical=10.dp)
-                ){
-                    Row {
-                        Box(modifier = Modifier
-                            .clip(RoundedCornerShape(topEnd = 30.dp, bottomEnd = 30.dp))
-                            .background(MaterialTheme.colorScheme.primaryContainer)
-                            .fillMaxHeight()
-                            .width(40.dp)
-                        ) {
-                            Icon(tint= MaterialTheme.colorScheme.onPrimaryContainer,painter= painterResource(R.drawable.menu), contentDescription = "Menu", modifier=Modifier.align(Alignment.Center))
-                        }
+        Box(modifier = Modifier
+            .height(200.dp)
+            .fillMaxWidth()
+            .padding(vertical=10.dp)
+        ) {
+            Row {
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(topEnd = 30.dp, bottomEnd = 30.dp))
+                        .background(MaterialTheme.colorScheme.primaryContainer)
+                        .fillMaxHeight()
+                        .width(40.dp)
+                ) {
+                    Icon(
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                        painter = painterResource(R.drawable.menu),
+                        contentDescription = "Menu",
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+                when (menuState) {
+                    is ApiState.Loading -> {
+                        MenuPlaceholder()
+                    }
+
+                    is ApiState.Success<*> -> {
+                        val menu = (menuState as ApiState.Success<List<MenuListItem>>).data
                         LazyRow(
                             //                        reverseLayout = true,
                             horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -71,29 +80,39 @@ fun Menu(openRecipe: (Recipe) -> Unit) {
                         ) {
                             if (menu.isEmpty()) {
                                 item {
-                                    Text("Add or Choose Recipes to Start Your Menu!", modifier = Modifier.padding(start = 10.dp))
+                                    Text(
+                                        "Add or Choose Recipes to Start Your Menu!",
+                                        modifier = Modifier.padding(start = 10.dp)
+                                    )
                                 }
                             } else {
-                                itemsIndexed(menu) { index,item ->
-                                    MenuItemView(item, openRecipe,index)
+                                itemsIndexed(menu) { index, item ->
+                                    MenuItemView(item, openRecipe, index)
                                 }
                             }
                         }
                     }
-                }
-            }
-            is ApiState.Error -> {
-                val error = (menuState as ApiState.Error).message
-                Text(error)
-                Button({
-                    viewModel::getMenu
-                }) {
-                    Text("Try Again")
-                }
-            }
 
-            else -> {}
+                    is ApiState.Error -> if (menuState is ApiState.Error) {
+                        val error = (menuState as ApiState.Error).message
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(error)
+                            Button(
+                                viewModel::getMenu
+                            ) {
+                                Text("Try Again")
+                            }
+
+                        }
+                    }
+
+                    else -> {}
+                }
+            }
         }
-
     }
 }
