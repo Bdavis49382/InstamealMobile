@@ -59,10 +59,11 @@ import com.instamealmobile.ui.PickerPopup
 import com.instamealmobile.ui.SideButton
 import com.instamealmobile.ui.SideButtons
 import com.instamealmobile.viewModels.AddRecipeToFeedViewModel
+import com.instamealmobile.viewModels.Purpose
 
 
 @Composable
-fun AddRecipeToFeed(recipe: Recipe,lazyListState: LazyListState,confirm: (Recipe) -> Unit) {
+fun AddRecipeToFeed(recipe: Recipe,lazyListState: LazyListState,purpose: Purpose, confirm: (Recipe) -> Unit) {
     val viewModel: AddRecipeToFeedViewModel =  viewModel()
     val imgLinkState by viewModel.img_link.collectAsState()
     val context = LocalContext.current
@@ -165,7 +166,7 @@ fun AddRecipeToFeed(recipe: Recipe,lazyListState: LazyListState,confirm: (Recipe
             LazyColumn(
                 state = lazyListState,
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth(.95f)
             ) {
                 item {
                     EditableTextState(
@@ -232,16 +233,18 @@ fun AddRecipeToFeed(recipe: Recipe,lazyListState: LazyListState,confirm: (Recipe
                     )
 
                 }
-                itemsIndexed(viewModel.ingredients) { index,item ->
+                itemsIndexed(viewModel.ingredients, key= {index,item -> item}) { index,item ->
                     Row(verticalAlignment = Alignment.CenterVertically) {
+                        Button({
+                            viewModel.ingredients.removeAt(index)
+                               }, shape = CircleShape) {
+                            Icon(Icons.Default.Delete, contentDescription = "Remove")
+                        }
                         EditableText(text = item, maxLines = 4, placeholder = "Ingredient", modifier = Modifier
-                            .width(270.dp)
-                            .padding(end = 5.dp, bottom = 5.dp)
+                            .width(300.dp)
+                            .padding(start = 5.dp, bottom = 5.dp)
                         ) {
                             viewModel.ingredients[index] = it
-                        }
-                        Button({viewModel.ingredients.removeAt(index)}, shape = CircleShape, modifier = Modifier.padding(horizontal = 5.dp)) {
-                            Icon(Icons.Default.Delete, contentDescription = "Remove")
                         }
                     }
                 }
@@ -273,21 +276,23 @@ fun AddRecipeToFeed(recipe: Recipe,lazyListState: LazyListState,confirm: (Recipe
                         textStyle = TextStyle(fontSize = 12.sp),
                         shape = RoundedCornerShape(20.dp),
                         modifier = Modifier
-                            .width(270.dp)
+                            .width(240.dp)
                             .padding(end = 5.dp, bottom = 5.dp)
                     )
 
                 }
-                itemsIndexed(viewModel.steps) { index,item ->
+                itemsIndexed(viewModel.steps, key={index,item -> item}) { index,item ->
                     Row {
+                        Button({
+                            viewModel.steps.removeAt(index)
+                               }, shape = CircleShape) {
+                            Icon(Icons.Default.Delete, contentDescription = "Remove")
+                        }
                         EditableText(text = item, placeholder = "Step", maxLines = 50, modifier = Modifier
-                            .width(270.dp)
-                            .padding(end = 5.dp, bottom = 5.dp)
+                            .width(300.dp)
+                            .padding(start = 5.dp, bottom = 5.dp)
                         ) {
                             viewModel.steps[index] = it
-                        }
-                        Button({viewModel.steps.removeAt(index)}, shape = CircleShape) {
-                            Icon(Icons.Default.Delete, contentDescription = "Remove")
                         }
                     }
                 }

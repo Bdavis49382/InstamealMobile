@@ -23,11 +23,12 @@ import androidx.compose.ui.unit.dp
 import com.instamealmobile.OpenAlert
 import com.instamealmobile.OpenSheet
 import com.instamealmobile.data.Recipe
+import com.instamealmobile.viewModels.Purpose
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SheetPages(showSheet: OpenSheet, setShowSheet: (OpenSheet) -> Unit, setAlert: (OpenAlert) -> Unit, pickedRecipe: Recipe = Recipe(title = "", img_link = ""), setPickedRecipe: (Recipe) -> Unit) {
+fun SheetPages(showSheet: OpenSheet, setShowSheet: (OpenSheet) -> Unit, setAlert: (OpenAlert) -> Unit, pickedRecipe: Recipe = Recipe(title = "", img_link = ""), setPickedRecipe: (Recipe) -> Unit, addToFeedPurpose: Purpose, setAddRecipePurpose: (Purpose) -> Unit) {
     val lazyListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     val closeSheet = {
@@ -39,7 +40,7 @@ fun SheetPages(showSheet: OpenSheet, setShowSheet: (OpenSheet) -> Unit, setAlert
         derivedStateOf { lazyListState.firstVisibleItemIndex == 0 }
     }
     val fullPages = listOf<OpenSheet>(OpenSheet.ShoppingList, OpenSheet.AddRecipeToFeed, OpenSheet.AddRecipeToMenu,
-        OpenSheet.PreviewRecipe)
+        OpenSheet.PreviewRecipe, OpenSheet.ViewRecipe)
     val halfPages = listOf<OpenSheet>(OpenSheet.Household)
     var oldValue by remember { mutableStateOf(SheetValue.Hidden)}
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = fullPages.contains(showSheet),
@@ -57,6 +58,7 @@ fun SheetPages(showSheet: OpenSheet, setShowSheet: (OpenSheet) -> Unit, setAlert
     if (showSheet == OpenSheet.None) {
         return
     }
+
     LaunchedEffect(sheetState.currentValue) {
         if (oldValue == SheetValue.Hidden
             && sheetState.currentValue == SheetValue.PartiallyExpanded
@@ -74,6 +76,7 @@ fun SheetPages(showSheet: OpenSheet, setShowSheet: (OpenSheet) -> Unit, setAlert
         when (showSheet) {
             OpenSheet.PreviewRecipe -> PreviewRecipe(lazyListState, { recipe ->
                 setPickedRecipe(recipe)
+                setAddRecipePurpose(Purpose.FeedEdit)
                 setShowSheet(OpenSheet.AddRecipeToFeed)
             }, pickedRecipe) {
                 setShowSheet(OpenSheet.AddRecipeToMenu)
@@ -84,15 +87,26 @@ fun SheetPages(showSheet: OpenSheet, setShowSheet: (OpenSheet) -> Unit, setAlert
                 Toast.makeText(context, "Recipe Added to Menu", Toast.LENGTH_SHORT).show()
                 closeSheet()
             }
-            OpenSheet.AddRecipeToFeed -> AddRecipeToFeed(pickedRecipe, lazyListState) {
+            OpenSheet.AddRecipeToFeed -> AddRecipeToFeed(pickedRecipe, lazyListState, addToFeedPurpose) {
                 setPickedRecipe(it)
-                setShowSheet(OpenSheet.PreviewRecipe)
-                Toast.makeText(context, if (pickedRecipe.id == null)"Recipe Added to My Recipes" else "Updated Recipe", Toast.LENGTH_SHORT).show()
+                if (addToFeedPurpose == Purpose.AddNew || addToFeedPurpose == Purpose.FeedEdit) {
+                    setShowSheet(OpenSheet.PreviewRecipe)
+                    if (addToFeedPurpose == Purpose.AddNew) {
+                        Toast.makeText(context, "Recipe Added to My Recipes", Toast.LENGTH_SHORT).show()
+                    }
+                } else if (addToFeedPurpose == Purpose.MenuEdit) {
+                    setShowSheet(OpenSheet.ViewRecipe)
+                    Toast.makeText(context, "Recipe Updated", Toast.LENGTH_SHORT).show()
+                }
             }
             OpenSheet.Household -> HouseholdPage(
                 { setAlert(OpenAlert.Join) },
                 { setAlert(OpenAlert.Invite) })
-            OpenSheet.ViewRecipe -> ViewRecipe(lazyListState, pickedRecipe) {
+            OpenSheet.ViewRecipe -> ViewRecipe(lazyListState, pickedRecipe, { recipe ->
+                    setPickedRecipe(recipe)
+                    setAddRecipePurpose(Purpose.MenuEdit)
+                    setShowSheet(OpenSheet.AddRecipeToFeed)
+            }) {
                 closeSheet()
                 setAlert(OpenAlert.Rating)
             }

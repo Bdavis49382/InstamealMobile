@@ -7,14 +7,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
 import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.instamealmobile.data.ApiState
@@ -30,6 +25,9 @@ import java.io.File
 import java.io.IOException
 import javax.inject.Inject
 
+enum class Purpose {
+    MenuEdit, FeedEdit, AddNew
+}
 @HiltViewModel
 class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedService): ViewModel() {
     var ingredients = mutableStateListOf<String>()
@@ -39,6 +37,7 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
     var source by mutableStateOf("")
     var newIngredient by mutableStateOf("")
     var newStep by mutableStateOf("")
+    var authorId by mutableStateOf("")
     private val _img_link = MutableStateFlow<ApiState<String>>(ApiState.Resting)
     val img_link: MutableStateFlow<ApiState<String>> = _img_link
     var steps = mutableStateListOf<String>()
@@ -52,6 +51,7 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
             servings.value = ""
             totalTime.value = ""
             source = ""
+            authorId = ""
             _img_link.value = ApiState.Resting
             steps.clear()
 
@@ -65,6 +65,7 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
             _img_link.value = ApiState.Success(recipe.img_link?:"")
             steps.clear()
             steps.addAll(recipe.instructions)
+            authorId = recipe.author_id?: ""
         }
     }
     fun validateRecipe() : Boolean {
@@ -102,7 +103,8 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
                                 img_link = if (img_link.value is ApiState.Success) {
                                     (img_link.value as? ApiState.Success)?.data
                                 } else "",
-                                instructions = steps
+                                instructions = steps,
+                                author_id = authorId
                             )
                         )
                     }

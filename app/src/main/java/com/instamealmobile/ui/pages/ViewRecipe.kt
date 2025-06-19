@@ -6,6 +6,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,7 +30,7 @@ import com.instamealmobile.viewModels.MenuViewModel
 import java.text.SimpleDateFormat
 
 @Composable
-fun ViewRecipe(lazyListState: LazyListState,recipe: Recipe, confirm: () -> Unit) {
+fun ViewRecipe(lazyListState: LazyListState,recipe: Recipe, editRecipe: (Recipe) -> Unit, confirm: () -> Unit) {
     val menuViewModel: MenuViewModel = viewModel()
     val menuItemState by menuViewModel.selected.collectAsState()
 
@@ -66,6 +69,13 @@ fun ViewRecipe(lazyListState: LazyListState,recipe: Recipe, confirm: () -> Unit)
                             confirm()
                         }) {
                             Text("Finish")
+                        }
+                        SideButton(
+                            {
+                                editRecipe(menuItem.recipe?:Recipe(title=""))
+                            }
+                        ) {
+                            Icon(Icons.Default.Edit, contentDescription = "Edit")
                         }
                     }
                 }
