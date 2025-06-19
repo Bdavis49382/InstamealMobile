@@ -54,12 +54,12 @@ fun Menu(openRecipe: (Recipe) -> Unit) {
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(topEnd = 30.dp, bottomEnd = 30.dp))
-                        .background(MaterialTheme.colorScheme.primaryContainer)
+                        .background(MaterialTheme.colorScheme.primary)
                         .fillMaxHeight()
                         .width(40.dp)
                 ) {
                     Icon(
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                        tint = MaterialTheme.colorScheme.onPrimary,
                         painter = painterResource(R.drawable.menu),
                         contentDescription = "Menu",
                         modifier = Modifier.align(Alignment.Center)

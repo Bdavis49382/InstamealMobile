@@ -5,13 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.LaunchedEffect
@@ -19,10 +14,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.credentials.CredentialManager
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.instamealmobile.data.Recipe
@@ -41,7 +34,6 @@ class MainActivity : ComponentActivity() {
             val (showSheet, setShowSheet) = remember { mutableStateOf(OpenSheet.None)}
             var (openAlert, setAlert) = remember { mutableStateOf(OpenAlert.None) }
             val (pickedRecipe, setPickedRecipe) = remember { mutableStateOf(Recipe(title="", img_link = "")) }
-            val snackbarHostState = remember { SnackbarHostState() }
             val authViewModel: AuthViewModel = viewModel()
             val context = LocalContext.current
             val coroutineScope = rememberCoroutineScope()
@@ -73,20 +65,7 @@ class MainActivity : ComponentActivity() {
                         Alerts(openAlert, setAlert, pickedRecipe)
 
                         SheetPages(showSheet, setShowSheet, setAlert, pickedRecipe, setPickedRecipe)
-                        Scaffold(
-                            floatingActionButton = {
-                                LargeFloatingActionButton(modifier = Modifier.clip(CircleShape),
-                                    containerColor = MaterialTheme.colorScheme.primary
-                                    , onClick = {
-                                    setShowSheet(OpenSheet.ShoppingList)
-                                }) {
-                                    Icon(painter = painterResource(R.drawable.shoppinglisticon), contentDescription = "Shopping List")
-                                }
-                            },
-                            snackbarHost = {
-                                SnackbarHost(snackbarHostState)
-                            }
-                        ) { innerPadding ->
+                        Scaffold { innerPadding ->
                             HomePage({meal ->
                                 setShowSheet(OpenSheet.PreviewRecipe)
                                 setPickedRecipe(meal)
@@ -98,7 +77,10 @@ class MainActivity : ComponentActivity() {
                                 setPickedRecipe(Recipe(title=""))
                             }, {
                                 setShowSheet(OpenSheet.Household)
-                            },Modifier.padding(innerPadding))
+                            }, {
+                                setShowSheet(OpenSheet.ShoppingList)
+                            },
+                            Modifier.padding(innerPadding))
                         }
                     }
                 }

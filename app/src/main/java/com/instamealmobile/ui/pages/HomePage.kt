@@ -19,7 +19,7 @@ import com.instamealmobile.viewModels.FeedViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomePage(openConfirmation: (meal : Recipe) -> Unit, openRecipe: (meal : Recipe) -> Unit, openAddRecipe: () -> Unit, openHousehold: () -> Unit, modifier : Modifier = Modifier) {
+fun HomePage(openConfirmation: (meal : Recipe) -> Unit, openRecipe: (meal : Recipe) -> Unit, openAddRecipe: () -> Unit, openHousehold: () -> Unit, openShoppingList: () -> Unit, modifier : Modifier = Modifier) {
     val viewModel: FeedViewModel =  viewModel()
     val pullToRefreshState = rememberPullToRefreshState()
 
@@ -38,6 +38,6 @@ fun HomePage(openConfirmation: (meal : Recipe) -> Unit, openRecipe: (meal : Reci
 
             }
         }
-        SearchBar(viewModel)
+        SearchBar(viewModel, openShoppingList)
     }
 }

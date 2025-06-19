@@ -1,6 +1,7 @@
 package com.instamealmobile.ui.pages
 
 import android.widget.Toast
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,11 +29,13 @@ fun JoinHousehold(onDismiss: () -> Unit) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp)
+                .height(240.dp)
                 .padding(0.dp),
             shape = RoundedCornerShape(16.dp),
         ) {
-           Column(horizontalAlignment = Alignment.CenterHorizontally,modifier = Modifier.padding(30.dp)) {
+           Column(horizontalAlignment = Alignment.CenterHorizontally,
+               verticalArrangement = Arrangement.spacedBy(10.dp) ,
+               modifier = Modifier.padding(30.dp)) {
                Text("Join by entering the code provided by the head of your household.", textAlign = TextAlign.Center)
                TextField(
                    value = viewModel.codeEntry,

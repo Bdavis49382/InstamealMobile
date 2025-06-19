@@ -27,9 +27,9 @@ fun FeedItem(recipe: Recipe, openConfirmation: (Recipe) -> Unit, modifier: Modif
     ) {
         Column {
             Text(text=recipe.title,
-                fontSize = 11.sp,
+                fontSize = 13.sp,
                 color= MaterialTheme.colorScheme.onBackground,
-                lineHeight = 11.sp,
+                lineHeight = 13.sp,
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier
                     .padding(start = 5.dp),
