@@ -57,6 +57,7 @@ import com.instamealmobile.ui.EditableTextState
 import com.instamealmobile.ui.ImagePurpose
 import com.instamealmobile.ui.PickerPopup
 import com.instamealmobile.ui.SideButton
+import com.instamealmobile.ui.SideButtons
 import com.instamealmobile.viewModels.AddRecipeToFeedViewModel
 
 
@@ -293,10 +294,7 @@ fun AddRecipeToFeed(recipe: Recipe,lazyListState: LazyListState,confirm: (Recipe
             }
 
         }
-        Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier
-            .fillMaxSize()
-            .padding(vertical = 200.dp)
-        ) {
+        SideButtons {
             SideButton({
                 if (!viewModel.submitRecipe(recipe.id,confirm)) {
                     viewModel.validatorsActive.value = true

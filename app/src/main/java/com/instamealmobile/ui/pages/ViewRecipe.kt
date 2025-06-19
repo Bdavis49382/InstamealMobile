@@ -21,6 +21,7 @@ import com.instamealmobile.data.Recipe
 import com.instamealmobile.data.ScreenState
 import com.instamealmobile.ui.RecipeView
 import com.instamealmobile.ui.SideButton
+import com.instamealmobile.ui.SideButtons
 import com.instamealmobile.ui.placeholders.RecipeViewPlaceholder
 import com.instamealmobile.viewModels.MenuViewModel
 import java.text.SimpleDateFormat
@@ -60,15 +61,10 @@ fun ViewRecipe(lazyListState: LazyListState,recipe: Recipe, confirm: () -> Unit)
                         }
                         RecipeView(lazyListState, menuItem.recipe ?: Recipe(title = ""))
                     }
-                    Box(
-                        contentAlignment = Alignment.BottomEnd, modifier = Modifier
-                            .fillMaxSize()
-                            .padding(vertical = 200.dp)
-                    ) {
+                    SideButtons {
                         SideButton({
                             confirm()
-                        }
-                        ) {
+                        }) {
                             Text("Finish")
                         }
                     }

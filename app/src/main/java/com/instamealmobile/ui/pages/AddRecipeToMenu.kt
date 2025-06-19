@@ -37,6 +37,7 @@ import com.instamealmobile.R
 import com.instamealmobile.data.Recipe
 import com.instamealmobile.ui.DatePickerModal
 import com.instamealmobile.ui.SideButton
+import com.instamealmobile.ui.SideButtons
 import com.instamealmobile.viewModels.MenuViewModel
 
 @Composable
@@ -141,10 +142,7 @@ fun AddRecipeToMenu(recipe : Recipe, confirm: () -> Unit) {
                 }
             }
         }
-        Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier
-            .fillMaxSize()
-            .padding(vertical = 200.dp)
-        ) {
+        SideButtons {
             SideButton({viewModel.addRecipe(recipe)
                 confirm()}
             ) {
