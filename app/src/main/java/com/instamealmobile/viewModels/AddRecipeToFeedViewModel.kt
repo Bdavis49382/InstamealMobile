@@ -15,6 +15,7 @@ import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.Recipe
 import com.instamealmobile.network.FeedService
+import com.instamealmobile.ui.ImagePurpose
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -23,6 +24,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import java.io.IOException
+import java.io.InvalidObjectException
 import javax.inject.Inject
 
 enum class Purpose {
@@ -144,7 +146,7 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
         }
     }
 
-    fun parseText(uri: Uri, context: Context, onceFinished: (String) -> Unit ) {
+    fun parseText(uri: Uri, context: Context, purpose: ImagePurpose, onceFinished: (String) -> Unit ) {
         val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
         val image: InputImage
         try {
@@ -152,7 +154,12 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
             recognizer.process(image)
                 .addOnSuccessListener { visionText ->
                     val stringBlocks = visionText.textBlocks.map {it.text}
-                    textToRecipe(stringBlocks)
+                    when (purpose) {
+                        ImagePurpose.TextParsing -> textToRecipe(stringBlocks)
+                        ImagePurpose.TextParsingIngredients -> textToIngredients(stringBlocks)
+                        ImagePurpose.TextParsingSteps -> textToSteps(stringBlocks)
+                        else -> throw InvalidObjectException("Image meant for text parsing was incorrectly labeled as being for storage.")
+                    }
                     onceFinished(visionText.text)
                 }
                 .addOnFailureListener { e ->
@@ -161,6 +168,23 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
         } catch (e: IOException) {
             e.printStackTrace()
         }
+    }
+
+    fun textToIngredients(stringList: List<String>) {
+        ingredients.addAll(stringList.map {
+            it.replace("Ingredients:?".toRegex(RegexOption.IGNORE_CASE),"").trim()
+        }.filter {
+            it.isNotBlank()
+        })
+    }
+    fun textToSteps(stringList: List<String>) {
+        steps.addAll(stringList.map {
+            it
+                .replace("\\b(?:Directions|Instructions|steps):?".toRegex(RegexOption.IGNORE_CASE),"").trim()
+                .replace("Step [0-9]{1,2}:?".toRegex(RegexOption.IGNORE_CASE),"").trim()
+        }.filter {
+            it.isNotBlank()
+        })
     }
 
     fun textToRecipe(stringList: List<String>) {

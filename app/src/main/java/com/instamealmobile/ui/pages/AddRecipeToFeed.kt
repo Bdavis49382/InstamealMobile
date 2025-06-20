@@ -207,6 +207,14 @@ fun AddRecipeToFeed(recipe: Recipe,lazyListState: LazyListState,purpose: Purpose
 
                 }
                 item {
+                    Button({
+                        imgPurpose = ImagePurpose.TextParsingIngredients
+                        popupIsOn = true
+                    }, modifier = Modifier.focusProperties { canFocus = false}) {
+                        Text("Grab Ingredients From Image")
+                    }
+                }
+                item {
                     OutlinedTextField(
                         value = viewModel.newIngredient,
                         placeholder = {Text("New Ingredient")},
@@ -231,9 +239,8 @@ fun AddRecipeToFeed(recipe: Recipe,lazyListState: LazyListState,purpose: Purpose
                             .width(270.dp)
                             .padding(end = 5.dp, bottom = 5.dp)
                     )
-
                 }
-                itemsIndexed(viewModel.ingredients, key= {index,item -> item}) { index,item ->
+                itemsIndexed(viewModel.ingredients, key= {index,item -> "$item$index,ingredients"}) { index,item ->
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Button({
                             viewModel.ingredients.removeAt(index)
@@ -253,6 +260,14 @@ fun AddRecipeToFeed(recipe: Recipe,lazyListState: LazyListState,purpose: Purpose
                         style = TextStyle(fontSize = 25.sp),
                         modifier = Modifier.padding(vertical = 5.dp)
                     )
+                }
+                item {
+                    Button({
+                        imgPurpose = ImagePurpose.TextParsingSteps
+                        popupIsOn = true
+                    }, modifier = Modifier.focusProperties { canFocus = false}) {
+                        Text("Grab Instructions From Image")
+                    }
                 }
                 item {
                     OutlinedTextField(
@@ -281,7 +296,7 @@ fun AddRecipeToFeed(recipe: Recipe,lazyListState: LazyListState,purpose: Purpose
                     )
 
                 }
-                itemsIndexed(viewModel.steps, key={index,item -> item}) { index,item ->
+                itemsIndexed(viewModel.steps, key={index,item -> "$item$index,steps"}) { index,item ->
                     Row {
                         Button({
                             viewModel.steps.removeAt(index)

@@ -33,7 +33,7 @@ import com.instamealmobile.viewModels.AddRecipeToFeedViewModel
 import java.io.File
 
 enum class ImagePurpose {
-    TextParsing, ImageStoring
+    TextParsing, ImageStoring, TextParsingIngredients, TextParsingSteps
 }
 
 @Composable
@@ -41,38 +41,43 @@ fun PickerPopup(popupIsOn: Boolean,imagePurpose: ImagePurpose, onDismiss: () -> 
     val viewModel : AddRecipeToFeedViewModel = viewModel()
     val context = LocalContext.current
 
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-        uri?.let { viewModel.uploadImage(it, context) {
-            Toast.makeText(context, "Image Uploaded Successfully", Toast.LENGTH_SHORT).show()
-        } }
-    }
-
-    val textLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-        uri?.let { viewModel.parseText(it, context) {
-            Toast.makeText(context, "Grabbed Recipe From Image - Check For Accuracy", Toast.LENGTH_SHORT).show()
-        }}
+    val pickerLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        uri?.let {
+            if (imagePurpose == ImagePurpose.ImageStoring) {
+                viewModel.uploadImage(it, context) {
+                    Toast.makeText(context, "Image Uploaded Successfully", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            } else {
+                viewModel.parseText(it, context, imagePurpose) {
+                    Toast.makeText(
+                        context,
+                        "Grabbed Recipe From Image - Check For Accuracy",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
     }
 
     val cameraUri = remember { mutableStateOf<Uri?>(null) }
     val cameraFile = File(context.cacheDir, "captured_image.jpg")
     cameraUri.value = FileProvider.getUriForFile(context, "${context.packageName}.provider", cameraFile)
-    val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
-            success ->
+
+    val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
         if (success && cameraUri.value != null) {
-            viewModel.uploadImage(cameraUri.value!!, context) {
-                Toast.makeText(context, "Image Uploaded Successfully", Toast.LENGTH_LONG).show()
+            if (imagePurpose == ImagePurpose.ImageStoring) {
+                viewModel.uploadImage(cameraUri.value!!, context) {
+                    Toast.makeText(context, "Image Uploaded Successfully", Toast.LENGTH_LONG).show()
+                }
+            } else {
+                viewModel.parseText(cameraUri.value!!, context, imagePurpose) { recipe ->
+                    Toast.makeText(context, "Grabbed Text From Image - Check For Accuracy", Toast.LENGTH_LONG).show()
+                }
             }
         }
     }
-    val textCameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
-            success ->
-        if (success && cameraUri.value != null) {
-            viewModel.parseText(cameraUri.value!!, context) { recipe ->
-                Log.i("FULL_TEXT",recipe)
-                Toast.makeText(context, "Grabbed Recipe From Image - Check For Accuracy", Toast.LENGTH_LONG).show()
-            }
-        }
-    }
+
     if (popupIsOn) {
         Dialog(onDismissRequest = onDismiss) {
             Card(
@@ -92,20 +97,13 @@ fun PickerPopup(popupIsOn: Boolean,imagePurpose: ImagePurpose, onDismiss: () -> 
                         horizontalArrangement = Arrangement.Center,
                         ) {
                         OutlinedButton({
-                            if (imagePurpose == ImagePurpose.ImageStoring) {
-                                cameraLauncher.launch(cameraUri.value!!)
-                            } else {
-                                textCameraLauncher.launch(cameraUri.value!!)
-                            }
+                            cameraLauncher.launch(cameraUri.value!!)
                             onDismiss()
                         }, modifier = Modifier.padding(end = 15.dp)) {
                             Icon(painter = painterResource(R.drawable.baseline_photo_camera_24),"camera")
                         }
                         OutlinedButton({
-                            if (imagePurpose == ImagePurpose.ImageStoring)
-                                launcher.launch("image/*")
-                            else
-                                textLauncher.launch("image/*")
+                            pickerLauncher.launch("image/*")
                             onDismiss()
                         }) {
                             Icon(painter = painterResource(R.drawable.baseline_image_search_24),"image search")

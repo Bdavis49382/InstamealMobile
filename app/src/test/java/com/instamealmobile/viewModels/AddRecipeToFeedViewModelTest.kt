@@ -281,4 +281,201 @@ class AddRecipeToFeedViewModelTest {
         assertTrue(viewModel.steps.isNotEmpty())
         assertEquals("Fry water until browned.", viewModel.steps[0])
     }
+
+    @Test
+    fun textToIngredients() {
+        val fakeBlocks = mutableListOf<String>(
+            "Ingredients",
+            "Ingredient 1",
+            "Ingredient 2",
+            "blabla",
+            "blabla"
+        )
+
+        viewModel.textToIngredients(fakeBlocks)
+
+        val expected = listOf<String>(
+            "Ingredient 1",
+            "Ingredient 2",
+            "blabla",
+            "blabla"
+
+        )
+        assertEquals(expected, viewModel.ingredients)
+    }
+    @Test
+    fun textToIngredientsHandlesWhiteSpace() {
+        val fakeBlocks = mutableListOf<String>(
+            "Ingredients \n",
+            " Ingredient 1  ",
+            "Ingredient 2 ",
+            " blabla",
+            " blabla"
+        )
+
+        viewModel.textToIngredients(fakeBlocks)
+
+        val expected = listOf<String>(
+            "Ingredient 1",
+            "Ingredient 2",
+            "blabla",
+            "blabla"
+
+        )
+        assertEquals(expected, viewModel.ingredients)
+    }
+    @Test
+    fun textToIngredientsHandlesUpperCase() {
+        val fakeBlocks = mutableListOf<String>(
+            "INGREDIENTS",
+            "Ingredient 1",
+            "Ingredient 2",
+            "blabla",
+            "blabla"
+        )
+
+        viewModel.textToIngredients(fakeBlocks)
+
+        val expected = listOf<String>(
+            "Ingredient 1",
+            "Ingredient 2",
+            "blabla",
+            "blabla"
+
+        )
+        assertEquals(expected, viewModel.ingredients)
+    }
+    @Test
+    fun textToIngredientsHandlesColon() {
+        val fakeBlocks = mutableListOf<String>(
+            "ingredients:",
+            "Ingredient 1",
+            "Ingredient 2",
+            "blabla",
+            "blabla"
+        )
+
+        viewModel.textToIngredients(fakeBlocks)
+
+        val expected = listOf<String>(
+            "Ingredient 1",
+            "Ingredient 2",
+            "blabla",
+            "blabla"
+
+        )
+        assertEquals(expected, viewModel.ingredients)
+    }
+    @Test
+    fun textToIngredientsHandlesPartials() {
+        val fakeBlocks = mutableListOf<String>(
+            "ingredients: Ingredient 1",
+            "Ingredient 2",
+            "blabla",
+            "blabla"
+        )
+
+        viewModel.textToIngredients(fakeBlocks)
+
+        val expected = listOf<String>(
+            "Ingredient 1",
+            "Ingredient 2",
+            "blabla",
+            "blabla"
+
+        )
+        assertEquals(expected, viewModel.ingredients)
+    }
+    @Test
+    fun textToStepsHandlesColon() {
+        val fakeBlocks = mutableListOf<String>(
+            "Directions:",
+            "Step 1",
+            "blabla",
+            "Step 2",
+            "blabla"
+        )
+
+        viewModel.textToSteps(fakeBlocks)
+
+        val expected = listOf<String>(
+            "blabla",
+            "blabla"
+
+        )
+        assertEquals(expected, viewModel.steps)
+    }
+    @Test
+    fun textToStepsHandlesInstructions() {
+        val fakeBlocks = mutableListOf<String>(
+            "Instructions",
+            "Step 1",
+            "blabla",
+            "Step 2",
+            "blabla"
+        )
+
+        viewModel.textToSteps(fakeBlocks)
+
+        val expected = listOf<String>(
+            "blabla",
+            "blabla"
+
+        )
+        assertEquals(expected, viewModel.steps)
+    }
+    @Test
+    fun textToStepsHandlesSteps() {
+        val fakeBlocks = mutableListOf<String>(
+            "Steps",
+            "Step 1",
+            "blabla",
+            "Step 2",
+            "blabla"
+        )
+
+        viewModel.textToSteps(fakeBlocks)
+
+        val expected = listOf<String>(
+            "blabla",
+            "blabla"
+
+        )
+        assertEquals(expected, viewModel.steps)
+    }
+    @Test
+    fun textToStepsHandlesWhiteSpace() {
+        val fakeBlocks = mutableListOf<String>(
+            "Instructions\n",
+            "Step 1 ",
+            " blabla  ",
+            " Step 2 ",
+            "blabla   "
+        )
+
+        viewModel.textToSteps(fakeBlocks)
+
+        val expected = listOf<String>(
+            "blabla",
+            "blabla"
+
+        )
+        assertEquals(expected, viewModel.steps)
+    }
+    @Test
+    fun textToStepsHandlesPartials() {
+        val fakeBlocks = mutableListOf<String>(
+            "Instructions Step 1: blabla",
+            "Step 2: blabla"
+        )
+
+        viewModel.textToSteps(fakeBlocks)
+
+        val expected = listOf<String>(
+            "blabla",
+            "blabla"
+
+        )
+        assertEquals(expected, viewModel.steps)
+    }
 }
