@@ -4,17 +4,25 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,15 +36,41 @@ fun EditableText(modifier : Modifier = Modifier,text : String = "", placeholder 
 @Composable
 fun EditableTextState(modifier : Modifier = Modifier,text : MutableState<String> = mutableStateOf(""), placeholder : String = "", fontSize: TextUnit = 15.sp, maxLines : Int = 2, isEditing: Boolean=false, precursor: String="", errorCondition: Boolean = false,errorMessage: String = "Failed Validation", onSubmit : (String) -> Unit = {}) {
     var isEditing by remember { mutableStateOf(isEditing) }
+    var wasFocused by remember { mutableStateOf(false)}
+    var textFieldValueState by remember { mutableStateOf(
+        TextFieldValue(text=text.value, selection = TextRange.Zero)
+        )
+    }
+    val focusRequester = remember { FocusRequester() }
+    LaunchedEffect(isEditing) {
+        if (isEditing) {
+            focusRequester.requestFocus()
+            textFieldValueState = textFieldValueState.copy(
+                selection = TextRange(textFieldValueState.text.length)
+            )
+        }
+    }
 
     if (isEditing || text.value.isEmpty()) {
-        OutlinedTextField(
-            value = text.value,
+        TextField(
+            value = textFieldValueState,
+            colors = TextFieldDefaults.colors(
+                unfocusedContainerColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent,
+            ),
             onValueChange = {
-                text.value = it
+                text.value = it.text
+                textFieldValueState = it
                 isEditing = true
                             },
-            modifier = modifier,
+            modifier = modifier
+                .focusRequester(focusRequester)
+                .onFocusChanged { focusState ->
+                if (!focusState.isFocused && wasFocused) {
+                    isEditing = false
+                }
+                wasFocused = focusState.isFocused
+            },
             shape = RoundedCornerShape(20.dp),
             placeholder = {Text(placeholder)},
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
