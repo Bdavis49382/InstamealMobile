@@ -1,5 +1,6 @@
 package com.instamealmobile.network
 
+import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.runBlocking
@@ -18,6 +19,8 @@ class FirebaseInterceptor : Interceptor {
                     .build()
                 )
             }
+        } else {
+            Log.e("AUTH","An Unauthorized request was just attempted.")
         }
         return chain.proceed(chain.request())
     }

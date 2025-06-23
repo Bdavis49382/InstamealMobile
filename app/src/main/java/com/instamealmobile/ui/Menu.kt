@@ -34,15 +34,19 @@ import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.MenuListItem
 import com.instamealmobile.data.Recipe
 import com.instamealmobile.ui.placeholders.MenuPlaceholder
+import com.instamealmobile.viewModels.AuthViewModel
 import com.instamealmobile.viewModels.MenuViewModel
 
 @Composable
 fun Menu(openRecipe: (Recipe) -> Unit) {
     val viewModel: MenuViewModel =  viewModel()
+    val authViewModel: AuthViewModel = viewModel()
     val menuState by viewModel.menu.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.getMenu()
+        if (authViewModel.checkLogin()) {
+            viewModel.getMenu()
+        }
     }
     Crossfade(targetState = menuState) {menuState ->
         Box(modifier = Modifier

@@ -18,6 +18,7 @@ import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingExcept
 import com.instamealmobile.BuildConfig
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.auth
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,13 +31,13 @@ class AuthViewModel @Inject constructor(): ViewModel() {
     private var auth: FirebaseAuth = Firebase.auth
     var uid: String? by mutableStateOf(null)
 
-//    suspend fun logout(credentialManager: CredentialManager) {
-//        credentialManager.clearCredentialState(ClearCredentialStateRequest())
-//        auth.signOut()
-//        uid = null
-//    }
+    suspend fun logout(credentialManager: CredentialManager) {
+        credentialManager.clearCredentialState(ClearCredentialStateRequest())
+        auth.signOut()
+        uid = null
+    }
 
-    fun login(coroutineScope: CoroutineScope, credentialManager : CredentialManager, context: Context) {
+    fun login(coroutineScope: CoroutineScope, credentialManager : CredentialManager, context: Context, after: () -> Unit = {}) {
         val googleIdOption = GetSignInWithGoogleOption.Builder(
             BuildConfig.GOOGLE_CLIENT_ID
         )
@@ -50,7 +51,7 @@ class AuthViewModel @Inject constructor(): ViewModel() {
                     request = request,
                     context = context
                 )
-                handleSignIn(result)
+                handleSignIn(result, after)
             } catch (e: GetCredentialException) {
                 Log.e("AUTH","Error logging in: ${e.message}")
             }
@@ -58,14 +59,18 @@ class AuthViewModel @Inject constructor(): ViewModel() {
     }
 
     fun checkLogin(): Boolean {
-        if (auth.currentUser != null) {
-            val user = auth.currentUser
-            uid = user?.uid
-            return true
+        try {
+            if (auth.currentUser != null) {
+                val user = auth.currentUser
+                uid = user?.uid
+                return true
+            }
+            return false
+        } catch (err: FirebaseAuthInvalidUserException) {
+            return false
         }
-        return false
     }
-    fun handleSignIn(result: GetCredentialResponse) {
+    fun handleSignIn(result: GetCredentialResponse, after: () -> Unit) {
         val credential = result.credential
         when (credential) {
             is CustomCredential -> {
@@ -73,7 +78,7 @@ class AuthViewModel @Inject constructor(): ViewModel() {
                     try {
                         val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
 
-                        firebaseAuthWithGoogle(googleIdTokenCredential.idToken)
+                        firebaseAuthWithGoogle(googleIdTokenCredential.idToken, after)
                     } catch (e: GoogleIdTokenParsingException) {
                         Log.e("AUTH", "Couldn't parse google token: ${e.message}")
                     }
@@ -81,12 +86,12 @@ class AuthViewModel @Inject constructor(): ViewModel() {
             }
         }
     }
-    fun firebaseAuthWithGoogle(idToken: String) {
+    fun firebaseAuthWithGoogle(idToken: String,after: () -> Unit) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         auth.signInWithCredential(credential)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    checkLogin()
+                    after()
                 }
             }
     }

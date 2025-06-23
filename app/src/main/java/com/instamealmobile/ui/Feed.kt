@@ -26,16 +26,20 @@ import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.Recipe
 import com.instamealmobile.data.ScreenState
 import com.instamealmobile.ui.placeholders.FeedPlaceholder
+import com.instamealmobile.viewModels.AuthViewModel
 import com.instamealmobile.viewModels.FeedViewModel
 
 
 @Composable
 fun Feed(openConfirmation : (Recipe) -> Unit, openAddRecipe : () -> Unit) {
     val viewModel : FeedViewModel = viewModel()
+    val authViewModel: AuthViewModel = viewModel()
     val feedState by viewModel.feed.collectAsState(ApiState.Loading)
 
     LaunchedEffect(true) {
-        viewModel.fetchFeed()
+        if (authViewModel.checkLogin()) {
+            viewModel.fetchFeed()
+        }
     }
 
     val screenState = when (feedState) {

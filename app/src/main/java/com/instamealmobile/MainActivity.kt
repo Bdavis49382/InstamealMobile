@@ -30,6 +30,8 @@ import com.instamealmobile.ui.pages.HomePage
 import com.instamealmobile.ui.pages.SheetPages
 import com.instamealmobile.ui.theme.InstamealMobileTheme
 import com.instamealmobile.viewModels.AuthViewModel
+import com.instamealmobile.viewModels.FeedViewModel
+import com.instamealmobile.viewModels.MenuViewModel
 import com.instamealmobile.viewModels.Purpose
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -43,13 +45,19 @@ class MainActivity : ComponentActivity() {
             val (pickedRecipe, setPickedRecipe) = remember { mutableStateOf(Recipe(title="", img_link = "")) }
             val (addToFeedPurpose, setAddToFeedPurpose) = remember {mutableStateOf(Purpose.AddNew)}
             val authViewModel: AuthViewModel = viewModel()
+            val menuViewModel: MenuViewModel = viewModel()
+            val feedViewModel: FeedViewModel = viewModel()
             val context = LocalContext.current
             val coroutineScope = rememberCoroutineScope()
             val credentialManager = CredentialManager.create(context)
 
             LaunchedEffect(Unit) {
+//                authViewModel.logout(credentialManager)
                 if (!authViewModel.checkLogin()) {
-                    authViewModel.login(coroutineScope,credentialManager, context)
+                    authViewModel.login(coroutineScope,credentialManager, context) {
+                        menuViewModel.getMenu()
+                        feedViewModel.fetchFeed()
+                    }
                 }
             }
              val darkColors = darkColorScheme(
