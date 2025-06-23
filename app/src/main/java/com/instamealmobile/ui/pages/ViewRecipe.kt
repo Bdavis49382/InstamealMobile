@@ -72,6 +72,7 @@ fun ViewRecipe(lazyListState: LazyListState,recipe: Recipe, editRecipe: (Recipe)
                         }
                         SideButton(
                             {
+                                menuItem.recipe?.index = recipe.index
                                 editRecipe(menuItem.recipe?:Recipe(title=""))
                             }
                         ) {

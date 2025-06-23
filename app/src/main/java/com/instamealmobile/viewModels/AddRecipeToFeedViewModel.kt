@@ -44,6 +44,8 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
     val img_link: MutableStateFlow<ApiState<String>> = _img_link
     var steps = mutableStateListOf<String>()
     var validatorsActive = mutableStateOf(false)
+    // When updating a menu recipe, keep track of its index.
+    var menuIndex by mutableStateOf(0)
     var scope = viewModelScope
 
     fun setRecipe(recipe: Recipe) {
@@ -68,6 +70,7 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
             steps.clear()
             steps.addAll(recipe.instructions)
             authorId = recipe.author_id?: ""
+            menuIndex = recipe.index
         }
     }
     fun validateRecipe() : Boolean {
@@ -110,7 +113,7 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
                             )
                         )
                     }
-                    confirm(Recipe(title = "", id = response))
+                    confirm(Recipe(title = "", id = response, index = menuIndex))
                 } catch (e: Exception) {
                     Log.e("RECIPE_SUBMISSION", e.message ?: "Issue with submitting a new recipe")
                 }

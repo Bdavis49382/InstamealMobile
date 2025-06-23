@@ -15,7 +15,7 @@ data class Recipe(
     val id: String? = null,
     val score: Float? = null,
     val rate: Float? = null,
-    val index: Int = 0
+    var index: Int = 0
 )
 
 data class Record(
