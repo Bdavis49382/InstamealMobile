@@ -22,7 +22,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.instamealmobile.viewModels.HouseholdViewModel
 
 @Composable
-fun JoinHousehold(onDismiss: () -> Unit) {
+fun JoinHousehold(reload: () -> Unit,onDismiss: () -> Unit) {
     val viewModel: HouseholdViewModel =  viewModel()
     val context = LocalContext.current
     Dialog(onDismissRequest = onDismiss) {
@@ -42,7 +42,7 @@ fun JoinHousehold(onDismiss: () -> Unit) {
                    onValueChange = {viewModel.codeEntry = it},
                    singleLine = true,
                )
-               Button({viewModel.joinHousehold()
+               Button({viewModel.joinHousehold(reload)
                    Toast.makeText(context, "Joined Household", Toast.LENGTH_SHORT).show()
                    onDismiss()}) {
                    Text("Submit")

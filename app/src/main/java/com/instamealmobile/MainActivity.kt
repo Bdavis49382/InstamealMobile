@@ -85,7 +85,10 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background
                     ) {
-                        Alerts(openAlert, setAlert, pickedRecipe)
+                        Alerts(openAlert, setAlert, pickedRecipe) {
+                            feedViewModel.fetchFeed()
+                            menuViewModel.getMenu()
+                        }
 
                         SheetPages(showSheet, setShowSheet, setAlert, pickedRecipe, setPickedRecipe, addToFeedPurpose, setAddToFeedPurpose)
                         Scaffold { innerPadding ->

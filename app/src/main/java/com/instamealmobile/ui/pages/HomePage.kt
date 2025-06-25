@@ -16,14 +16,16 @@ import com.instamealmobile.ui.Header
 import com.instamealmobile.ui.Menu
 import com.instamealmobile.ui.SearchBar
 import com.instamealmobile.viewModels.FeedViewModel
+import com.instamealmobile.viewModels.MenuViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomePage(openConfirmation: (meal : Recipe) -> Unit, openRecipe: (meal : Recipe) -> Unit, openAddRecipe: () -> Unit, openHousehold: () -> Unit, openShoppingList: () -> Unit, modifier : Modifier = Modifier) {
     val viewModel: FeedViewModel =  viewModel()
+    val menuViewModel: MenuViewModel = viewModel()
     val pullToRefreshState = rememberPullToRefreshState()
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -32,7 +34,10 @@ fun HomePage(openConfirmation: (meal : Recipe) -> Unit, openRecipe: (meal : Reci
             PullToRefreshBox(
                 state = pullToRefreshState,
                 isRefreshing = viewModel.isRefreshing,
-                onRefresh = viewModel::refreshFeed
+                onRefresh = {
+                    viewModel.refreshFeed()
+                    menuViewModel.refreshMenu()
+                }
             ) {
                 Feed(openConfirmation, openAddRecipe)
 

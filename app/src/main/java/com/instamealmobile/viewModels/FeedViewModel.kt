@@ -26,9 +26,10 @@ class FeedViewModel @Inject constructor(private val apiService: FeedService): Vi
                 _feed.value = ApiState.Loading
                 val response = apiService.getFeed()
                 _feed.value = ApiState.Success(response)
-                isRefreshing = false
             } catch (e: Exception) {
                 _feed.value = ApiState.Error("Failed to fetch data: ${e.message}")
+            } finally {
+                isRefreshing = false
             }
         }
     }

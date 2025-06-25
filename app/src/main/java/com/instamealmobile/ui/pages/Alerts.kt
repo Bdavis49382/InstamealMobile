@@ -5,10 +5,10 @@ import com.instamealmobile.OpenAlert
 import com.instamealmobile.data.Recipe
 
 @Composable
-fun Alerts(openAlert: OpenAlert, setAlert: (OpenAlert) -> Unit, pickedRecipe: Recipe) {
+fun Alerts(openAlert: OpenAlert, setAlert: (OpenAlert) -> Unit, pickedRecipe: Recipe, reload: () -> Unit) {
     when (openAlert) {
         OpenAlert.Join -> {
-            JoinHousehold { setAlert(OpenAlert.None) }
+            JoinHousehold(reload) { setAlert(OpenAlert.None) }
         }
         OpenAlert.Invite -> {
             InviteToHousehold { setAlert(OpenAlert.None) }

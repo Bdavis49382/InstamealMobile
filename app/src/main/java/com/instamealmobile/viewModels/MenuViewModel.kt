@@ -29,6 +29,7 @@ class MenuViewModel @Inject constructor(private val apiService: MenuService): Vi
     private val _selected = MutableStateFlow<ApiState<MenuItem>>(ApiState.Loading)
     val selected: MutableStateFlow<ApiState<MenuItem>> = _selected
     var scope = viewModelScope
+    var isRefreshing by mutableStateOf(false)
 
     // Variables for adding a new item to menu
     var ingredients = mutableStateListOf<String>()
@@ -79,9 +80,18 @@ class MenuViewModel @Inject constructor(private val apiService: MenuService): Vi
                 _menu.value = ApiState.Success(response)
             } catch (e: Exception) {
                 _menu.value = ApiState.Error("Failed to fetch data: ${e.message}")
+            } finally {
+                isRefreshing = false
+
             }
         }
     }
+
+    fun refreshMenu() {
+        isRefreshing = true
+        getMenu()
+    }
+
     fun finishMeal(recipeId: String, rating: Float?) {
         scope.launch {
             try {

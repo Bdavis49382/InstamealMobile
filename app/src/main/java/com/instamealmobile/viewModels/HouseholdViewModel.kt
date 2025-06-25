@@ -24,6 +24,7 @@ class HouseholdViewModel @Inject constructor(private val apiService: HouseholdSe
     var scope = viewModelScope
 
     fun getUsers() {
+        _users.value = ApiState.Loading
         scope.launch {
             try {
                 val response = apiService.getHousehold()
@@ -45,11 +46,12 @@ class HouseholdViewModel @Inject constructor(private val apiService: HouseholdSe
         }
     }
 
-    fun joinHousehold() {
+    fun joinHousehold(reload: () -> Unit) {
         scope.launch {
             try {
                 val response = apiService.joinHousehold(codeEntry)
                 _users.value = ApiState.Success(response)
+                reload()
             } catch (e: Exception) {
                 _users.value = ApiState.Error("Failed to fetch data: ${e.message}")
             }
