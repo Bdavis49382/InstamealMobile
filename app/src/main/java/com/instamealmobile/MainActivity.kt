@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.credentials.CredentialManager
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.instamealmobile.data.Recipe
+import com.instamealmobile.ui.Header
 import com.instamealmobile.ui.pages.Alerts
 import com.instamealmobile.ui.pages.HomePage
 import com.instamealmobile.ui.pages.SheetPages
@@ -91,7 +92,7 @@ class MainActivity : ComponentActivity() {
                         }
 
                         SheetPages(showSheet, setShowSheet, setAlert, pickedRecipe, setPickedRecipe, addToFeedPurpose, setAddToFeedPurpose)
-                        Scaffold { innerPadding ->
+                        Scaffold(topBar = {Header { setShowSheet(OpenSheet.Household) } }) { innerPadding ->
                             HomePage({meal ->
                                 setShowSheet(OpenSheet.PreviewRecipe)
                                 setPickedRecipe(meal)
@@ -102,8 +103,6 @@ class MainActivity : ComponentActivity() {
                                 setAddToFeedPurpose(Purpose.AddNew)
                                 setShowSheet(OpenSheet.AddRecipeToFeed)
                                 setPickedRecipe(Recipe(title=""))
-                            }, {
-                                setShowSheet(OpenSheet.Household)
                             }, {
                                 setShowSheet(OpenSheet.ShoppingList)
                             },
