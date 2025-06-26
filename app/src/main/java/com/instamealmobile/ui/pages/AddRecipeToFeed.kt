@@ -85,7 +85,7 @@ fun AddRecipeToFeed(recipe: Recipe,lazyListState: LazyListState,purpose: Purpose
                 Column(modifier = Modifier.width(200.dp).fillMaxHeight(), verticalArrangement = Arrangement.Center) {
                     EditableTextState(
                         text = viewModel.title,
-                        placeholder = "title",
+                        placeholder = "Title",
                         onSubmit = {
                             viewModel.title.value = it
                             focusManager.moveFocus(FocusDirection.Down)
