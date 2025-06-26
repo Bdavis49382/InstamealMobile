@@ -24,6 +24,7 @@ class ShoppingListViewModel @Inject constructor(private val apiService: Shopping
         scope.launch {
             try {
                 val response = apiService.getShoppingList()
+                response.forEachIndexed {index, value -> value.index  = index}
                 _shoppingList.value = ApiState.Success(response)
             } catch (e: Exception) {
                 _shoppingList.value = ApiState.Error("Failed to fetch data: ${e.message}")
@@ -47,8 +48,12 @@ class ShoppingListViewModel @Inject constructor(private val apiService: Shopping
     fun checkItem(index: Int) {
         scope.launch {
             try {
-                val response = apiService.checkItem(index)
-                _shoppingList.value = ApiState.Success(response)
+                if (shoppingList.value is ApiState.Success) {
+                    val items = (shoppingList.value as ApiState.Success).data.toMutableList()
+                    items[index] = items[index].copy(checked = !items[index].checked)
+                    _shoppingList.value = ApiState.Success(items)
+                }
+                apiService.checkItem(index)
             } catch (e: Exception) {
                 _shoppingList.value = ApiState.Error("Failed to check item: ${e.message}")
             }

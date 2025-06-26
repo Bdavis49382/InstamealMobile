@@ -28,10 +28,10 @@ import androidx.compose.ui.unit.sp
 import com.instamealmobile.data.ShoppingItem
 
 @Composable
-fun CheckItem(shoppingItem: ShoppingItem, editMethod: (String) -> Unit, checkMethod: () -> Unit) {
+fun CheckItem(shoppingItem: ShoppingItem, editMethod: (String) -> Unit, checkMethod: () -> Unit, modifier: Modifier = Modifier) {
     var checked by remember { mutableStateOf(shoppingItem.checked) }
     Row (
-        modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
+        modifier = modifier.fillMaxWidth().padding(vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {

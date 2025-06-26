@@ -2,11 +2,12 @@ package com.instamealmobile.data
 
 data class ShoppingItem(
     val user_id: String? = null,
-    val checked: Boolean = false,
+    var checked: Boolean = false,
     val recipe_id: String? = null,
     val name: String,
     val user_initial: String = "",
-    val recipe_title: String = ""
+    val recipe_title: String = "",
+    var index: Int = 0
     )
 
 data class SmallShoppingItem(

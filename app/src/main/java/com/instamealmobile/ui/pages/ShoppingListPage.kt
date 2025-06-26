@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
@@ -26,17 +26,20 @@ import com.instamealmobile.viewModels.ShoppingListViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.text.input.ImeAction
 import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.ShoppingItem
 import com.instamealmobile.data.SmallShoppingItem
 import com.instamealmobile.ui.placeholders.ShoppingListPlaceholder
+import kotlinx.coroutines.launch
 
 @Composable
 fun ShoppingListPage(lazyListState: LazyListState) {
     var newItemText by remember { mutableStateOf("") }
     val viewModel: ShoppingListViewModel =  viewModel()
     val shoppingListState by viewModel.shoppingList.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         viewModel.fetchShoppingList()
@@ -78,19 +81,25 @@ fun ShoppingListPage(lazyListState: LazyListState) {
                             .fillMaxWidth()
                             .padding(bottom = 20.dp)
                     ) {
-                        itemsIndexed(shoppingList.reversed()) { index, item ->
+                        items(shoppingList.reversed().sortedBy { it.checked }, key = {it.index}) { item ->
                             CheckItem(
+                                modifier = Modifier.animateItem(),
                                 shoppingItem = item,
                                 editMethod = fun(text: String) {
                                     val newShoppingItem = SmallShoppingItem(item)
                                     newShoppingItem.name = text
                                     viewModel.editItem(
-                                        shoppingList.size - index - 1,
+                                        item.index,
                                         newShoppingItem
                                     )
                                 },
                                 checkMethod = {
-                                    viewModel.checkItem(shoppingList.size - index - 1)
+                                    if(!item.checked) {
+                                        coroutineScope.launch {
+                                            lazyListState.animateScrollToItem(0)
+                                        }
+                                    }
+                                    viewModel.checkItem(item.index)
                                 }
                             )
                         }
