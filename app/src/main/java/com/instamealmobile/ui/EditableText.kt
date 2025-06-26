@@ -1,6 +1,7 @@
 package com.instamealmobile.ui
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -35,6 +36,7 @@ fun EditableText(modifier : Modifier = Modifier,text : String = "", placeholder 
 
 @Composable
 fun EditableTextState(modifier : Modifier = Modifier,text : MutableState<String> = mutableStateOf(""), placeholder : String = "", fontSize: TextUnit = 15.sp, maxLines : Int = 2, isEditing: Boolean=false, precursor: String="", errorCondition: Boolean = false,errorMessage: String = "Failed Validation", onSubmit : (String) -> Unit = {}) {
+    var startingText by remember { mutableStateOf("")}
     var isEditing by remember { mutableStateOf(isEditing) }
     var wasFocused by remember { mutableStateOf(false)}
     var textFieldValueState by remember { mutableStateOf(
@@ -42,6 +44,9 @@ fun EditableTextState(modifier : Modifier = Modifier,text : MutableState<String>
         )
     }
     val focusRequester = remember { FocusRequester() }
+    LaunchedEffect(Unit) {
+        startingText = text.value
+    }
     LaunchedEffect(isEditing) {
         if (isEditing) {
             focusRequester.requestFocus()
@@ -59,9 +64,11 @@ fun EditableTextState(modifier : Modifier = Modifier,text : MutableState<String>
                 focusedContainerColor = Color.Transparent,
             ),
             onValueChange = {
+                if (text.value.isEmpty()) {
+                    isEditing = true
+                }
                 text.value = it.text
                 textFieldValueState = it
-                isEditing = true
                             },
             modifier = modifier
                 .focusRequester(focusRequester)
@@ -85,7 +92,9 @@ fun EditableTextState(modifier : Modifier = Modifier,text : MutableState<String>
             keyboardActions = KeyboardActions(
                 onDone = {
                     isEditing = false
-                    onSubmit(text.value)
+                    if (text.value != startingText) {
+                        onSubmit(text.value)
+                    }
                 }
             )
         )
@@ -95,6 +104,7 @@ fun EditableTextState(modifier : Modifier = Modifier,text : MutableState<String>
             maxLines = maxLines,
             fontSize=fontSize,
             modifier = modifier
+                .fillMaxWidth()
                 .clickable { isEditing = true }
         )
     }

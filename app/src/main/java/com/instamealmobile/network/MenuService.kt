@@ -5,6 +5,7 @@ import com.instamealmobile.data.MenuListItem
 import com.instamealmobile.data.Recipe
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -25,4 +26,6 @@ interface MenuService {
         @Path("recipe_id") recipe_id: String,
         @Query("rating") rating: Float?
     ) : List<MenuListItem>
+    @PATCH("menu/index/{index}")
+    suspend fun updateRecipeByIndex( @Path("index") index: Int, @Body menu_item: MenuItem) : MenuItem
 }

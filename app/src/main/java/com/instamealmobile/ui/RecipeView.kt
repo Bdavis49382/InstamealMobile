@@ -30,7 +30,7 @@ import coil.compose.AsyncImage
 import com.instamealmobile.data.Recipe
 
 @Composable
-fun RecipeView(lazyListState: LazyListState,recipe: Recipe) {
+fun RecipeView(lazyListState: LazyListState, recipe: Recipe, innerContent: @Composable () -> Unit = {}) {
     Column(
         verticalArrangement = Arrangement.spacedBy(10.dp),
         modifier = Modifier
@@ -56,7 +56,7 @@ fun RecipeView(lazyListState: LazyListState,recipe: Recipe) {
                             withLink(
                                 link = LinkAnnotation.Url(
                                     recipe.src_link,
-                                    TextLinkStyles(style = SpanStyle(color = Color.Blue))
+                                    TextLinkStyles(style = SpanStyle(color = Color.Blue, fontSize = 15.sp))
                                 )
                             ) {
                                 append(recipe.src_name)
@@ -88,7 +88,9 @@ fun RecipeView(lazyListState: LazyListState,recipe: Recipe) {
                         Text("Total Time: ${recipe.time_estimate[0]}")
                     }
                 }
-
+            }
+            item {
+                innerContent()
             }
             item {
                 Text(
