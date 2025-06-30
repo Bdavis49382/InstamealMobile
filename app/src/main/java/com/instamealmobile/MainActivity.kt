@@ -91,7 +91,11 @@ class MainActivity : ComponentActivity() {
                             menuViewModel.getMenu()
                         }
 
-                        SheetPages(showSheet, setShowSheet, setAlert, pickedRecipe, setPickedRecipe, addToFeedPurpose, setAddToFeedPurpose)
+                        SheetPages(showSheet, setShowSheet, setAlert, pickedRecipe, setPickedRecipe, addToFeedPurpose, setAddToFeedPurpose) {
+                            feedViewModel.fetchFeed()
+                            menuViewModel.getMenu()
+
+                        }
                         Scaffold(topBar = {Header { setShowSheet(OpenSheet.Household) } }) { innerPadding ->
                             HomePage({meal ->
                                 setShowSheet(OpenSheet.PreviewRecipe)

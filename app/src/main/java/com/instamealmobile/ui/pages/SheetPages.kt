@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SheetPages(showSheet: OpenSheet, setShowSheet: (OpenSheet) -> Unit, setAlert: (OpenAlert) -> Unit, pickedRecipe: Recipe = Recipe(title = "", img_link = ""), setPickedRecipe: (Recipe) -> Unit, addToFeedPurpose: Purpose, setAddRecipePurpose: (Purpose) -> Unit) {
+fun SheetPages(showSheet: OpenSheet, setShowSheet: (OpenSheet) -> Unit, setAlert: (OpenAlert) -> Unit, pickedRecipe: Recipe = Recipe(title = "", img_link = ""), setPickedRecipe: (Recipe) -> Unit, addToFeedPurpose: Purpose, setAddRecipePurpose: (Purpose) -> Unit, reload: () -> Unit) {
     val lazyListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     val closeSheet = {
@@ -101,7 +101,7 @@ fun SheetPages(showSheet: OpenSheet, setShowSheet: (OpenSheet) -> Unit, setAlert
             }
             OpenSheet.Household -> HouseholdPage(
                 { setAlert(OpenAlert.Join) },
-                { setAlert(OpenAlert.Invite) })
+                { setAlert(OpenAlert.Invite) }, reload)
             OpenSheet.ViewRecipe -> ViewRecipe(lazyListState, pickedRecipe, { recipe ->
                     setPickedRecipe(recipe)
                     setAddRecipePurpose(Purpose.MenuEdit)

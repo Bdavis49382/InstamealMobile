@@ -12,6 +12,7 @@ import com.instamealmobile.network.HouseholdService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -36,6 +37,7 @@ class HouseholdViewModel @Inject constructor(private val apiService: HouseholdSe
     }
 
     fun getCode() {
+        _code.value = ApiState.Loading
         scope.launch {
             try {
                 val response = apiService.getHouseholdCode()
@@ -46,12 +48,19 @@ class HouseholdViewModel @Inject constructor(private val apiService: HouseholdSe
         }
     }
 
-    fun joinHousehold(reload: () -> Unit) {
+    fun joinHousehold(reload: () -> Unit, onFailure: () -> Unit, onSuccess: () -> Unit) {
         scope.launch {
             try {
                 val response = apiService.joinHousehold(codeEntry)
                 _users.value = ApiState.Success(response)
                 reload()
+                onSuccess()
+            } catch (e: HttpException) {
+                if (e.code() == 400 || e.code() == 404) {
+                    onFailure()
+                } else {
+                    _users.value = ApiState.Error("Failed to fetch data: ${e.message}")
+                }
             } catch (e: Exception) {
                 _users.value = ApiState.Error("Failed to fetch data: ${e.message}")
             }
@@ -59,12 +68,13 @@ class HouseholdViewModel @Inject constructor(private val apiService: HouseholdSe
 
     }
 
-    fun kickUser(user_id: String) {
+    fun kickUser(user_id: String, reload: () -> Unit) {
         scope.launch {
             try {
                 Log.i("Fun Fact","kicking user: $user_id")
                 val response = apiService.kickUser(user_id)
                 _users.value = ApiState.Success(response)
+                reload()
             } catch (e: Exception) {
                 _users.value = ApiState.Error("Failed to fetch data: ${e.message}")
             }

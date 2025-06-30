@@ -15,6 +15,7 @@ import com.instamealmobile.network.MenuService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.ZoneId
@@ -123,7 +124,14 @@ class MenuViewModel @Inject constructor(private val apiService: MenuService): Vi
             try {
                 val response = apiService.getRecipeByIndex(index)
                 _selected.value = ApiState.Success(response)
-            } catch (e: Exception) {
+            } catch (e: HttpException) {
+                if (e.code() == 400) {
+                    _selected.value = ApiState.Error("There is no recipe here, you may have been kicked or the menu has been changed very recently. Try refreshing.")
+                } else {
+                    _selected.value = ApiState.Error("Failed to fetch data: ${e.message}")
+                }
+            }
+            catch (e: Exception) {
                 _selected.value = ApiState.Error("Failed to fetch data: ${e.message}")
             }
         }

@@ -26,12 +26,15 @@ import com.instamealmobile.data.User
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.instamealmobile.viewModels.HouseholdViewModel
 
 @Composable
-fun HouseholdPage(join : () -> Unit, invite: () -> Unit) {
+fun HouseholdPage(join : () -> Unit, invite: () -> Unit, reload: () -> Unit) {
     val viewModel: HouseholdViewModel =  viewModel()
     val householdState by viewModel.users.collectAsState()
+    val user = Firebase.auth.currentUser
 
     LaunchedEffect(Unit) {
         viewModel.getUsers()
@@ -80,8 +83,15 @@ fun HouseholdPage(join : () -> Unit, invite: () -> Unit) {
                         items(household.subList(1,household.size)) { item ->
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(item.full_name, fontSize = 20.sp, modifier = Modifier.padding(end=20.dp))
-                                Button({viewModel.kickUser(item.id)}) {
-                                    Text("Kick")
+                                // Users should only see an option to kick if they are the admin or it is themselves.
+                                if (user?.uid == household[0].id || user?.uid == item.id) {
+                                    Button({viewModel.kickUser(item.id, reload)}) {
+                                        if (user.uid == item.id) {
+                                            Text("Leave")
+                                        } else {
+                                            Text("Kick")
+                                        }
+                                    }
                                 }
                             }
                         }
