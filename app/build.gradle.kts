@@ -99,10 +99,11 @@ dependencies {
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.text.recognition)
     implementation(libs.compose.shimmer)
+    implementation(libs.core)
+
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.googleid)
-
     implementation(libs.firebase.auth.ktx)
     implementation(libs.play.services.auth)
     implementation(platform(libs.firebase.bom))

@@ -25,12 +25,12 @@ import com.instamealmobile.ui.placeholders.RecipeViewPlaceholder
 import com.instamealmobile.viewModels.RecipeViewModel
 
 @Composable
-fun PreviewRecipe(lazyListState: LazyListState,editRecipe : (Recipe) -> Unit, recipe: Recipe,  confirm: (Recipe) -> Unit) {
+fun PreviewRecipe(lazyListState: LazyListState,editRecipe : (Recipe) -> Unit, recipe: RecipeIdentifier,  confirm: (Recipe) -> Unit) {
     val viewModel: RecipeViewModel =  viewModel()
     val recipeState by viewModel.recipe.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.getRecipe(RecipeIdentifier.factory(recipe))
+        viewModel.getRecipe(recipe)
     }
     Box(contentAlignment = Alignment.TopStart, modifier = Modifier.fillMaxSize()) {
         Crossfade(targetState = recipeState, label = "ContentSwitch") { screenState ->
