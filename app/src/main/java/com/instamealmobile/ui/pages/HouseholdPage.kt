@@ -14,7 +14,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -28,10 +27,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import com.instamealmobile.OpenAlert
 import com.instamealmobile.viewModels.HouseholdViewModel
+import com.instamealmobile.viewModels.NavViewModel
 
 @Composable
-fun HouseholdPage(join : () -> Unit, invite: () -> Unit, reload: () -> Unit) {
+fun HouseholdPage(reload: () -> Unit) {
+    val nav: NavViewModel = viewModel()
     val viewModel: HouseholdViewModel =  viewModel()
     val householdState by viewModel.users.collectAsState()
     val user = Firebase.auth.currentUser
@@ -62,13 +64,13 @@ fun HouseholdPage(join : () -> Unit, invite: () -> Unit, reload: () -> Unit) {
                         .fillMaxWidth()
                         .height(100.dp)
                     ) {
-                        Button(join, modifier = Modifier
+                        Button(onClick = {nav.navigateTo(OpenAlert.Join)}, modifier = Modifier
                             .width(150.dp)
                             .height(50.dp)
                         ) {
                             Text("Join")
                         }
-                        Button(invite, modifier = Modifier
+                        Button(onClick = {nav.navigateTo(OpenAlert.Invite)}, modifier = Modifier
                             .width(150.dp)
                             .height(50.dp)
                         ) {
@@ -96,7 +98,7 @@ fun HouseholdPage(join : () -> Unit, invite: () -> Unit, reload: () -> Unit) {
                             }
                         }
                         item {
-                            Button(invite, modifier = Modifier
+                            Button(onClick = {nav.navigateTo(OpenAlert.Invite)}, modifier = Modifier
                                 .width(100.dp)
                                 .height(40.dp)
                             ) {

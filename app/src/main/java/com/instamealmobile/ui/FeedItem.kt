@@ -16,14 +16,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.instamealmobile.OpenSheet
 import com.instamealmobile.data.Recipe
+import com.instamealmobile.data.RecipeIdentifier
+import com.instamealmobile.viewModels.NavViewModel
 
 @Composable
-fun FeedItem(recipe: Recipe, openConfirmation: (Recipe) -> Unit, modifier: Modifier = Modifier) {
+fun FeedItem(recipe: Recipe, modifier: Modifier = Modifier) {
+    val nav: NavViewModel = viewModel()
     Box(
         modifier = modifier
-            .clickable { openConfirmation(recipe) }
+            .clickable { nav.navigateTo(OpenSheet.PreviewRecipe,RecipeIdentifier.factory(recipe)) }
     ) {
         Column {
             Text(text=recipe.title,

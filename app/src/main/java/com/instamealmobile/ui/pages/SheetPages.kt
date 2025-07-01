@@ -20,6 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.composables.core.ModalBottomSheet
 import com.composables.core.Scrim
 import com.composables.core.Sheet
@@ -27,23 +28,21 @@ import com.composables.core.SheetDetent
 import com.composables.core.SheetDetent.Companion.FullyExpanded
 import com.composables.core.SheetDetent.Companion.Hidden
 import com.composables.core.rememberModalBottomSheetState
-import com.instamealmobile.OpenAlert
 import com.instamealmobile.OpenSheet
-import com.instamealmobile.data.Recipe
-import com.instamealmobile.data.RecipeIdentifier
-import com.instamealmobile.viewModels.Purpose
+import com.instamealmobile.viewModels.NavViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SheetPages(showSheet: OpenSheet, setShowSheet: (OpenSheet) -> Unit, setAlert: (OpenAlert) -> Unit, pickedRecipe: Recipe = Recipe(title = "", img_link = ""), setPickedRecipe: (Recipe) -> Unit, addToFeedPurpose: Purpose, setAddRecipePurpose: (Purpose) -> Unit, reload: () -> Unit) {
+fun SheetPages(reload: () -> Unit) {
+    val nav: NavViewModel = viewModel()
     val lazyListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     val closeSheet = {
         coroutineScope.launch {
             lazyListState.scrollToItem(0)
         }
-        setShowSheet(OpenSheet.None)
+        nav.closeSheet()
     }
     val halfExpanded = SheetDetent(identifier = "halfExpanded") { containerHeight, sheetHeight ->
         containerHeight * 0.5f
@@ -53,10 +52,10 @@ fun SheetPages(showSheet: OpenSheet, setShowSheet: (OpenSheet) -> Unit, setAlert
     )
     val context = LocalContext.current
 
-    LaunchedEffect(showSheet) {
-        if (showSheet == OpenSheet.None) {
+    LaunchedEffect(nav.openSheet) {
+        if (nav.openSheet == OpenSheet.None) {
             sheetState.targetDetent = Hidden
-        } else if (showSheet == OpenSheet.Household) {
+        } else if (nav.openSheet == OpenSheet.Household) {
             sheetState.targetDetent = halfExpanded
         } else {
             sheetState.targetDetent = FullyExpanded
@@ -64,8 +63,8 @@ fun SheetPages(showSheet: OpenSheet, setShowSheet: (OpenSheet) -> Unit, setAlert
     }
 
     LaunchedEffect(sheetState.currentDetent) {
-        if (sheetState.currentDetent == Hidden && showSheet != OpenSheet.None) {
-            setShowSheet(OpenSheet.None)
+        if (sheetState.currentDetent == Hidden && nav.openSheet != OpenSheet.None) {
+            nav.closeSheet()
         }
     }
 
@@ -83,43 +82,16 @@ fun SheetPages(showSheet: OpenSheet, setShowSheet: (OpenSheet) -> Unit, setAlert
                 .fillMaxWidth()
                 .imePadding()
         ) {
-            when (showSheet) {
-                OpenSheet.PreviewRecipe -> PreviewRecipe(lazyListState, { recipe ->
-                    setPickedRecipe(recipe)
-                    setAddRecipePurpose(Purpose.FeedEdit)
-                    setShowSheet(OpenSheet.AddRecipeToFeed)
-                }, RecipeIdentifier.factory(pickedRecipe)) {
-                    setShowSheet(OpenSheet.AddRecipeToMenu)
-                    setPickedRecipe(it)
-                }
+            when (nav.openSheet) {
+                OpenSheet.PreviewRecipe -> PreviewRecipe(lazyListState)
                 OpenSheet.ShoppingList -> ShoppingListPage(lazyListState)
-                OpenSheet.AddRecipeToMenu -> AddRecipeToMenu(pickedRecipe) {
+                OpenSheet.AddRecipeToMenu -> AddRecipeToMenu(nav.getRecipe()) {
                     Toast.makeText(context, "Recipe Added to Menu", Toast.LENGTH_SHORT).show()
                     closeSheet()
                 }
-                OpenSheet.AddRecipeToFeed -> AddRecipeToFeed(pickedRecipe, lazyListState, addToFeedPurpose) {
-                    setPickedRecipe(it)
-                    if (addToFeedPurpose == Purpose.AddNew || addToFeedPurpose == Purpose.FeedEdit) {
-                        setShowSheet(OpenSheet.PreviewRecipe)
-                        if (addToFeedPurpose == Purpose.AddNew) {
-                            Toast.makeText(context, "Recipe Added to My Recipes", Toast.LENGTH_SHORT).show()
-                        }
-                    } else if (addToFeedPurpose == Purpose.MenuEdit) {
-                        setShowSheet(OpenSheet.ViewRecipe)
-                        Toast.makeText(context, "Recipe Updated", Toast.LENGTH_SHORT).show()
-                    }
-                }
-                OpenSheet.Household -> HouseholdPage(
-                    { setAlert(OpenAlert.Join) },
-                    { setAlert(OpenAlert.Invite) }, reload)
-                OpenSheet.ViewRecipe -> ViewRecipe(lazyListState, pickedRecipe, { recipe ->
-                    setPickedRecipe(recipe)
-                    setAddRecipePurpose(Purpose.MenuEdit)
-                    setShowSheet(OpenSheet.AddRecipeToFeed)
-                }) {
-                    closeSheet()
-                    setAlert(OpenAlert.Rating)
-                }
+                OpenSheet.AddRecipeToFeed -> AddRecipeToFeed(nav.getRecipe(), lazyListState)
+                OpenSheet.Household -> HouseholdPage(reload)
+                OpenSheet.ViewRecipe -> ViewRecipe(lazyListState, nav.pickedRecipe)
                 OpenSheet.None -> Unit // Do Nothing
             }
         }

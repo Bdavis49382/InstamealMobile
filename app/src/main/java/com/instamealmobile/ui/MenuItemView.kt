@@ -16,16 +16,20 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.instamealmobile.OpenSheet
 import com.instamealmobile.data.MenuListItem
-import com.instamealmobile.data.Recipe
+import com.instamealmobile.data.RecipeIdentifier.MenuIndex
+import com.instamealmobile.viewModels.NavViewModel
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.TextStyle
 import java.util.Locale
 
 @Composable
-fun MenuItemView(menuListItem: MenuListItem, openRecipe: (Recipe) -> Unit) {
+fun MenuItemView(menuListItem: MenuListItem) {
+    val nav: NavViewModel = viewModel()
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         if (menuListItem.date != null) {
             val localDate = menuListItem.date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
@@ -46,7 +50,7 @@ fun MenuItemView(menuListItem: MenuListItem, openRecipe: (Recipe) -> Unit) {
                 .size(120.dp)
                 .clip(CircleShape)
                 .border(3.dp, MaterialTheme.colorScheme.primary, CircleShape)
-                .clickable { openRecipe(Recipe(title="",id=menuListItem.recipe_id,index=menuListItem.index?: 0)) },
+                .clickable { nav.navigateTo(OpenSheet.ViewRecipe, MenuIndex(menuListItem.index?:0))},
             contentDescription = null
         )
         Text(menuListItem.title,overflow = TextOverflow.Ellipsis,

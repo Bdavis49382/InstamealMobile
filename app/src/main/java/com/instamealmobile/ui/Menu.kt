@@ -32,13 +32,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.instamealmobile.R
 import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.MenuListItem
-import com.instamealmobile.data.Recipe
 import com.instamealmobile.ui.placeholders.MenuPlaceholder
 import com.instamealmobile.viewModels.AuthViewModel
 import com.instamealmobile.viewModels.MenuViewModel
 
 @Composable
-fun Menu(openRecipe: (Recipe) -> Unit) {
+fun Menu() {
     val viewModel: MenuViewModel =  viewModel()
     val authViewModel: AuthViewModel = viewModel()
     val menuState by viewModel.menu.collectAsState()
@@ -91,7 +90,7 @@ fun Menu(openRecipe: (Recipe) -> Unit) {
                                 }
                             } else {
                                 items(menu.sortedBy { it.date?.time ?: Long.MAX_VALUE }) { item ->
-                                    MenuItemView(item, openRecipe)
+                                    MenuItemView(item)
                                 }
                             }
                         }

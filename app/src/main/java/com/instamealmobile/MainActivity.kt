@@ -11,8 +11,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,7 +22,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.credentials.CredentialManager
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.instamealmobile.data.Recipe
 import com.instamealmobile.ui.Header
 import com.instamealmobile.ui.pages.Alerts
 import com.instamealmobile.ui.pages.HomePage
@@ -33,7 +30,6 @@ import com.instamealmobile.ui.theme.InstamealMobileTheme
 import com.instamealmobile.viewModels.AuthViewModel
 import com.instamealmobile.viewModels.FeedViewModel
 import com.instamealmobile.viewModels.MenuViewModel
-import com.instamealmobile.viewModels.Purpose
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -41,10 +37,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val (showSheet, setShowSheet) = remember { mutableStateOf(OpenSheet.None)}
-            var (openAlert, setAlert) = remember { mutableStateOf(OpenAlert.None) }
-            val (pickedRecipe, setPickedRecipe) = remember { mutableStateOf(Recipe(title="", img_link = "")) }
-            val (addToFeedPurpose, setAddToFeedPurpose) = remember {mutableStateOf(Purpose.AddNew)}
             val authViewModel: AuthViewModel = viewModel()
             val menuViewModel: MenuViewModel = viewModel()
             val feedViewModel: FeedViewModel = viewModel()
@@ -86,31 +78,17 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background
                     ) {
-                        Alerts(openAlert, setAlert, pickedRecipe) {
+                        Alerts {
                             feedViewModel.fetchFeed()
                             menuViewModel.getMenu()
                         }
 
-                        SheetPages(showSheet, setShowSheet, setAlert, pickedRecipe, setPickedRecipe, addToFeedPurpose, setAddToFeedPurpose) {
+                        SheetPages {
                             feedViewModel.fetchFeed()
                             menuViewModel.getMenu()
-
                         }
-                        Scaffold(topBar = {Header { setShowSheet(OpenSheet.Household) } }) { innerPadding ->
-                            HomePage({meal ->
-                                setShowSheet(OpenSheet.PreviewRecipe)
-                                setPickedRecipe(meal)
-                            }, {meal ->
-                                setShowSheet(OpenSheet.ViewRecipe)
-                                setPickedRecipe(meal)
-                            }, {
-                                setAddToFeedPurpose(Purpose.AddNew)
-                                setShowSheet(OpenSheet.AddRecipeToFeed)
-                                setPickedRecipe(Recipe(title=""))
-                            }, {
-                                setShowSheet(OpenSheet.ShoppingList)
-                            },
-                            Modifier.padding(innerPadding))
+                        Scaffold(topBar = {Header()}) { innerPadding ->
+                            HomePage(Modifier.padding(innerPadding))
                         }
                     }
                 }

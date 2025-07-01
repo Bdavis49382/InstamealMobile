@@ -21,7 +21,7 @@ import com.instamealmobile.ui.AddRecipeButton
 import com.valentinilk.shimmer.shimmer
 
 @Composable
-fun FeedPlaceholder(openAddRecipe: () -> Unit) {
+fun FeedPlaceholder() {
     Column(modifier = Modifier.padding(horizontal = 10.dp)) {
         Box(modifier = Modifier
             .clip(RoundedCornerShape(10.dp))
@@ -39,7 +39,7 @@ fun FeedPlaceholder(openAddRecipe: () -> Unit) {
                 .height(700.dp)
         ) {
             item {
-                AddRecipeButton(openAddRecipe)
+                AddRecipeButton()
             }
             items(mutableListOf(1, 1, 1)) {
                 Box(

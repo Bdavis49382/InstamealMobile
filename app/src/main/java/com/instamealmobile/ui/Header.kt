@@ -15,10 +15,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.instamealmobile.OpenSheet
 import com.instamealmobile.R
+import com.instamealmobile.viewModels.NavViewModel
 
 @Composable
-fun Header(openHousehold : () -> Unit) {
+fun Header() {
+    val nav: NavViewModel = viewModel()
     Row(
         verticalAlignment = Alignment.Bottom,
         modifier = Modifier
@@ -32,7 +36,7 @@ fun Header(openHousehold : () -> Unit) {
             color = MaterialTheme.colorScheme.onPrimaryContainer,
             modifier = Modifier.padding(horizontal = 10.dp).weight(1f)
         )
-        Button(onClick = openHousehold, modifier = Modifier.padding(horizontal = 5.dp), colors = ButtonDefaults.buttonColors(
+        Button(onClick = {nav.navigateTo(OpenSheet.Household)}, modifier = Modifier.padding(horizontal = 5.dp), colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary,
         )) {

@@ -31,7 +31,7 @@ import com.instamealmobile.viewModels.FeedViewModel
 
 
 @Composable
-fun Feed(openConfirmation : (Recipe) -> Unit, openAddRecipe : () -> Unit) {
+fun Feed() {
     val viewModel : FeedViewModel = viewModel()
     val authViewModel: AuthViewModel = viewModel()
     val feedState by viewModel.feed.collectAsState(ApiState.Loading)
@@ -51,7 +51,7 @@ fun Feed(openConfirmation : (Recipe) -> Unit, openAddRecipe : () -> Unit) {
     Crossfade(targetState = screenState, label = "ContentSwitch") { screenState ->
         when (screenState) {
             ScreenState.Loading ->  {
-                FeedPlaceholder(openAddRecipe)
+                FeedPlaceholder()
             }
             ScreenState.Success -> if (feedState is ApiState.Success) {
                 val feed = (feedState as ApiState.Success<List<Recipe>>).data
@@ -78,14 +78,14 @@ fun Feed(openConfirmation : (Recipe) -> Unit, openAddRecipe : () -> Unit) {
                                 .height(700.dp)
                         ) {
                             item(span = { GridItemSpan(2)}) {
-                                FeedItem(feed[0], openConfirmation)
+                                FeedItem(feed[0])
                             }
                             item {
-                                AddRecipeButton(openAddRecipe)
+                                AddRecipeButton()
                             }
                             if (feed.size > 1) {
                                 items(feed.subList(1, feed.size - 1)) { item ->
-                                    FeedItem(item, openConfirmation, modifier = Modifier.fillMaxWidth())
+                                    FeedItem(item,modifier = Modifier.fillMaxWidth())
                                 }
                             }
                         }

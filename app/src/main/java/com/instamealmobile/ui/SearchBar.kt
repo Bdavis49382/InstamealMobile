@@ -36,12 +36,16 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.instamealmobile.OpenSheet
 import com.instamealmobile.R
 import com.instamealmobile.viewModels.FeedViewModel
+import com.instamealmobile.viewModels.NavViewModel
 
 @Composable
-fun SearchBar(viewModel:  FeedViewModel, openShoppingList: () -> Unit) {
+fun SearchBar(viewModel:  FeedViewModel) {
     var searchBoxText by remember { mutableStateOf("") }
+    val nav: NavViewModel = viewModel()
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
@@ -82,7 +86,7 @@ fun SearchBar(viewModel:  FeedViewModel, openShoppingList: () -> Unit) {
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 ),
                 onClick = {
-                    openShoppingList()
+                    nav.navigateTo(OpenSheet.ShoppingList)
                 }) {
                 Icon(painter = painterResource(R.drawable.shoppinglisticon), contentDescription = "Shopping List")
             }

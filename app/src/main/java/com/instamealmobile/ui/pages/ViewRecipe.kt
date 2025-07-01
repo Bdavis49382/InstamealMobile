@@ -18,16 +18,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.instamealmobile.OpenAlert
+import com.instamealmobile.OpenSheet
 import com.instamealmobile.R
 import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.MenuItem
 import com.instamealmobile.data.Recipe
+import com.instamealmobile.data.RecipeIdentifier
+import com.instamealmobile.data.RecipeIdentifier.RecipeId
 import com.instamealmobile.data.ScreenState
 import com.instamealmobile.ui.DatePickerModal
 import com.instamealmobile.ui.EditableText
@@ -36,17 +43,29 @@ import com.instamealmobile.ui.SideButton
 import com.instamealmobile.ui.SideButtons
 import com.instamealmobile.ui.placeholders.RecipeViewPlaceholder
 import com.instamealmobile.viewModels.MenuViewModel
+import com.instamealmobile.viewModels.NavViewModel
+import com.instamealmobile.viewModels.Purpose
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 @Composable
-fun ViewRecipe(lazyListState: LazyListState,recipe: Recipe, editRecipe: (Recipe) -> Unit, confirm: () -> Unit) {
+fun ViewRecipe(lazyListState: LazyListState, recipeIdentifier: RecipeIdentifier?) {
+    val nav: NavViewModel = viewModel()
     val menuViewModel: MenuViewModel = viewModel()
     val menuItemState by menuViewModel.selected.collectAsState()
+    var recipeIndex by remember { mutableIntStateOf(0) }
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
-        menuViewModel.getRecipe(recipe.index)
+        if (recipeIdentifier is RecipeIdentifier.MenuIndex) {
+            menuViewModel.getRecipe(recipeIdentifier.index)
+            recipeIndex = recipeIdentifier.index
+        } else if (recipeIdentifier is RecipeIdentifier.FullRecipe) {
+            menuViewModel.getRecipe(recipeIdentifier.recipe.index)
+            recipeIndex = recipeIdentifier.recipe.index
+        } else {
+            throw Exception("Tried to view a recipe without using the menu index. was ${recipeIdentifier?.javaClass.toString()}")
+        }
     }
     val screenState = when (menuItemState) {
         is ApiState.Loading -> ScreenState.Loading
@@ -60,7 +79,7 @@ fun ViewRecipe(lazyListState: LazyListState,recipe: Recipe, editRecipe: (Recipe)
                 val menuItem = (menuItemState as ApiState.Success<MenuItem>).data
                 menuViewModel.date = it ?: 0
                 menuItem.date = menuViewModel.getLocalDate()
-                menuViewModel.updateMenuItem(recipe.index, menuItem)
+                menuViewModel.updateMenuItem(recipeIndex, menuItem)
                 Toast.makeText(context, "Date Updated", Toast.LENGTH_SHORT).show()
             }
         }) {menuViewModel.datePickerOpen = false }
@@ -82,7 +101,7 @@ fun ViewRecipe(lazyListState: LazyListState,recipe: Recipe, editRecipe: (Recipe)
                                     maxLines = 1,
                                     placeholder = "Enter Note (Optional)") {
                                     menuItem.note = it
-                                    menuViewModel.updateMenuItem(recipe.index, menuItem)
+                                    menuViewModel.updateMenuItem(recipeIndex, menuItem)
                                     Toast.makeText(context, "Menu Entry Note Updated", Toast.LENGTH_SHORT).show()
                                 }
                                 Row(verticalAlignment = Alignment.CenterVertically,
@@ -100,14 +119,20 @@ fun ViewRecipe(lazyListState: LazyListState,recipe: Recipe, editRecipe: (Recipe)
                     }
                     SideButtons {
                         SideButton({
-                            confirm()
+                            if (menuItem.recipe_id != null) {
+                                nav.pickedRecipe = RecipeId(menuItem.recipe_id)
+                                nav.navigateTo(OpenAlert.Rating)
+                                nav.closeSheet()
+                            } else {
+                                throw Exception("Not enough information to finish recipe. No id was stored with menu item.")
+                            }
                         }) {
                             Text("Finish")
                         }
                         SideButton(
                             {
-                                menuItem.recipe?.index = recipe.index
-                                editRecipe(menuItem.recipe?:Recipe(title=""))
+                                menuItem.recipe?.index = recipeIndex
+                                nav.navigateTo(OpenSheet.AddRecipeToFeed, RecipeIdentifier.factory(menuItem.recipe), Purpose.MenuEdit)
                             }
                         ) {
                             Icon(Icons.Default.Edit, contentDescription = "Edit")

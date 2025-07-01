@@ -20,12 +20,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.instamealmobile.viewModels.HouseholdViewModel
+import com.instamealmobile.viewModels.NavViewModel
 
 @Composable
-fun JoinHousehold(reload: () -> Unit,onDismiss: () -> Unit) {
+fun JoinHousehold(reload: () -> Unit) {
     val viewModel: HouseholdViewModel =  viewModel()
+    val nav: NavViewModel = viewModel()
     val context = LocalContext.current
-    Dialog(onDismissRequest = onDismiss) {
+    Dialog(onDismissRequest = nav::closeAlert) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -46,7 +48,7 @@ fun JoinHousehold(reload: () -> Unit,onDismiss: () -> Unit) {
                    Toast.makeText(context, "Invalid Code :(", Toast.LENGTH_SHORT).show()
                }) {
                    Toast.makeText(context, "Joined Household", Toast.LENGTH_SHORT).show()
-                   onDismiss()}
+                   nav.closeAlert()}
                }) {
                    Text("Submit")
                }

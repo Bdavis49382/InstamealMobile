@@ -33,11 +33,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.instamealmobile.R
 import com.instamealmobile.data.ApiState
 import com.instamealmobile.viewModels.HouseholdViewModel
+import com.instamealmobile.viewModels.NavViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun InviteToHousehold(onDismiss: () -> Unit) {
+fun InviteToHousehold() {
     val viewModel: HouseholdViewModel =  viewModel()
+    val nav: NavViewModel = viewModel()
     val codeState by viewModel.code.collectAsState()
     val clipboardManager = LocalClipboard.current
     val coroutineScope = rememberCoroutineScope()
@@ -47,7 +49,7 @@ fun InviteToHousehold(onDismiss: () -> Unit) {
         viewModel.getCode()
     }
 
-    Dialog(onDismissRequest = onDismiss) {
+    Dialog(onDismissRequest = nav::closeAlert) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()

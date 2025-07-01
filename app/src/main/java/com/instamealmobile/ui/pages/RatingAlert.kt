@@ -30,6 +30,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.instamealmobile.viewModels.MenuViewModel
 import com.instamealmobile.R
+import com.instamealmobile.viewModels.NavViewModel
 
 @Composable
 fun Star(index: Int, rating: MutableState<Float>) {
@@ -49,11 +50,12 @@ fun Star(index: Int, rating: MutableState<Float>) {
 }
 
 @Composable
-fun RatingAlert(recipeId: String,onDismiss: () -> Unit) {
+fun RatingAlert(recipeId: String) {
     val viewModel : MenuViewModel = viewModel()
+    val nav : NavViewModel = viewModel()
     var rating = remember { mutableFloatStateOf(4F) }
     val context = LocalContext.current
-    Dialog(onDismissRequest = onDismiss) {
+    Dialog(onDismissRequest = nav::closeAlert) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -76,15 +78,14 @@ fun RatingAlert(recipeId: String,onDismiss: () -> Unit) {
                     Button({
                         viewModel.finishMeal(recipeId,rating.floatValue)
                         Toast.makeText(context, "Recipe Finished", Toast.LENGTH_SHORT).show()
-                        onDismiss()
+                        nav.closeAlert()
                     }, modifier = Modifier.padding(end=5.dp)) {
                         Text("Save Rating")
                     }
                     OutlinedButton({
                         viewModel.finishMeal(recipeId, null)
                         Toast.makeText(context, "Recipe Finished", Toast.LENGTH_SHORT).show()
-                        onDismiss()
-
+                        nav.closeAlert()
                     }) {
                         Text("Skip")
                     }

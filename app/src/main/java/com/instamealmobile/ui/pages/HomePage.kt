@@ -10,7 +10,6 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.instamealmobile.data.Recipe
 import com.instamealmobile.ui.Feed
 import com.instamealmobile.ui.Menu
 import com.instamealmobile.ui.SearchBar
@@ -19,7 +18,7 @@ import com.instamealmobile.viewModels.MenuViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomePage(openConfirmation: (meal : Recipe) -> Unit, openRecipe: (meal : Recipe) -> Unit, openAddRecipe: () -> Unit, openShoppingList: () -> Unit, modifier : Modifier = Modifier) {
+fun HomePage(modifier: Modifier = Modifier) {
     val viewModel: FeedViewModel =  viewModel()
     val menuViewModel: MenuViewModel = viewModel()
     val pullToRefreshState = rememberPullToRefreshState()
@@ -28,7 +27,7 @@ fun HomePage(openConfirmation: (meal : Recipe) -> Unit, openRecipe: (meal : Reci
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
-            Menu(openRecipe)
+            Menu()
             PullToRefreshBox(
                 state = pullToRefreshState,
                 isRefreshing = viewModel.isRefreshing,
@@ -37,10 +36,10 @@ fun HomePage(openConfirmation: (meal : Recipe) -> Unit, openRecipe: (meal : Reci
                     menuViewModel.refreshMenu()
                 }
             ) {
-                Feed(openConfirmation, openAddRecipe)
+                Feed()
 
             }
         }
-        SearchBar(viewModel, openShoppingList)
+        SearchBar(viewModel)
     }
 }

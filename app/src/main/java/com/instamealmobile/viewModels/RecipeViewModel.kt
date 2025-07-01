@@ -17,7 +17,7 @@ class RecipeViewModel @Inject constructor(private val apiService: MenuService): 
     val recipe: MutableStateFlow<ApiState<Recipe>> = _recipe
     var scope = viewModelScope
 
-    fun getRecipe(recipe: RecipeIdentifier) {
+    fun getRecipe(recipe: RecipeIdentifier?) {
         _recipe.value = ApiState.Loading
         scope.launch {
             try {
@@ -25,6 +25,8 @@ class RecipeViewModel @Inject constructor(private val apiService: MenuService): 
                 val response = when (recipe) {
                     is RecipeIdentifier.RecipeId -> apiService.getRecipe(recipe.id)
                     is RecipeIdentifier.RecipeLink -> apiService.getRecipeOnline(recipe.link)
+                    is RecipeIdentifier.FullRecipe -> recipe.recipe
+                    else -> throw Exception("Cannot Get Recipe when one has not been selected.")
                 }
                 _recipe.value = ApiState.Success(response)
             } catch (e: Exception) {

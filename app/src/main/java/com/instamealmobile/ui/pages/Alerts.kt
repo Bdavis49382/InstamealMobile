@@ -1,23 +1,28 @@
 package com.instamealmobile.ui.pages
 
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.instamealmobile.OpenAlert
-import com.instamealmobile.data.Recipe
+import com.instamealmobile.data.RecipeIdentifier
+import com.instamealmobile.viewModels.NavViewModel
 
 @Composable
-fun Alerts(openAlert: OpenAlert, setAlert: (OpenAlert) -> Unit, pickedRecipe: Recipe, reload: () -> Unit) {
-    when (openAlert) {
+fun Alerts(reload: () -> Unit) {
+    val nav: NavViewModel = viewModel()
+    when (nav.openAlert) {
         OpenAlert.Join -> {
-            JoinHousehold(reload) { setAlert(OpenAlert.None) }
+            JoinHousehold(reload)
         }
         OpenAlert.Invite -> {
-            InviteToHousehold { setAlert(OpenAlert.None) }
+            InviteToHousehold()
         }
         OpenAlert.Rating -> {
-            if (pickedRecipe.id.isNullOrEmpty()) {
+            if (nav.pickedRecipe == null) {
                 throw Exception("Tried to finish a recipe without one selected!")
             }
-            RatingAlert(pickedRecipe.id) {setAlert(OpenAlert.None)}
+            if (nav.pickedRecipe is RecipeIdentifier.RecipeId) {
+                RatingAlert((nav.pickedRecipe as RecipeIdentifier.RecipeId).id)
+            }
         }
         OpenAlert.None -> {}
     }

@@ -49,9 +49,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.instamealmobile.OpenSheet
 import com.instamealmobile.R
 import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.Recipe
+import com.instamealmobile.data.RecipeIdentifier
+import com.instamealmobile.data.RecipeIdentifier.MenuIndex
 import com.instamealmobile.ui.EditableText
 import com.instamealmobile.ui.EditableTextState
 import com.instamealmobile.ui.ImagePurpose
@@ -59,12 +62,14 @@ import com.instamealmobile.ui.PickerPopup
 import com.instamealmobile.ui.SideButton
 import com.instamealmobile.ui.SideButtons
 import com.instamealmobile.viewModels.AddRecipeToFeedViewModel
+import com.instamealmobile.viewModels.NavViewModel
 import com.instamealmobile.viewModels.Purpose
 
 
 @Composable
-fun AddRecipeToFeed(recipe: Recipe,lazyListState: LazyListState,purpose: Purpose, confirm: (Recipe) -> Unit) {
+fun AddRecipeToFeed(recipe: Recipe,lazyListState: LazyListState) {
     val viewModel: AddRecipeToFeedViewModel =  viewModel()
+    val nav: NavViewModel = viewModel()
     val imgLinkState by viewModel.img_link.collectAsState()
     val context = LocalContext.current
 
@@ -316,7 +321,22 @@ fun AddRecipeToFeed(recipe: Recipe,lazyListState: LazyListState,purpose: Purpose
         }
         SideButtons {
             SideButton({
-                if (!viewModel.submitRecipe(recipe.id,confirm)) {
+                if (!viewModel.submitRecipe(recipe.id) { recipe ->
+                        nav.pickedRecipe = RecipeIdentifier.factory(recipe)
+                        if (nav.addToFeedPurpose == Purpose.AddNew || nav.addToFeedPurpose == Purpose.FeedEdit) {
+                            nav.openSheet = OpenSheet.PreviewRecipe
+                            if (nav.addToFeedPurpose == Purpose.AddNew) {
+                                Toast.makeText(
+                                    context,
+                                    "Recipe Added to My Recipes",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        } else if (nav.addToFeedPurpose == Purpose.MenuEdit) {
+                            nav.navigateTo(OpenSheet.ViewRecipe, recipe = MenuIndex(recipe.index))
+                            Toast.makeText(context, "Recipe Updated", Toast.LENGTH_SHORT).show()
+                        }
+                    }) {
                     viewModel.validatorsActive.value = true
                     Toast.makeText(context,"More Details Are Needed to Save Recipe", Toast.LENGTH_SHORT).show()
                 }

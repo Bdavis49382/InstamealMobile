@@ -24,17 +24,21 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.instamealmobile.OpenSheet
+import com.instamealmobile.viewModels.NavViewModel
 
 @Composable
-fun AddRecipeButton(openAddRecipePage: () -> Unit) {
+fun AddRecipeButton() {
+    val nav: NavViewModel = viewModel()
     ElevatedCard(modifier = Modifier.padding(top = 10.dp)) {
         Box(
             contentAlignment = Alignment.BottomCenter,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(180.dp)
-                .clickable { openAddRecipePage() }
+                .clickable { nav.navigateTo(OpenSheet.AddRecipeToFeed)}
         ) {
             AsyncImage(
                 model = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfajWqibp3QaI9ltOy2CmoqbljCae0PdkCww&s",

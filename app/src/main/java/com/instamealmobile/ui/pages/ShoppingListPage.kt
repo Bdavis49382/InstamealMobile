@@ -103,6 +103,11 @@ fun ShoppingListPage(lazyListState: LazyListState) {
                                 }
                             )
                         }
+                        item {
+                            if (shoppingList.isEmpty()) {
+                                Text("No Shopping Left To Be Done! Add Items For Your Next Shopping Trip.")
+                            }
+                        }
                     }
                 }
 
