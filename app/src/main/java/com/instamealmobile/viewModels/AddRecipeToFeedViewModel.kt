@@ -33,12 +33,14 @@ enum class Purpose {
 @HiltViewModel
 class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedService): ViewModel() {
     var ingredients = mutableStateListOf<String>()
+    var tags = mutableStateListOf<String>()
     var title =  mutableStateOf("")
     var servings = mutableStateOf("")
     var totalTime = mutableStateOf("")
     var source by mutableStateOf("")
     var newIngredient by mutableStateOf("")
     var newStep by mutableStateOf("")
+    var newTag by mutableStateOf("")
     var authorId by mutableStateOf("")
     private val _img_link = MutableStateFlow<ApiState<String>>(ApiState.Resting)
     val img_link: MutableStateFlow<ApiState<String>> = _img_link

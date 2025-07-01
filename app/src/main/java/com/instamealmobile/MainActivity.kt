@@ -62,7 +62,9 @@ class MainActivity : ComponentActivity() {
                  background = Color.Black,
                  onBackground = Color.White,
                  primary = Color(0xFF6E412F),
-                 onPrimary = Color.White
+                 onPrimary = Color.White,
+                 secondary  = Color.LightGray,
+                 onSecondary = Color.Black
             )
 
             val typography = Typography(

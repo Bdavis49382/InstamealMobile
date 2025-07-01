@@ -1,5 +1,6 @@
 package com.instamealmobile.ui
 
+import Tag
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -47,6 +48,12 @@ fun RecipeView(lazyListState: LazyListState, recipe: Recipe, innerContent: @Comp
             modifier = Modifier
                 .fillMaxWidth()
         ) {
+            item {
+                Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+                    Tag("Main Dish")
+                    Tag("Mediterranean")
+                }
+            }
             item {
                 if (recipe.src_link.isNullOrEmpty()) {
                     Text(text=recipe.src_name?:"")

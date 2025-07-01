@@ -16,12 +16,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -55,6 +52,7 @@ import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.Recipe
 import com.instamealmobile.data.RecipeIdentifier
 import com.instamealmobile.data.RecipeIdentifier.MenuIndex
+import com.instamealmobile.ui.DeleteButton
 import com.instamealmobile.ui.EditableText
 import com.instamealmobile.ui.EditableTextState
 import com.instamealmobile.ui.ImagePurpose
@@ -205,6 +203,52 @@ fun AddRecipeToFeed(recipe: Recipe,lazyListState: LazyListState) {
                 }
                 item {
                     Text(
+                        text = "Tags",
+                        style = TextStyle(fontSize = 25.sp),
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 5.dp)
+                    )
+                }
+                item {
+                    OutlinedTextField(
+                        value = viewModel.newTag,
+                        placeholder = {Text("New Tag")},
+                        onValueChange = {viewModel.newTag = it},
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                        isError = viewModel.validatorsActive.value && viewModel.tags.isEmpty(),
+                        supportingText = {
+                            if (viewModel.validatorsActive.value && viewModel.tags.isEmpty()) {
+                                Text("At least one tag is required.")
+                            }
+                        },
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                viewModel.tags.add(viewModel.newTag)
+                                viewModel.newTag = ""
+                            }
+                        ),
+                        singleLine = true,
+                        textStyle = TextStyle(fontSize = 12.sp),
+                        shape = RoundedCornerShape(20.dp),
+                        modifier = Modifier
+                            .width(270.dp)
+                            .padding(end = 5.dp, bottom = 5.dp)
+                    )
+                }
+                itemsIndexed(viewModel.tags, key= {index,item -> "$item$index,tags"}) { index,item ->
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        DeleteButton {
+                            viewModel.tags.removeAt(index)
+                        }
+                        EditableText(text = item, maxLines = 4, placeholder = "Main Dish", modifier = Modifier
+                            .width(300.dp)
+                            .padding(start = 5.dp, bottom = 5.dp)
+                        ) {
+                            viewModel.tags[index] = it
+                        }
+                    }
+                }
+                item {
+                    Text(
                         text = "Ingredients",
                         style = TextStyle(fontSize = 25.sp),
                         modifier = Modifier.fillMaxWidth().padding(bottom = 5.dp)
@@ -247,10 +291,8 @@ fun AddRecipeToFeed(recipe: Recipe,lazyListState: LazyListState) {
                 }
                 itemsIndexed(viewModel.ingredients, key= {index,item -> "$item$index,ingredients"}) { index,item ->
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Button({
+                        DeleteButton{
                             viewModel.ingredients.removeAt(index)
-                               }, shape = CircleShape) {
-                            Icon(Icons.Default.Delete, contentDescription = "Remove")
                         }
                         EditableText(text = item, maxLines = 4, placeholder = "Ingredient", modifier = Modifier
                             .width(300.dp)
@@ -303,10 +345,8 @@ fun AddRecipeToFeed(recipe: Recipe,lazyListState: LazyListState) {
                 }
                 itemsIndexed(viewModel.steps, key={index,item -> "$item$index,steps"}) { index,item ->
                     Row {
-                        Button({
+                        DeleteButton{
                             viewModel.steps.removeAt(index)
-                               }, shape = CircleShape) {
-                            Icon(Icons.Default.Delete, contentDescription = "Remove")
                         }
                         EditableText(text = item, placeholder = "Step", maxLines = 50, modifier = Modifier
                             .width(300.dp)

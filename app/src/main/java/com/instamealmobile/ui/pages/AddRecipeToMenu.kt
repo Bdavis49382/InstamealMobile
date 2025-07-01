@@ -14,11 +14,9 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,6 +34,7 @@ import coil.compose.AsyncImage
 import com.instamealmobile.R
 import com.instamealmobile.data.Recipe
 import com.instamealmobile.ui.DatePickerModal
+import com.instamealmobile.ui.DeleteButton
 import com.instamealmobile.ui.SideButton
 import com.instamealmobile.ui.SideButtons
 import com.instamealmobile.viewModels.MenuViewModel
@@ -129,15 +128,9 @@ fun AddRecipeToMenu(recipe : Recipe, confirm: () -> Unit) {
                                 .padding(horizontal = 10.dp)
                                 .width(250.dp)
                         )
-                        TextButton(
+                        DeleteButton(
                             onClick = {viewModel.ingredients.removeAt(index)}
-                        ) {
-                            Icon(
-                                Icons.Default.Close,
-                                contentDescription = "Remove Item",
-                                modifier = Modifier
-                            )
-                        }
+                        )
                     }
                 }
             }
