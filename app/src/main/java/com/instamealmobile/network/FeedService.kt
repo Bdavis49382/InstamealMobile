@@ -27,5 +27,7 @@ interface FeedService {
     suspend fun uploadImage(
         @Part file: MultipartBody.Part
     ) : String
+    @GET("feed/tags")
+    suspend fun getTags(): List<String>
 
 }

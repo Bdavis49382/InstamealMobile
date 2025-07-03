@@ -40,6 +40,6 @@ fun HomePage(modifier: Modifier = Modifier) {
 
             }
         }
-        SearchBar(viewModel)
+        SearchBar()
     }
 }

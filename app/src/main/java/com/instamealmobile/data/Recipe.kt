@@ -2,6 +2,7 @@ package com.instamealmobile.data
 
 data class Recipe(
     val title: String,
+    val tags: MutableList<String> = mutableListOf<String>(),
     val img_link: String? = null,
     val src_name: String? = null,
     val time_estimate: List<String> = mutableListOf<String>(),

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -49,9 +50,10 @@ fun RecipeView(lazyListState: LazyListState, recipe: Recipe, innerContent: @Comp
                 .fillMaxWidth()
         ) {
             item {
-                Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-                    Tag("Main Dish")
-                    Tag("Mediterranean")
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+                    items(recipe.tags) { text ->
+                        Tag(text)
+                    }
                 }
             }
             item {

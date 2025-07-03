@@ -63,7 +63,7 @@ class MainActivity : ComponentActivity() {
                  onBackground = Color.White,
                  primary = Color(0xFF6E412F),
                  onPrimary = Color.White,
-                 secondary  = Color.LightGray,
+                 secondary  = Color(0xFFe6ebe4),
                  onSecondary = Color.Black
             )
 

@@ -46,6 +46,7 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
     val img_link: MutableStateFlow<ApiState<String>> = _img_link
     var steps = mutableStateListOf<String>()
     var validatorsActive = mutableStateOf(false)
+    var src_link = mutableStateOf("")
     // When updating a menu recipe, keep track of its index.
     var menuIndex by mutableStateOf(0)
     var scope = viewModelScope
@@ -56,6 +57,8 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
             title.value = ""
             servings.value = ""
             totalTime.value = ""
+            src_link.value = ""
+            tags.clear()
             source = ""
             authorId = ""
             _img_link.value = ApiState.Resting
@@ -64,7 +67,10 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
         } else {
             ingredients.clear()
             ingredients.addAll(recipe.ingredients)
+            tags.clear()
+            tags.addAll(recipe.tags)
             title.value = recipe.title
+            src_link.value = recipe.src_link ?: ""
             servings.value = recipe.servings?: ""
             totalTime.value = if (recipe.time_estimate.size > 0) recipe.time_estimate[0] else ""
             source = recipe.src_name?: ""
@@ -91,6 +97,7 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
                                 ingredients = ingredients,
                                 title = title.value,
                                 servings = servings.value,
+                                tags = tags,
                                 time_estimate = if (totalTime.value.isNotEmpty()) listOf(totalTime.value) else listOf(),
                                 src_name = source,
                                 img_link = if (img_link.value is ApiState.Success) {
@@ -103,8 +110,10 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
                         apiService.updateRecipe(
                             id, Recipe(
                                 ingredients = ingredients,
+                                tags = tags,
                                 title = title.value,
                                 servings = servings.value,
+                                src_link = src_link.value,
                                 time_estimate = if (totalTime.value.isNotEmpty()) listOf(totalTime.value) else listOf(),
                                 src_name = source,
                                 img_link = if (img_link.value is ApiState.Success) {

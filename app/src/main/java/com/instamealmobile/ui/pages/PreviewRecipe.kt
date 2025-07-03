@@ -19,6 +19,7 @@ import com.instamealmobile.OpenSheet
 import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.Recipe
 import com.instamealmobile.data.RecipeIdentifier
+import com.instamealmobile.data.RecipeIdentifier.RecipeLink
 import com.instamealmobile.ui.RecipeView
 import com.instamealmobile.ui.SideButton
 import com.instamealmobile.ui.SideButtons
@@ -47,6 +48,9 @@ fun PreviewRecipe(
 
                 is ApiState.Success<*> -> if (recipeState is ApiState.Success) {
                     val recipeData = (recipeState as ApiState.Success<Recipe>).data
+                    if (recipeData.tags.isEmpty() && nav.pickedRecipe is RecipeLink) {
+                        recipeData.tags.addAll((nav.pickedRecipe as RecipeLink).tags)
+                    }
                     RecipeView(lazyListState, recipeData)
                     SideButtons {
                         SideButton(

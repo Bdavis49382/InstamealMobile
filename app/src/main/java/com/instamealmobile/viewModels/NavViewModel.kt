@@ -38,6 +38,8 @@ class NavViewModel @Inject constructor(): ViewModel() {
     fun getRecipe(): Recipe {
         if (pickedRecipe is FullRecipe) {
             return (pickedRecipe as FullRecipe).recipe
+        } else if (pickedRecipe is RecipeIdentifier.RecipeContent) {
+            return (pickedRecipe as RecipeIdentifier.RecipeContent).recipe
         } else {
             return Recipe(title="")
         }
