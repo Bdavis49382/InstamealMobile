@@ -28,7 +28,6 @@ import com.instamealmobile.ui.pages.HomePage
 import com.instamealmobile.ui.pages.SheetPages
 import com.instamealmobile.ui.theme.InstamealMobileTheme
 import com.instamealmobile.viewModels.AuthViewModel
-import com.instamealmobile.viewModels.FeedViewModel
 import com.instamealmobile.viewModels.MenuViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -39,7 +38,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             val authViewModel: AuthViewModel = viewModel()
             val menuViewModel: MenuViewModel = viewModel()
-            val feedViewModel: FeedViewModel = viewModel()
             val context = LocalContext.current
             val coroutineScope = rememberCoroutineScope()
             val credentialManager = CredentialManager.create(context)
@@ -49,7 +47,6 @@ class MainActivity : ComponentActivity() {
                 if (!authViewModel.checkLogin()) {
                     authViewModel.login(coroutineScope,credentialManager, context) {
                         menuViewModel.getMenu()
-                        feedViewModel.fetchFeed()
                     }
                 }
             }
@@ -81,12 +78,10 @@ class MainActivity : ComponentActivity() {
                         color = MaterialTheme.colorScheme.background
                     ) {
                         Alerts {
-                            feedViewModel.fetchFeed()
                             menuViewModel.getMenu()
                         }
 
                         SheetPages {
-                            feedViewModel.fetchFeed()
                             menuViewModel.getMenu()
                         }
                         Scaffold(topBar = {Header()}) { innerPadding ->
