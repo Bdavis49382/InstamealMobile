@@ -9,12 +9,13 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface FeedService {
     @GET("feed/")
-    suspend fun getFeed() : List<Recipe>
-    @GET("feed/search/{query}")
-    suspend fun searchFeed(@Path("query") query: String) : List<Recipe>
+    suspend fun getFeed(@Query("page") page: Int = 0) : List<Recipe>
+    @GET("feed/search/")
+    suspend fun searchFeed(@Query("query") query: String) : List<Recipe>
     @POST("feed/")
     suspend fun addRecipe(@Body recipe: Recipe) : String
     @PUT("feed/{recipe_id}")

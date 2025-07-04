@@ -5,8 +5,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
 import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.Recipe
+import com.instamealmobile.network.FeedPagingSource
 import com.instamealmobile.network.FeedService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,24 +23,10 @@ class FeedViewModel @Inject constructor(private val apiService: FeedService): Vi
     val feed: MutableStateFlow<ApiState<List<Recipe>>> = _feed
     var isRefreshing by mutableStateOf(false)
     var scope = viewModelScope
-
-    fun fetchFeed() {
-        scope.launch {
-            try {
-                _feed.value = ApiState.Loading
-                val response = apiService.getFeed()
-                _feed.value = ApiState.Success(response)
-            } catch (e: Exception) {
-                _feed.value = ApiState.Error("Failed to fetch data: ${e.message}")
-            } finally {
-                isRefreshing = false
-            }
-        }
-    }
-    fun refreshFeed() {
-        isRefreshing = true
-        fetchFeed()
-    }
+    val pagingFlow = Pager(
+        config = PagingConfig(pageSize = 50),
+        pagingSourceFactory = { FeedPagingSource(apiService)}
+    ).flow.cachedIn(viewModelScope)
 
     fun searchFeed(query: String) {
         _feed.value = ApiState.Loading
