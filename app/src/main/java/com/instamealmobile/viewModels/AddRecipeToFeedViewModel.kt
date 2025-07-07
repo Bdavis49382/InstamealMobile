@@ -16,7 +16,11 @@ import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.Recipe
 import com.instamealmobile.network.FeedService
 import com.instamealmobile.ui.ImagePurpose
+import com.itextpdf.text.pdf.PdfReader
+import com.itextpdf.text.pdf.parser.LocationTextExtractionStrategy
+import com.itextpdf.text.pdf.parser.PdfTextExtractor
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -160,6 +164,27 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
         }
     }
 
+    fun parsePdf(uri: Uri, context: Context, onceFinished: (List<String>) -> Unit) {
+        scope.launch(Dispatchers.IO) {
+            try {
+                val inputStream = context.contentResolver.openInputStream(uri)!!
+                val reader = PdfReader(inputStream)
+                val pages = reader.numberOfPages
+                val lines = mutableListOf<String>()
+                for (i in 1..pages) {
+                    val page = PdfTextExtractor.getTextFromPage(reader, i,
+                        LocationTextExtractionStrategy()).trim()
+                    lines.addAll(page.split("\n").filter { it.isNotBlank()})
+                }
+                reader.close()
+                textToRecipe(lines)
+                onceFinished(lines)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
     fun parseText(uri: Uri, context: Context, purpose: ImagePurpose, onceFinished: (String) -> Unit ) {
         val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
         val image: InputImage
@@ -228,15 +253,15 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
                     totalTime.value = block.uppercase().replace("TOTAL:","").lowercase().trim()
                     continue
                 }
-                else if (block.uppercase().contains("SERVINGS:")) {
+                else if (block.uppercase().contains("SERVINGS: [0-9]{1,2}".toRegex())) {
                     try {
-                        servings.value = block.uppercase().replace("SERVINGS:","").lowercase().trim()
+                        servings.value = "SERVINGS: ([0-9]{1,2})".toRegex().find(block.uppercase())!!.groupValues[1]
                     } catch (e: Exception){
                         Log.i("TEXT_WARNING",e.message?: "servings failed to convert to float")
                     }
                     continue
                 }
-                if (block.uppercase().contains("INGREDIENTS")) {
+                if (block.uppercase().trim().startsWith("INGREDIENTS")) {
                     isIngredients = true
                     isSteps = false
                     continue
@@ -247,10 +272,15 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
                     continue
                 }
                 if (isIngredients) {
-                    ingredients.add(block.trim())
+                    val pattern = Regex("([0-9]+ ?[0-9]?/?[0-9]?|ONE|TWO|THREE|FOUR|FIVE|SIX|SEVEN|EIGHT|NINE|TEN)?(CUPS?|TEASPOONS?|TABLESPOONS?|DASH|PINCH|LITERS?|GALLONS?|POUNDS?|OUNCES?)?(.+)",
+                        RegexOption.IGNORE_CASE)
+                    val match = pattern.find(block.trim())
+                    if (match != null) {
+                        ingredients.add(match.groupValues.subList(1,match.groupValues.size).joinToString(" ") {it.trim()})
+                    }
                 }
                 else if (isSteps && !"STEP [1-9]{1,2}".toRegex().containsMatchIn(block.uppercase())) {
-                    steps.add(block.trim())
+                    steps.add(block.trim().replace("[0-9]\\. ".toRegex(), ""))
                 }
         }
     }

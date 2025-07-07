@@ -8,6 +8,7 @@ import com.instamealmobile.network.MenuService
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.slot
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -68,6 +69,7 @@ class MenuViewModelTest {
         every { mockRecipe.img_link} returns ""
 
         val mock = mockk<MenuListItem>()
+        every { mock.index = capture(slot<Int>())} answers {}
         val fakeList = mutableListOf<MenuListItem>(mock)
         coEvery { mockService.addRecipe(any())} returns fakeList
 
@@ -86,6 +88,7 @@ class MenuViewModelTest {
     fun finishMeal() = runTest {
         // Arrange
         val mock = mockk<MenuListItem>()
+        every { mock.index = capture(slot<Int>())} answers {}
         val fakeList = mutableListOf<MenuListItem>(mock)
         coEvery { mockService.finishMeal(any(),any())} returns fakeList
 

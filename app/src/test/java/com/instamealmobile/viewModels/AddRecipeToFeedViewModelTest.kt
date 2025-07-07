@@ -246,7 +246,7 @@ class AddRecipeToFeedViewModelTest {
             "Total:   90 minutes",
             "Instructions for recipe",
             "Fry water until browned.",
-            "The best ingredients:  ",
+            "ingredients:  ",
             "1 Cup Water"
         )
 
@@ -267,7 +267,7 @@ class AddRecipeToFeedViewModelTest {
             "Random Gibberish",
             "Instructions for recipe",
             "Fry water until browned.",
-            "The best ingredients:  ",
+            " ingredients:  ",
             "1 Cup Water",
             "Total:   90 minutes"
         )

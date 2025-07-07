@@ -101,6 +101,7 @@ dependencies {
     implementation(libs.compose.shimmer)
     implementation(libs.core)
     implementation(libs.androidx.paging.compose)
+    implementation(libs.itextg)
 
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)

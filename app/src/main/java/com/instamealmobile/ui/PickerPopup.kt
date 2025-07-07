@@ -1,7 +1,6 @@
 package com.instamealmobile.ui
 
 import android.net.Uri
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -9,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -40,6 +40,12 @@ enum class ImagePurpose {
 fun PickerPopup(popupIsOn: Boolean,imagePurpose: ImagePurpose, onDismiss: () -> Unit) {
     val viewModel : AddRecipeToFeedViewModel = viewModel()
     val context = LocalContext.current
+
+    val pdfPickerLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri != null) {
+            viewModel.parsePdf(uri, context) {}
+        }
+    }
 
     val pickerLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri?.let {
@@ -82,8 +88,8 @@ fun PickerPopup(popupIsOn: Boolean,imagePurpose: ImagePurpose, onDismiss: () -> 
         Dialog(onDismissRequest = onDismiss) {
             Card(
                 modifier = Modifier
-                    .width(220.dp)
-                    .height(100.dp)
+                    .width(260.dp)
+                    .height(120.dp)
                     .padding(0.dp),
                 shape = RoundedCornerShape(16.dp),
             ) {
@@ -94,12 +100,13 @@ fun PickerPopup(popupIsOn: Boolean,imagePurpose: ImagePurpose, onDismiss: () -> 
                 ) {
                     Text("Upload Image", modifier = Modifier.padding(bottom = 10.dp))
                     Row(verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center,
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        modifier = Modifier.fillMaxWidth()
                         ) {
                         OutlinedButton({
                             cameraLauncher.launch(cameraUri.value!!)
                             onDismiss()
-                        }, modifier = Modifier.padding(end = 15.dp)) {
+                        }) {
                             Icon(painter = painterResource(R.drawable.baseline_photo_camera_24),"camera")
                         }
                         OutlinedButton({
@@ -107,6 +114,15 @@ fun PickerPopup(popupIsOn: Boolean,imagePurpose: ImagePurpose, onDismiss: () -> 
                             onDismiss()
                         }) {
                             Icon(painter = painterResource(R.drawable.baseline_image_search_24),"image search")
+                        }
+                        if (imagePurpose == ImagePurpose.TextParsing) {
+                            OutlinedButton({
+                                pdfPickerLauncher.launch(arrayOf("application/pdf"))
+                                onDismiss()
+                            }) {
+                                Icon(painter = painterResource(R.drawable.baseline_picture_as_pdf_24),"pdf search")
+                            }
+
                         }
                     }
                 }

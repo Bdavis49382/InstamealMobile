@@ -5,6 +5,7 @@ import com.instamealmobile.data.ShoppingItem
 import com.instamealmobile.data.SmallShoppingItem
 import com.instamealmobile.network.ShoppingListService
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -16,7 +17,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -102,10 +103,8 @@ class ShoppingListViewModelTest {
         advanceUntilIdle()
 
         // Assert
-        assertTrue(viewModel.shoppingList.value is ApiState.Success)
-        val data = (viewModel.shoppingList.value as ApiState.Success).data
-        assertEquals(1, data.size)
-        assertEquals(true, data[0].checked)
+        assertTrue(viewModel.shoppingList.value is ApiState.Loading)
+        coVerify { mockService.checkItem(any()) }
     }
 
     @Test

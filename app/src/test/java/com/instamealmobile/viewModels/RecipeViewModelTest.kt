@@ -64,7 +64,7 @@ class RecipeViewModelTest {
         coEvery { mockService.getRecipeOnline(any())} returns Recipe(title="")
 
         // Act
-        viewModel.getRecipe(RecipeLink(""))
+        viewModel.getRecipe(RecipeLink("",listOf("mainDishes")))
 
         // Assert
         advanceUntilIdle()
