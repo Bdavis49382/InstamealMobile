@@ -6,12 +6,18 @@ import com.instamealmobile.data.Recipe
 import javax.inject.Inject
 
 class FeedPagingSource @Inject constructor(
-    private val api: FeedService
+    private val api: FeedService, private val query: String
 ) : PagingSource<Int, Recipe>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Recipe> {
         val page = params.key ?: 0
         return try {
-            val response = api.getFeed(page = page)
+            val response = if (query.isEmpty()) {
+                api.getFeed(page = page)
+            } else if (page == 0) {
+                api.searchFeed(query)
+            } else {
+                listOf()
+            }
             LoadResult.Page(
                 data = response,
                 prevKey = if (page == 0) null else page - 1,

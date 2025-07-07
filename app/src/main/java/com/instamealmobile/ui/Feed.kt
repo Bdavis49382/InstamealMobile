@@ -2,8 +2,10 @@ package com.instamealmobile.ui
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -45,6 +47,7 @@ fun Feed() {
             isRefreshing = items.loadState.refresh is LoadState.Loading,
             onRefresh = {
                 menuViewModel.refreshMenu()
+                viewModel.query.value = ""
                 items.refresh()
             }
         ) {
@@ -82,17 +85,22 @@ fun Feed() {
                                         item?.let {FeedItem(item)}
                                     }
                                 } else {
-                                    item {
-                                        Text(
-                                            "No Recipes To Show",
-                                            textAlign = TextAlign.Center,
-                                            modifier = Modifier.fillMaxWidth()
-                                        )
+                                    item(span = { GridItemSpan(2)}) {
+                                        Column(horizontalAlignment = Alignment.CenterHorizontally,modifier = Modifier.fillMaxWidth()) {
+                                            Text(
+                                                "No Recipes To Show",
+                                                textAlign = TextAlign.Center,
+                                                modifier = Modifier.fillMaxWidth()
+                                            )
+                                            Button({
+                                                viewModel.query.value = ""
+                                                items.refresh() }) {
+                                                Text("Refresh Feed")
+                                            }
+
+                                        }
                                     }
                                     item {
-                                        Button({ items.refresh() }) {
-                                            Text("Refresh Feed")
-                                        }
 
                                     }
 
@@ -117,6 +125,11 @@ fun Feed() {
                                     }
 
                                     else -> {}
+                                }
+                                item(span = { GridItemSpan(2)}) {
+                                    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                                        Text("No More Search Results.", modifier = Modifier.padding(top = 10.dp, bottom = 200.dp))
+                                    }
                                 }
                             }
                         }
