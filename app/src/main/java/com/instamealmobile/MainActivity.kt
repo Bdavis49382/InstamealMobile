@@ -22,12 +22,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.credentials.CredentialManager
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.instamealmobile.ui.Header
 import com.instamealmobile.ui.pages.Alerts
 import com.instamealmobile.ui.pages.HomePage
 import com.instamealmobile.ui.pages.SheetPages
 import com.instamealmobile.ui.theme.InstamealMobileTheme
 import com.instamealmobile.viewModels.AuthViewModel
+import com.instamealmobile.viewModels.FeedViewModel
 import com.instamealmobile.viewModels.MenuViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -37,6 +39,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val authViewModel: AuthViewModel = viewModel()
+            val feedViewModel: FeedViewModel = viewModel()
+            val items = feedViewModel.pagingFlow.collectAsLazyPagingItems()
             val menuViewModel: MenuViewModel = viewModel()
             val context = LocalContext.current
             val coroutineScope = rememberCoroutineScope()
@@ -47,6 +51,7 @@ class MainActivity : ComponentActivity() {
                 if (!authViewModel.checkLogin()) {
                     authViewModel.login(coroutineScope,credentialManager, context) {
                         menuViewModel.getMenu()
+                        items.refresh()
                     }
                 }
             }
@@ -79,10 +84,12 @@ class MainActivity : ComponentActivity() {
                     ) {
                         Alerts {
                             menuViewModel.getMenu()
+                            items.refresh()
                         }
 
                         SheetPages {
                             menuViewModel.getMenu()
+                            items.refresh()
                         }
                         Scaffold(topBar = {Header()}) { innerPadding ->
                             HomePage(Modifier.padding(innerPadding))
