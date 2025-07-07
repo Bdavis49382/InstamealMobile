@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,6 +21,10 @@ fun RecipeViewPlaceholder() {
             .padding(20.dp)
     ) {
         ShimmerBox(width = 300.dp, height = 25.dp)
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp)) {
+            ShimmerBox(width = 120.dp, height = 15.dp)
+            ShimmerBox(width = 120.dp, height = 15.dp)
+        }
         ShimmerBox(width = 100.dp, height = 10.dp)
         ShimmerBox(fillmaxWidth = true, height = 300.dp, modifier = Modifier
             .clip(RoundedCornerShape(10.dp))

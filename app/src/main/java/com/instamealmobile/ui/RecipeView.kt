@@ -4,6 +4,7 @@ import Tag
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -130,6 +131,11 @@ fun RecipeView(lazyListState: LazyListState, recipe: Recipe, innerContent: @Comp
                     fontSize = 18.sp,
                     modifier = Modifier
                         .padding(horizontal = 10.dp)
+                )
+            }
+            item {
+                Spacer(modifier = Modifier
+                    .padding(40.dp)
                 )
             }
         }
