@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -49,7 +51,6 @@ import coil.compose.AsyncImage
 import com.instamealmobile.OpenSheet
 import com.instamealmobile.R
 import com.instamealmobile.data.ApiState
-import com.instamealmobile.data.Recipe
 import com.instamealmobile.data.RecipeIdentifier
 import com.instamealmobile.data.RecipeIdentifier.MenuIndex
 import com.instamealmobile.ui.DeleteButton
@@ -65,7 +66,7 @@ import com.instamealmobile.viewModels.Purpose
 
 
 @Composable
-fun AddRecipeToFeed(recipe: Recipe,lazyListState: LazyListState) {
+fun AddRecipeToFeed(lazyListState: LazyListState) {
     val viewModel: AddRecipeToFeedViewModel =  viewModel()
     val nav: NavViewModel = viewModel()
     val imgLinkState by viewModel.img_link.collectAsState()
@@ -75,7 +76,7 @@ fun AddRecipeToFeed(recipe: Recipe,lazyListState: LazyListState) {
     var popupIsOn by remember {mutableStateOf(false)}
     val focusManager = LocalFocusManager.current
     LaunchedEffect(Unit) {
-        viewModel.setRecipe(recipe)
+        viewModel.setRecipe(nav.getRecipe())
     }
 
     PickerPopup(popupIsOn, imgPurpose) {popupIsOn = false }
@@ -111,7 +112,7 @@ fun AddRecipeToFeed(recipe: Recipe,lazyListState: LazyListState) {
                         modifier = Modifier
                     )
                 }
-                Box(modifier = Modifier.width(400.dp).focusProperties {canFocus = false}
+                Box(modifier = Modifier.width(400.dp).padding(start=10.dp).focusProperties {canFocus = false}
                     , contentAlignment = Alignment.Center) {
                     Crossfade(targetState = imgLinkState, label = "ContentSwitch") { screenState ->
                         when (screenState) {
@@ -123,7 +124,9 @@ fun AddRecipeToFeed(recipe: Recipe,lazyListState: LazyListState) {
                                 val img_link = (imgLinkState as ApiState.Success<String>).data
                                 AsyncImage(
                                     model = img_link,
+                                    contentScale = ContentScale.Crop,
                                     modifier = Modifier
+                                        .aspectRatio(1f)
                                         .clickable {
                                             imgPurpose = ImagePurpose.ImageStoring
                                             popupIsOn = true
@@ -361,7 +364,7 @@ fun AddRecipeToFeed(recipe: Recipe,lazyListState: LazyListState) {
         }
         SideButtons {
             SideButton({
-                if (!viewModel.submitRecipe(recipe.id) { recipe ->
+                if (!viewModel.submitRecipe(viewModel.fullRecipe.value.id) { recipe ->
                         nav.pickedRecipe = RecipeIdentifier.factory(recipe)
                         if (nav.addToFeedPurpose == Purpose.AddNew || nav.addToFeedPurpose == Purpose.FeedEdit) {
                             nav.openSheet = OpenSheet.PreviewRecipe

@@ -55,6 +55,7 @@ fun SheetPages(reload: () -> Unit) {
     LaunchedEffect(nav.openSheet) {
         if (nav.openSheet == OpenSheet.None) {
             sheetState.targetDetent = Hidden
+            nav.pickedRecipe = null
         } else if (nav.openSheet == OpenSheet.Household) {
             sheetState.targetDetent = halfExpanded
         } else {
@@ -89,7 +90,7 @@ fun SheetPages(reload: () -> Unit) {
                     Toast.makeText(context, "Recipe Added to Menu", Toast.LENGTH_SHORT).show()
                     closeSheet()
                 }
-                OpenSheet.AddRecipeToFeed -> AddRecipeToFeed(nav.getRecipe(), lazyListState)
+                OpenSheet.AddRecipeToFeed -> AddRecipeToFeed(lazyListState)
                 OpenSheet.Household -> HouseholdPage(reload)
                 OpenSheet.ViewRecipe -> ViewRecipe(lazyListState, nav.pickedRecipe)
                 OpenSheet.None -> Unit // Do Nothing

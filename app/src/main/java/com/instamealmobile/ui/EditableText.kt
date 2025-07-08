@@ -47,6 +47,9 @@ fun EditableTextState(modifier : Modifier = Modifier,text : MutableState<String>
     LaunchedEffect(Unit) {
         startingText = text.value
     }
+    LaunchedEffect(text.value) {
+        textFieldValueState = TextFieldValue(text=text.value)
+    }
     LaunchedEffect(isEditing) {
         if (isEditing) {
             focusRequester.requestFocus()
