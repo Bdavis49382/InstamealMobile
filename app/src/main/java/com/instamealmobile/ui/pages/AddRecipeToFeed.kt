@@ -63,12 +63,14 @@ import com.instamealmobile.ui.SideButtons
 import com.instamealmobile.viewModels.AddRecipeToFeedViewModel
 import com.instamealmobile.viewModels.NavViewModel
 import com.instamealmobile.viewModels.Purpose
+import com.instamealmobile.viewModels.SearchBarViewModel
 
 
 @Composable
 fun AddRecipeToFeed(lazyListState: LazyListState) {
     val viewModel: AddRecipeToFeedViewModel =  viewModel()
     val nav: NavViewModel = viewModel()
+    val searchBarViewModel: SearchBarViewModel = viewModel()
     val imgLinkState by viewModel.img_link.collectAsState()
     val context = LocalContext.current
 
@@ -225,7 +227,7 @@ fun AddRecipeToFeed(lazyListState: LazyListState) {
                         },
                         keyboardActions = KeyboardActions(
                             onDone = {
-                                viewModel.tags.add(viewModel.newTag)
+                                viewModel.addTag(viewModel.newTag)
                                 viewModel.newTag = ""
                             }
                         ),
@@ -365,6 +367,7 @@ fun AddRecipeToFeed(lazyListState: LazyListState) {
         SideButtons {
             SideButton({
                 if (!viewModel.submitRecipe(viewModel.fullRecipe.value.id) { recipe ->
+                        searchBarViewModel.getTags()
                         nav.pickedRecipe = RecipeIdentifier.factory(recipe)
                         if (nav.addToFeedPurpose == Purpose.AddNew || nav.addToFeedPurpose == Purpose.FeedEdit) {
                             nav.openSheet = OpenSheet.PreviewRecipe

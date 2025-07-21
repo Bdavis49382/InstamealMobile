@@ -1,6 +1,7 @@
 package com.instamealmobile.ui
 
 import Tag
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -53,7 +55,10 @@ fun RecipeView(lazyListState: LazyListState, recipe: Recipe, innerContent: @Comp
             item {
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                     items(recipe.tags) { text ->
-                        Tag(text)
+                        Tag(text, modifier = Modifier
+                            .clip(RoundedCornerShape(20.dp))
+                            .background(MaterialTheme.colorScheme.secondaryContainer)
+                        )
                     }
                 }
             }

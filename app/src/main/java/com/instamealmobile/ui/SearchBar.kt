@@ -1,18 +1,22 @@
 package com.instamealmobile.ui
 
 import Tag
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -37,7 +41,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -55,6 +61,7 @@ import com.instamealmobile.viewModels.FeedViewModel
 import com.instamealmobile.viewModels.NavViewModel
 import com.instamealmobile.viewModels.SearchBarViewModel
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SearchBar() {
     var searchBoxText by remember { mutableStateOf("") }
@@ -62,6 +69,7 @@ fun SearchBar() {
     val viewModel: FeedViewModel = viewModel()
     val searchBarViewModel: SearchBarViewModel = viewModel()
     val tagsState by searchBarViewModel.tags.collectAsState(ApiState.Loading)
+    var keyboardAppearedSinceFocused by remember { mutableStateOf(false)}
     var activated by remember { mutableStateOf(false)}
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
@@ -72,36 +80,51 @@ fun SearchBar() {
     LaunchedEffect(Unit) {
         searchBarViewModel.getTags()
     }
+
+    if (activated) {
+        if (WindowInsets.isImeVisible) {
+            keyboardAppearedSinceFocused = true
+        } else if (keyboardAppearedSinceFocused) {
+            focusManager.clearFocus()
+        }
+    }
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
         Column(verticalArrangement = Arrangement.Bottom, horizontalAlignment = Alignment.End) {
-            if (activated) {
-                when (tagsState) {
-                    is ApiState.Success<*> -> {
-                        val tags = (tagsState as ApiState.Success).data
-                        Box(contentAlignment = Alignment.BottomEnd,modifier = Modifier.height(180.dp).width(300.dp).padding(10.dp)) {
-                            LazyColumn(verticalArrangement = Arrangement.spacedBy(3.dp), horizontalAlignment = Alignment.End) {
-                                items(tags) {
-                                    Tag(it) {
-                                        if (searchBoxText.contains("#$it ")) {
-                                            searchBoxText = searchBoxText.replace("#$it ","")
-                                        } else {
-                                            searchBoxText += "#$it "
+            Crossfade(activated) {a ->
+                if (a) {
+                    when (tagsState) {
+                        is ApiState.Success<*> -> {
+                            val tags = (tagsState as ApiState.Success).data
+                            Box(contentAlignment = Alignment.BottomStart, modifier = Modifier.height(180.dp).fillMaxWidth().padding(10.dp)) {
+                                LazyRow(horizontalArrangement = Arrangement.spacedBy(5.dp), verticalAlignment = Alignment.Bottom, modifier = Modifier
+                                ) {
+                                    items(tags) {
+                                        Tag(it, modifier = Modifier
+                                            .shadow(10.dp, RoundedCornerShape(20.dp))
+                                            .clip(RoundedCornerShape(20.dp))
+                                            .background(if (!searchBoxText.contains("#$it ")) MaterialTheme.colorScheme.secondaryContainer else Color.Gray)
+                                        ) {
+                                            if (searchBoxText.contains("#$it ")) {
+                                                searchBoxText = searchBoxText.replace("#$it ","")
+                                            } else {
+                                                searchBoxText += "#$it "
+                                            }
+                                            textFieldValueState = textFieldValueState.copy(
+                                                text = searchBoxText,
+                                                selection = TextRange(searchBoxText.length)
+                                            )
                                         }
-                                        textFieldValueState = textFieldValueState.copy(
-                                            text = searchBoxText,
-                                            selection = TextRange(searchBoxText.length)
-                                        )
                                     }
                                 }
+
                             }
+
+                        }
+                        else -> {
 
                         }
 
                     }
-                    else -> {
-
-                    }
-
                 }
             }
             Row(horizontalArrangement = Arrangement.SpaceBetween,
@@ -141,6 +164,7 @@ fun SearchBar() {
                         .fillMaxWidth(.70f)
                         .onFocusChanged({ focusState ->
                             activated = focusState.isFocused
+                            if (activated) keyboardAppearedSinceFocused = false
                         })
                         .clip(RoundedCornerShape(20.dp))
                 )

@@ -28,6 +28,7 @@ import com.composables.core.SheetDetent
 import com.composables.core.SheetDetent.Companion.FullyExpanded
 import com.composables.core.SheetDetent.Companion.Hidden
 import com.composables.core.rememberModalBottomSheetState
+import com.instamealmobile.OpenAlert
 import com.instamealmobile.OpenSheet
 import com.instamealmobile.viewModels.NavViewModel
 import kotlinx.coroutines.launch
@@ -55,7 +56,9 @@ fun SheetPages(reload: () -> Unit) {
     LaunchedEffect(nav.openSheet) {
         if (nav.openSheet == OpenSheet.None) {
             sheetState.targetDetent = Hidden
-            nav.pickedRecipe = null
+            if (nav.openAlert == OpenAlert.None) {
+                nav.pickedRecipe = null
+            }
         } else if (nav.openSheet == OpenSheet.Household) {
             sheetState.targetDetent = halfExpanded
         } else {

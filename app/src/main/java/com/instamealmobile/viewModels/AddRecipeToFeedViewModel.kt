@@ -141,6 +141,10 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
         }
     }
 
+    fun addTag(name: String) {
+        tags.add(name.replace("#","").split(" ").joinToString { it.replaceFirstChar { it.uppercase() } })
+    }
+
     fun uploadImage(uri: Uri, context: Context, after: () -> Unit) {
         try {
             val inputStream = context.contentResolver.openInputStream(uri)
