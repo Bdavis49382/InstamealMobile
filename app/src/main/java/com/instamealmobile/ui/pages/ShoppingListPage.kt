@@ -28,6 +28,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.text.input.ImeAction
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.ShoppingItem
 import com.instamealmobile.data.SmallShoppingItem
@@ -38,6 +40,7 @@ import kotlinx.coroutines.launch
 fun ShoppingListPage(lazyListState: LazyListState) {
     var newItemText by remember { mutableStateOf("") }
     val viewModel: ShoppingListViewModel =  viewModel()
+    val user = Firebase.auth
     val shoppingListState by viewModel.shoppingList.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
@@ -58,7 +61,12 @@ fun ShoppingListPage(lazyListState: LazyListState) {
                 placeholder = { Text("New item for list...") },
                 keyboardOptions = KeyboardOptions(imeAction= ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = {
-                    viewModel.addItemToList(newItemText)
+                    val userInitial = user.currentUser?.displayName?.substring(0,1) ?: ""
+                    viewModel.addItemToList(newItemText, userInitial) {
+                        coroutineScope.launch {
+                            lazyListState.animateScrollToItem(0)
+                        }
+                    }
                     newItemText = ""
                 }),
                 singleLine = true,

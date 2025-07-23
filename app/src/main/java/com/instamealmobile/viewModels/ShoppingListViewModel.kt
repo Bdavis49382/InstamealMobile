@@ -32,16 +32,37 @@ class ShoppingListViewModel @Inject constructor(private val apiService: Shopping
         }
     }
 
-    fun addItemToList(text: String) {
+    fun addItemToList(text: String, userInitial: String, scrollToTop: () -> Unit) {
         scope.launch {
             try {
-                _shoppingList.value = ApiState.Loading
+                if (shoppingList.value is ApiState.Success) {
+                    val items = (shoppingList.value as ApiState.Success).data.toMutableList()
+                    items.add(ShoppingItem(name=text, index = items.size, user_initial = userInitial))
+                    _shoppingList.value = ApiState.Success(items)
+                    scrollToTop()
+                }
                 val response = apiService.postShoppingList(ShoppingItem(
                     name=text))
-                _shoppingList.value = ApiState.Success(response)
+                response.forEachIndexed {index, value -> value.index  = index}
+                apply(response, scrollToTop)
             } catch (e: Exception) {
                 _shoppingList.value = ApiState.Error("Failed to update shopping list: ${e.message}")
             }
+        }
+    }
+    fun apply(newList: List<ShoppingItem>, scrollToTop: () -> Unit) {
+        //    If there are any differences, apply the newList, otherwise leave it
+        if (shoppingList.value is ApiState.Success) {
+            for (item in (shoppingList.value as ApiState.Success).data.zip(newList)) {
+                if (item.first.name != item.second.name) {
+                    _shoppingList.value = ApiState.Success(newList)
+                    scrollToTop()
+                    return
+                }
+            }
+        } else {
+            _shoppingList.value = ApiState.Success(newList)
+            scrollToTop()
         }
     }
 
