@@ -81,7 +81,7 @@ class ShoppingListViewModelTest {
         coEvery { mockService.postShoppingList(any())} returns fakeList
 
         // Act
-        viewModel.addItemToList("Fake Item")
+        viewModel.addItemToList("Fake Item", "B", {})
         advanceUntilIdle()
 
         // Assert
