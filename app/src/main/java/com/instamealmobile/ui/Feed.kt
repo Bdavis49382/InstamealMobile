@@ -75,15 +75,6 @@ fun Feed() {
                                         val item = items[0]
                                         item?.let {FeedItem(item)}
                                     }
-                                }
-                                if (items.itemCount >= 2) {
-                                    item {
-                                        AddRecipeButton()
-                                    }
-                                    item(span = { GridItemSpan(1)}) {
-                                        val item = items[1]
-                                        item?.let {FeedItem(item)}
-                                    }
                                 } else {
                                     item(span = { GridItemSpan(2)}) {
                                         Column(horizontalAlignment = Alignment.CenterHorizontally,modifier = Modifier.fillMaxWidth()) {
@@ -104,6 +95,15 @@ fun Feed() {
 
                                     }
 
+                                }
+                                if (items.itemCount >= 2) {
+                                    item {
+                                        AddRecipeButton()
+                                    }
+                                    item(span = { GridItemSpan(1)}) {
+                                        val item = items[1]
+                                        item?.let {FeedItem(item)}
+                                    }
                                 }
                                 items(items.itemCount) { index ->
                                     if (index > 1) {
