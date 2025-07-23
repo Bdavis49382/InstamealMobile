@@ -77,6 +77,7 @@ class MenuViewModel @Inject constructor(private val apiService: MenuService): Vi
             try {
                 val response = apiService.updateRecipeByIndex(index, menuItem)
                 _selected.value = ApiState.Success(response)
+                getMenu()
             } catch (e: Exception) {
                 _menu.value = ApiState.Error("Failed to fetch data: ${e.message}")
             }

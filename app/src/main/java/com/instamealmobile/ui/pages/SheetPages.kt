@@ -92,6 +92,7 @@ fun SheetPages(reload: () -> Unit) {
                 OpenSheet.AddRecipeToMenu -> AddRecipeToMenu(nav.getRecipe()) {
                     Toast.makeText(context, "Recipe Added to Menu", Toast.LENGTH_SHORT).show()
                     closeSheet()
+                    reload()
                 }
                 OpenSheet.AddRecipeToFeed -> AddRecipeToFeed(lazyListState)
                 OpenSheet.Household -> HouseholdPage(reload)
