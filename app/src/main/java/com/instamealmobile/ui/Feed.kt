@@ -71,9 +71,8 @@ fun Feed() {
                             ) {
                                 if (items.itemCount >= 1) {
                                     item(span = { GridItemSpan(2)}) {
-
                                         val item = items[0]
-                                        item?.let {FeedItem(item)}
+                                        item?.let {FeedItem(item, intrinsic = true)}
                                     }
                                 } else {
                                     item(span = { GridItemSpan(2)}) {

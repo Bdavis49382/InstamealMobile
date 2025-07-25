@@ -1,5 +1,6 @@
 package com.instamealmobile.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,15 +18,25 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
+import coil.compose.rememberAsyncImagePainter
 import com.instamealmobile.OpenSheet
 import com.instamealmobile.data.Recipe
 import com.instamealmobile.data.RecipeIdentifier
 import com.instamealmobile.viewModels.NavViewModel
 
 @Composable
-fun FeedItem(recipe: Recipe, modifier: Modifier = Modifier) {
+fun FeedItem(recipe: Recipe, modifier: Modifier = Modifier, intrinsic: Boolean = false) {
     val nav: NavViewModel = viewModel()
+    val painter = rememberAsyncImagePainter(model = if (!recipe.img_link.isNullOrEmpty()) recipe.img_link else  "https://placehold.co/600x400.png?text=${recipe.title}")
+    val aspectRatio = when (painter.state) {
+        is AsyncImagePainter.State.Success -> {
+            val size = painter.state.painter?.intrinsicSize
+            if (size != null && intrinsic && size.width > 0 && size.height > 0) size.width / size.height else 1f
+
+        }
+        else -> 1f
+    }
     Box(
         modifier = modifier
             .clickable { nav.navigateTo(OpenSheet.PreviewRecipe,RecipeIdentifier.factory(recipe)) }
@@ -40,36 +51,15 @@ fun FeedItem(recipe: Recipe, modifier: Modifier = Modifier) {
                     .padding(start = 5.dp),
             )
             Box(contentAlignment = Alignment.TopEnd) {
-                AsyncImage(
-                    model = if (!recipe.img_link.isNullOrEmpty()) recipe.img_link else  "https://placehold.co/600x400.png?text=${recipe.title}",
+                Image(
+                    painter = painter,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .aspectRatio(1f)
+                        .aspectRatio(aspectRatio)
                         .clip(RoundedCornerShape(10.dp)),
                     contentDescription = null,
                     contentScale = ContentScale.Crop
                 )
-//                Box(contentAlignment = Alignment.Center, modifier = Modifier
-//                    .padding(10.dp)
-//                    .background(MaterialTheme.colorScheme.background, RoundedCornerShape(5.dp))
-//                    .graphicsLayer {
-//                        this.alpha = 0.9f
-//                    }
-//                    .width(55.dp)
-//                    .height(25.dp)
-//                ) {
-//                    Row(verticalAlignment = Alignment.CenterVertically,modifier = Modifier
-//                        .width(50.dp)
-//                        .height(20.dp)
-//                    ) {
-//                        Text("2:45 ",
-//                            fontSize = 13.sp,
-//                            letterSpacing = 0.sp,
-//                            modifier = Modifier
-//                        )
-//                        Icon(painter = painterResource(com.instamealmobile.R.drawable.history), contentDescription = "Clock Icon")
-//                    }
-//                }
             }
         }
     }

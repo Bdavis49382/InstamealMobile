@@ -27,7 +27,7 @@ fun FeedPlaceholder() {
             .clip(RoundedCornerShape(10.dp))
             .fillMaxWidth()
             .shimmer()
-            .height(400.dp)
+            .height(300.dp)
             .background(Color.LightGray)
         )
         LazyVerticalStaggeredGrid(columns = StaggeredGridCells.Fixed(2),

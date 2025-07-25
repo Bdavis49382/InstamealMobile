@@ -1,6 +1,7 @@
 package com.instamealmobile.ui
 
 import Tag
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -31,11 +32,21 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
+import coil.compose.rememberAsyncImagePainter
 import com.instamealmobile.data.Recipe
 
 @Composable
 fun RecipeView(lazyListState: LazyListState, recipe: Recipe, innerContent: @Composable () -> Unit = {}) {
+    val painter = rememberAsyncImagePainter(model = if (!recipe.img_link.isNullOrEmpty()) recipe.img_link else  "https://placehold.co/600x400.png?text=${recipe.title}")
+    val aspectRatio = when (painter.state) {
+        is AsyncImagePainter.State.Success -> {
+            val size = painter.state.painter?.intrinsicSize
+            if (size != null && size.width > 0 && size.height > 0) size.width / size.height else 1f
+
+        }
+        else -> 1f
+    }
     Column(
         verticalArrangement = Arrangement.spacedBy(10.dp),
         modifier = Modifier
@@ -84,11 +95,11 @@ fun RecipeView(lazyListState: LazyListState, recipe: Recipe, innerContent: @Comp
                 }
             }
             item {
-                AsyncImage(
-                    model = if (!recipe.img_link.isNullOrEmpty()) recipe.img_link else  "https://placehold.co/600x400.png?text=${recipe.title}",
+                Image(
+                    painter = painter,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .aspectRatio(1f)
+                        .aspectRatio(aspectRatio)
                         .clip(RoundedCornerShape(10.dp)),
                     contentDescription = null
                 )
