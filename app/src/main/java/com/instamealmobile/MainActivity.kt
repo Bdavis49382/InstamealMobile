@@ -3,6 +3,7 @@ package com.instamealmobile
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -10,6 +11,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -56,17 +58,25 @@ class MainActivity : ComponentActivity() {
                 }
             }
              val darkColors = darkColorScheme(
-//                primaryContainer = Color(0xFFC6F5D0),
                  primaryContainer = Color(0xFFA5B97D),
                 onPrimaryContainer = Color.Black,
                 secondaryContainer = Color.White,
                 onSecondaryContainer = Color.Black,
-                 background = Color.Black,
-                 onBackground = Color.White,
                  primary = Color(0xFF6E412F),
                  onPrimary = Color.White,
                  secondary  = Color(0xFFe6ebe4),
                  onSecondary = Color.Black
+            )
+
+            val lightColors = lightColorScheme(
+                primaryContainer = Color(0xFFA5B97D),
+                onPrimaryContainer = Color.Black,
+                secondaryContainer = Color.White,
+                onSecondaryContainer = Color.Black,
+                primary = Color(0xFF6E412F),
+                onPrimary = Color.White,
+                secondary  = Color(0xFFe6ebe4),
+                onSecondary = Color.Black
             )
 
             val typography = Typography(
@@ -77,7 +87,7 @@ class MainActivity : ComponentActivity() {
             )
 
             InstamealMobileTheme {
-                MaterialTheme(colorScheme = darkColors, typography=typography) {
+                MaterialTheme(colorScheme = if (isSystemInDarkTheme()) darkColors else lightColors, typography=typography) {
                     Surface(
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background

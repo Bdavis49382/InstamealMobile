@@ -19,6 +19,6 @@ fun Tag(text: String, modifier: Modifier = Modifier,onClick: () -> Unit = {}) {
             onClick()
         }
     ) {
-        Text(text, color = MaterialTheme.colorScheme.onSecondary, modifier = Modifier.padding(horizontal=8.dp, vertical=4.dp))
+        Text(text, color = MaterialTheme.colorScheme.onSecondaryContainer, modifier = Modifier.padding(horizontal=8.dp, vertical=4.dp))
     }
 }
