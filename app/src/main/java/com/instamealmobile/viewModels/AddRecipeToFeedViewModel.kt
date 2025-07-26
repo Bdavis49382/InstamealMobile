@@ -12,6 +12,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import com.instamealmobile.BuildConfig
 import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.Recipe
 import com.instamealmobile.network.FeedService
@@ -158,7 +159,8 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
                 try {
                     _img_link.value = ApiState.Loading
                     val response = apiService.uploadImage(multipartRequest)
-                    _img_link.value = ApiState.Success(response)
+                    val imageUrl = "${BuildConfig.BACKEND_URL}/feed/image/$response "
+                    _img_link.value = ApiState.Success(imageUrl)
                     after()
                 } catch (e: Exception) {
                     _img_link.value = ApiState.Error("Failed to fetch data: ${e.message}")

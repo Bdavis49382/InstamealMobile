@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -23,20 +22,19 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.AsyncImage
 import com.instamealmobile.R
 import com.instamealmobile.data.Recipe
 import com.instamealmobile.ui.DatePickerModal
 import com.instamealmobile.ui.DeleteButton
 import com.instamealmobile.ui.SideButton
 import com.instamealmobile.ui.SideButtons
+import com.instamealmobile.ui.SmartAsyncImage
 import com.instamealmobile.viewModels.MenuViewModel
 
 @Composable
@@ -82,13 +80,9 @@ fun AddRecipeToMenu(recipe : Recipe, confirm: () -> Unit) {
                     )
                 }
                 Box(modifier = Modifier) {
-                    AsyncImage(
-                        model = if (!recipe.img_link.isNullOrEmpty()) recipe.img_link else  "https://placehold.co/600x400.png?text=${recipe.title}",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .aspectRatio(1f)
-                            .clip(RoundedCornerShape(10.dp)),
-                        contentDescription = null
+                    SmartAsyncImage(
+                        url = recipe.img_link,
+                        backupText = recipe.title
                     )
 
                 }

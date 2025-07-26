@@ -12,12 +12,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.AsyncImage
 import com.instamealmobile.OpenSheet
 import com.instamealmobile.data.MenuListItem
 import com.instamealmobile.data.RecipeIdentifier.MenuIndex
@@ -43,15 +41,14 @@ fun MenuItemView(menuListItem: MenuListItem) {
         else {
             Text("")
         }
-        AsyncImage(
-            model = menuListItem.img_link,
-            contentScale = ContentScale.Crop,
+        SmartAsyncImage(
+            url = menuListItem.img_link,
+            backupText = menuListItem.title,
             modifier = Modifier
                 .size(120.dp)
                 .clip(CircleShape)
                 .border(3.dp, MaterialTheme.colorScheme.primary, CircleShape)
                 .clickable { nav.navigateTo(OpenSheet.ViewRecipe, MenuIndex(menuListItem.index?:0))},
-            contentDescription = null
         )
         Text(menuListItem.title,overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center,

@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -35,10 +34,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.focusProperties
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -47,7 +44,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.AsyncImage
 import com.instamealmobile.OpenSheet
 import com.instamealmobile.R
 import com.instamealmobile.data.ApiState
@@ -60,6 +56,7 @@ import com.instamealmobile.ui.ImagePurpose
 import com.instamealmobile.ui.PickerPopup
 import com.instamealmobile.ui.SideButton
 import com.instamealmobile.ui.SideButtons
+import com.instamealmobile.ui.SmartAsyncImage
 import com.instamealmobile.viewModels.AddRecipeToFeedViewModel
 import com.instamealmobile.viewModels.NavViewModel
 import com.instamealmobile.viewModels.Purpose
@@ -124,17 +121,13 @@ fun AddRecipeToFeed(lazyListState: LazyListState) {
 
                             is ApiState.Success -> if (imgLinkState is ApiState.Success){
                                 val img_link = (imgLinkState as ApiState.Success<String>).data
-                                AsyncImage(
-                                    model = img_link,
-                                    contentScale = ContentScale.Crop,
+                                SmartAsyncImage(
+                                    url = img_link,
                                     modifier = Modifier
-                                        .aspectRatio(1f)
                                         .clickable {
                                             imgPurpose = ImagePurpose.ImageStoring
                                             popupIsOn = true
                                         }
-                                        .clip(RoundedCornerShape(10.dp)),
-                                    contentDescription = null
                                 )
 
                             }
