@@ -48,7 +48,7 @@ fun EditableTextState(modifier : Modifier = Modifier,text : MutableState<String>
         startingText = text.value
     }
     LaunchedEffect(text.value) {
-        textFieldValueState = TextFieldValue(text=text.value)
+        textFieldValueState = textFieldValueState.copy(text = text.value)
     }
     LaunchedEffect(isEditing) {
         if (isEditing) {
