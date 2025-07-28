@@ -104,7 +104,7 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
                                 ingredients = ingredients,
                                 title = title.value,
                                 servings = servings.value,
-                                tags = tags,
+                                tags = tags.map {cleanTag(it)}.toMutableList(),
                                 time_estimate = if (totalTime.value.isNotEmpty()) listOf(totalTime.value) else listOf(),
                                 src_name = source,
                                 img_link = if (img_link.value is ApiState.Success) {
@@ -117,7 +117,7 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
                         apiService.updateRecipe(
                             id, Recipe(
                                 ingredients = ingredients,
-                                tags = tags,
+                                tags = tags.map {cleanTag(it)}.toMutableList(),
                                 title = title.value,
                                 servings = servings.value,
                                 src_link = src_link.value,
@@ -143,7 +143,12 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
     }
 
     fun addTag(name: String) {
-        tags.add(name.replace("#","").split(" ").joinToString { it.replaceFirstChar { it.uppercase() } })
+        tags.add(cleanTag(name))
+    }
+
+    fun cleanTag(name: String) : String {
+        // Remove hashtags and spaces and Pascal case it.
+        return name.replace("#","").split(" ").joinToString(separator = "") { it.replaceFirstChar { it.uppercase() } }
     }
 
     fun uploadImage(uri: Uri, context: Context, after: () -> Unit) {
