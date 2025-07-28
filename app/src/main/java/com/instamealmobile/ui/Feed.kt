@@ -27,6 +27,7 @@ import androidx.paging.LoadState
 import androidx.paging.LoadState.NotLoading
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.instamealmobile.ui.placeholders.FeedPlaceholder
+import com.instamealmobile.ui.placeholders.ShimmerBox
 import com.instamealmobile.viewModels.AuthViewModel
 import com.instamealmobile.viewModels.FeedViewModel
 import com.instamealmobile.viewModels.MenuViewModel
@@ -93,7 +94,6 @@ fun Feed() {
                                     item {
 
                                     }
-
                                 }
                                 if (items.itemCount >= 2) {
                                     item {
@@ -112,7 +112,10 @@ fun Feed() {
                                 }
                                 when (items.loadState.append) {
                                     is LoadState.Loading -> {
-                                        item { Text("Loading...") }
+                                        item {
+                                            ShimmerBox(fillmaxWidth = true, height = 200.dp)
+                                        }
+
                                     }
 
                                     is LoadState.Error -> {
@@ -122,12 +125,13 @@ fun Feed() {
                                             }
                                         }
                                     }
+                                    else -> {
+                                        item(span = { GridItemSpan(2)}) {
+                                            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                                                Text("No More Search Results.", modifier = Modifier.padding(top = 10.dp, bottom = 200.dp))
+                                            }
+                                        }
 
-                                    else -> {}
-                                }
-                                item(span = { GridItemSpan(2)}) {
-                                    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                                        Text("No More Search Results.", modifier = Modifier.padding(top = 10.dp, bottom = 200.dp))
                                     }
                                 }
                             }

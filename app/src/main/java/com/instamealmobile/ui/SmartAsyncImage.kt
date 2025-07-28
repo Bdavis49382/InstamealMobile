@@ -27,7 +27,7 @@ fun SmartAsyncImage(url: String?, modifier: Modifier = Modifier, backupText: Str
         placeholder = painterResource(R.drawable.baseline_image_24),
         imageLoader = viewModel.imageLoader
         )
-    val fallbackRatio = 13f / 8f
+    val fallbackRatio = 14f / 8f
     val aspectRatio = when (painter.state) {
         is AsyncImagePainter.State.Success -> {
             val size = painter.state.painter?.intrinsicSize
