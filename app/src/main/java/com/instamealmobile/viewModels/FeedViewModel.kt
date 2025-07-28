@@ -27,6 +27,6 @@ class FeedViewModel @Inject constructor(private val apiService: FeedService): Vi
     }.cachedIn(viewModelScope)
 
     fun searchFeed(query: String) {
-        _query.value = query
+        _query.value = query.trim()
     }
 }
