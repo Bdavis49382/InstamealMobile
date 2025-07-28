@@ -58,6 +58,7 @@ import com.instamealmobile.ui.SideButton
 import com.instamealmobile.ui.SideButtons
 import com.instamealmobile.ui.SmartAsyncImage
 import com.instamealmobile.viewModels.AddRecipeToFeedViewModel
+import com.instamealmobile.viewModels.MenuViewModel
 import com.instamealmobile.viewModels.NavViewModel
 import com.instamealmobile.viewModels.Purpose
 import com.instamealmobile.viewModels.SearchBarViewModel
@@ -66,6 +67,7 @@ import com.instamealmobile.viewModels.SearchBarViewModel
 @Composable
 fun AddRecipeToFeed(lazyListState: LazyListState) {
     val viewModel: AddRecipeToFeedViewModel =  viewModel()
+    val menuViewModel: MenuViewModel = viewModel()
     val nav: NavViewModel = viewModel()
     val searchBarViewModel: SearchBarViewModel = viewModel()
     val imgLinkState by viewModel.img_link.collectAsState()
@@ -359,23 +361,25 @@ fun AddRecipeToFeed(lazyListState: LazyListState) {
         }
         SideButtons {
             SideButton({
-                if (!viewModel.submitRecipe(viewModel.fullRecipe.value.id) { recipe ->
-                        searchBarViewModel.getTags()
-                        nav.pickedRecipe = RecipeIdentifier.factory(recipe)
-                        if (nav.addToFeedPurpose == Purpose.AddNew || nav.addToFeedPurpose == Purpose.FeedEdit) {
-                            nav.openSheet = OpenSheet.PreviewRecipe
-                            if (nav.addToFeedPurpose == Purpose.AddNew) {
-                                Toast.makeText(
-                                    context,
-                                    "Recipe Added to My Recipes",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        } else if (nav.addToFeedPurpose == Purpose.MenuEdit) {
-                            nav.navigateTo(OpenSheet.ViewRecipe, recipe = MenuIndex(recipe.index))
-                            Toast.makeText(context, "Recipe Updated", Toast.LENGTH_SHORT).show()
+                val validSubmission = viewModel.submitRecipe(viewModel.fullRecipe.value.id) { recipe ->
+                    searchBarViewModel.getTags()
+                    nav.pickedRecipe = RecipeIdentifier.factory(recipe)
+                    if (nav.addToFeedPurpose == Purpose.AddNew || nav.addToFeedPurpose == Purpose.FeedEdit) {
+                        nav.openSheet = OpenSheet.PreviewRecipe
+                        if (nav.addToFeedPurpose == Purpose.AddNew) {
+                            Toast.makeText(
+                                context,
+                                "Recipe Added to My Recipes",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
-                    }) {
+                    } else if (nav.addToFeedPurpose == Purpose.MenuEdit) {
+                        nav.navigateTo(OpenSheet.ViewRecipe, recipe = MenuIndex(recipe.index))
+                        menuViewModel.getMenu()
+                        Toast.makeText(context, "Recipe Updated", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                if (!validSubmission) {
                     viewModel.validatorsActive.value = true
                     Toast.makeText(context,"More Details Are Needed to Save Recipe", Toast.LENGTH_SHORT).show()
                 }
