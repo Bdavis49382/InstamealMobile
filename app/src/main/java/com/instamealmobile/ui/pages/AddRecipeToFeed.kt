@@ -214,12 +214,6 @@ fun AddRecipeToFeed(lazyListState: LazyListState) {
                         placeholder = {Text("New Tag")},
                         onValueChange = {viewModel.newTag = it},
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                        isError = viewModel.validatorsActive.value && viewModel.tags.isEmpty(),
-                        supportingText = {
-                            if (viewModel.validatorsActive.value && viewModel.tags.isEmpty()) {
-                                Text("At least one tag is required.")
-                            }
-                        },
                         keyboardActions = KeyboardActions(
                             onDone = {
                                 viewModel.addTag(viewModel.newTag)
