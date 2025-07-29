@@ -44,12 +44,18 @@ fun JoinHousehold(reload: () -> Unit) {
                    onValueChange = {viewModel.codeEntry = it},
                    singleLine = true,
                )
-               Button({viewModel.joinHousehold(reload, {
-                   Toast.makeText(context, "Invalid Code :(", Toast.LENGTH_SHORT).show()
-               }) {
-                   Toast.makeText(context, "Joined Household", Toast.LENGTH_SHORT).show()
-                   nav.closeAlert()}
-               }) {
+               Button({
+                   if (viewModel.codeEntry.isBlank()) {
+                       Toast.makeText(context, "Please Enter Code", Toast.LENGTH_SHORT).show()
+                   } else {
+                       viewModel.joinHousehold(reload, {
+                           Toast.makeText(context, "Invalid Code :(", Toast.LENGTH_SHORT).show()
+                       }) {
+                           Toast.makeText(context, "Joined Household", Toast.LENGTH_SHORT).show()
+                           nav.closeAlert()}
+                   }
+               })
+               {
                    Text("Submit")
                }
            }
