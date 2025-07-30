@@ -68,13 +68,19 @@ class HouseholdViewModel @Inject constructor(private val apiService: HouseholdSe
 
     }
 
-    fun kickUser(user_id: String, reload: () -> Unit) {
+    fun kickUser(user_id: String, reload: () -> Unit, onFailure: () -> Unit) {
         scope.launch {
             try {
                 Log.i("Fun Fact","kicking user: $user_id")
                 val response = apiService.kickUser(user_id)
                 _users.value = ApiState.Success(response)
                 reload()
+            } catch (e: HttpException) {
+                if (e.code() == 404) {
+                    onFailure()
+                } else {
+                    _users.value = ApiState.Error("Failed to fetch data: ${e.message}")
+                }
             } catch (e: Exception) {
                 _users.value = ApiState.Error("Failed to fetch data: ${e.message}")
             }
