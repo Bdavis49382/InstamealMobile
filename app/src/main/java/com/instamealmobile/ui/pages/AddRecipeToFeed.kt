@@ -102,10 +102,10 @@ fun AddRecipeToFeed(lazyListState: LazyListState) {
                         modifier = Modifier
                             .padding(vertical = 10.dp)
                     )
-                    EditableText(
+                    EditableTextState(
                         text = viewModel.source,
                         placeholder = "Source",
-                        onSubmit = {viewModel.source = it
+                        onSubmit = {viewModel.source.value = it
                             focusManager.moveFocus(FocusDirection.Down)
                                    },
                         maxLines = 1,

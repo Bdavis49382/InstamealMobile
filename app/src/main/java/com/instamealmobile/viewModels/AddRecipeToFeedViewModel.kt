@@ -42,7 +42,7 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
     var title =  mutableStateOf("")
     var servings = mutableStateOf("")
     var totalTime = mutableStateOf("")
-    var source by mutableStateOf("")
+    var source = mutableStateOf("")
     var newIngredient by mutableStateOf("")
     var newStep by mutableStateOf("")
     var newTag by mutableStateOf("")
@@ -65,7 +65,7 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
             totalTime.value = ""
             src_link.value = ""
             tags.clear()
-            source = ""
+            source.value = ""
             authorId = ""
             _img_link.value = ApiState.Resting
             steps.clear()
@@ -79,7 +79,7 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
             src_link.value = recipe.src_link ?: ""
             servings.value = recipe.servings?: ""
             totalTime.value = if (recipe.time_estimate.size > 0) recipe.time_estimate[0] else ""
-            source = recipe.src_name?: ""
+            source.value = recipe.src_name?: ""
             _img_link.value = ApiState.Success(recipe.img_link?:"")
             steps.clear()
             steps.addAll(recipe.instructions)
@@ -106,7 +106,7 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
                                 servings = servings.value,
                                 tags = tags.map {cleanTag(it)}.toMutableList(),
                                 time_estimate = if (totalTime.value.isNotEmpty()) listOf(totalTime.value) else listOf(),
-                                src_name = source,
+                                src_name = source.value,
                                 img_link = if (img_link.value is ApiState.Success) {
                                     (img_link.value as? ApiState.Success)?.data
                                 } else "",
@@ -122,7 +122,7 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
                                 servings = servings.value,
                                 src_link = src_link.value,
                                 time_estimate = if (totalTime.value.isNotEmpty()) listOf(totalTime.value) else listOf(),
-                                src_name = source,
+                                src_name = source.value,
                                 img_link = if (img_link.value is ApiState.Success) {
                                     (img_link.value as? ApiState.Success)?.data
                                 } else "",

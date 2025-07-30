@@ -69,7 +69,7 @@ class AddRecipeToFeedViewModelTest {
         assertTrue(viewModel.title.value.isEmpty())
         assertTrue(viewModel.servings.value.isEmpty())
         assertTrue(viewModel.totalTime.value.isEmpty())
-        assertTrue(viewModel.source.isEmpty())
+        assertTrue(viewModel.source.value.isEmpty())
         assertTrue(viewModel.newIngredient.isEmpty())
         assertTrue(viewModel.newStep.isEmpty())
     }
@@ -95,7 +95,7 @@ class AddRecipeToFeedViewModelTest {
         assertEquals("1",viewModel.title.value)
         assertEquals("1",viewModel.servings.value)
         assertEquals("1",viewModel.totalTime.value)
-        assertEquals("1",viewModel.source)
+        assertEquals("1",viewModel.source.value)
         assertEquals("1", (viewModel.img_link.value as ApiState.Success).data)
     }
 
