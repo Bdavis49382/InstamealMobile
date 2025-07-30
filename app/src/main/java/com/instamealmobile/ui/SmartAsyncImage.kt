@@ -10,11 +10,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.instamealmobile.network.ImageViewModel
 import com.instamealmobile.R
 
@@ -22,8 +24,15 @@ import com.instamealmobile.R
 fun SmartAsyncImage(url: String?, modifier: Modifier = Modifier, backupText: String = "", intrinsic: Boolean = false) {
 
     val viewModel : ImageViewModel = viewModel()
+    val fullURL = if (!url.isNullOrEmpty()) url else  "https://placehold.co/600x400.png?text=$backupText"
+    val imageRequest = ImageRequest.Builder(LocalContext.current)
+        .data(fullURL)
+        .memoryCacheKey(fullURL)
+        .diskCacheKey(fullURL)
+        .build()
+
     val painter = rememberAsyncImagePainter(
-        model = if (!url.isNullOrEmpty()) url else  "https://placehold.co/600x400.png?text=$backupText",
+        model = imageRequest,
         placeholder = painterResource(R.drawable.baseline_image_24),
         imageLoader = viewModel.imageLoader
         )
