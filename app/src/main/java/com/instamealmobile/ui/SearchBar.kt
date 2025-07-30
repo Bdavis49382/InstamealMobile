@@ -102,12 +102,12 @@ fun SearchBar() {
                                         Tag(it, modifier = Modifier
                                             .shadow(10.dp, RoundedCornerShape(20.dp))
                                             .clip(RoundedCornerShape(20.dp))
-                                            .background(if (!searchBoxText.contains("#$it ")) MaterialTheme.colorScheme.secondaryContainer else Color.Gray)
+                                            .background(if (!searchBoxText.contains("#$it")) MaterialTheme.colorScheme.secondaryContainer else Color.Gray)
                                         ) {
-                                            if (searchBoxText.contains("#$it ")) {
-                                                searchBoxText = searchBoxText.replace("#$it ","")
+                                            if (searchBoxText.contains(" #$it ")) {
+                                                searchBoxText = searchBoxText.replace(" #$it ","")
                                             } else {
-                                                searchBoxText += "#$it "
+                                                searchBoxText += " #$it "
                                             }
                                             textFieldValueState = textFieldValueState.copy(
                                                 text = searchBoxText,
