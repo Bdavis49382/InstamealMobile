@@ -28,7 +28,6 @@ import androidx.paging.LoadState.NotLoading
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.instamealmobile.ui.placeholders.FeedPlaceholder
 import com.instamealmobile.ui.placeholders.ShimmerBox
-import com.instamealmobile.viewModels.AuthViewModel
 import com.instamealmobile.viewModels.FeedViewModel
 import com.instamealmobile.viewModels.MenuViewModel
 
@@ -37,109 +36,110 @@ import com.instamealmobile.viewModels.MenuViewModel
 @Composable
 fun Feed() {
     val viewModel : FeedViewModel = viewModel()
-    val authViewModel: AuthViewModel = viewModel()
     val menuViewModel: MenuViewModel = viewModel()
-    if (authViewModel.checkLogin()) {
-        val items = viewModel.pagingFlow.collectAsLazyPagingItems()
-        val pullToRefreshState = rememberPullToRefreshState()
+    val items = viewModel.pagingFlow.collectAsLazyPagingItems()
+    val pullToRefreshState = rememberPullToRefreshState()
 
-        PullToRefreshBox(
-            state = pullToRefreshState,
-            isRefreshing = items.loadState.refresh is LoadState.Loading,
-            onRefresh = {
-                menuViewModel.refreshMenu()
-                viewModel.query.value = ""
-                items.refresh()
-            }
-        ) {
-            Crossfade(targetState = items.loadState.refresh, label = "ContentSwitch") { screenState ->
-                when (screenState) {
-                    LoadState.Loading -> {
-                        FeedPlaceholder()
-                    }
-                    is NotLoading ->  {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
+    PullToRefreshBox(
+        state = pullToRefreshState,
+        isRefreshing = items.loadState.refresh is LoadState.Loading,
+        onRefresh = {
+            menuViewModel.refreshMenu()
+            viewModel.query.value = ""
+            items.refresh()
+        }
+    ) {
+        Crossfade(targetState = items.loadState.refresh, label = "ContentSwitch") { screenState ->
+            when (screenState) {
+                LoadState.Loading -> {
+                    FeedPlaceholder()
+                }
+                is NotLoading ->  {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(2),
+                            contentPadding = PaddingValues(horizontal = 15.dp, vertical = 0.dp),
+                            horizontalArrangement = Arrangement.spacedBy(15.dp),
+                            verticalArrangement = Arrangement.spacedBy(10.dp),
+                            modifier = Modifier
+                                .padding(top = 10.dp)
+                                .height(700.dp)
                         ) {
-                            LazyVerticalGrid(
-                                columns = GridCells.Fixed(2),
-                                contentPadding = PaddingValues(horizontal = 15.dp, vertical = 0.dp),
-                                horizontalArrangement = Arrangement.spacedBy(15.dp),
-                                verticalArrangement = Arrangement.spacedBy(10.dp),
-                                modifier = Modifier
-                                    .padding(top = 10.dp)
-                                    .height(700.dp)
-                            ) {
-                                if (items.itemCount >= 1) {
-                                    item(span = { GridItemSpan(2)}) {
-                                        val item = items[0]
-                                        item?.let {FeedItem(item, intrinsic = true)}
-                                    }
-                                } else {
-                                    item(span = { GridItemSpan(2)}) {
-                                        Column(horizontalAlignment = Alignment.CenterHorizontally,modifier = Modifier.fillMaxWidth()) {
-                                            Text(
-                                                "No Recipes To Show",
-                                                textAlign = TextAlign.Center,
-                                                modifier = Modifier.fillMaxWidth()
-                                            )
-                                            Button({
-                                                viewModel.query.value = ""
-                                                items.refresh() }) {
-                                                Text("Refresh Feed")
-                                            }
-
+                            if (items.itemCount >= 1) {
+                                item(span = { GridItemSpan(2)}) {
+                                    val item = items[0]
+                                    item?.let {FeedItem(item, intrinsic = true)}
+                                }
+                            } else {
+                                item(span = { GridItemSpan(2)}) {
+                                    Column(horizontalAlignment = Alignment.CenterHorizontally,modifier = Modifier.fillMaxWidth()) {
+                                        Text(
+                                            "No Recipes To Show",
+                                            textAlign = TextAlign.Center,
+                                            modifier = Modifier.fillMaxWidth()
+                                        )
+                                        Button({
+                                            viewModel.query.value = ""
+                                            items.refresh() }) {
+                                            Text("Refresh Feed")
                                         }
+
                                     }
+                                }
+                                item {
+
+                                }
+                            }
+                            if (items.itemCount >= 2) {
+                                item {
+                                    AddRecipeButton()
+                                }
+                                item(span = { GridItemSpan(1)}) {
+                                    val item = items[1]
+                                    item?.let {FeedItem(item)}
+                                }
+                            }
+                            items(items.itemCount) { index ->
+                                if (index > 1) {
+                                    val item = items[index]
+                                    item?.let { FeedItem(item, modifier = Modifier.fillMaxWidth()) }
+                                }
+                            }
+                            when (items.loadState.append) {
+                                is LoadState.Loading -> {
                                     item {
-
+                                        ShimmerBox(fillmaxWidth = true, height = 200.dp)
                                     }
+
                                 }
-                                if (items.itemCount >= 2) {
+
+                                is LoadState.Error -> {
                                     item {
-                                        AddRecipeButton()
-                                    }
-                                    item(span = { GridItemSpan(1)}) {
-                                        val item = items[1]
-                                        item?.let {FeedItem(item)}
+                                        Button(items::refresh) {
+                                            Text("Try Again")
+                                        }
                                     }
                                 }
-                                items(items.itemCount) { index ->
-                                    if (index > 1) {
-                                        val item = items[index]
-                                        item?.let { FeedItem(item, modifier = Modifier.fillMaxWidth()) }
-                                    }
-                                }
-                                when (items.loadState.append) {
-                                    is LoadState.Loading -> {
-                                        item {
-                                            ShimmerBox(fillmaxWidth = true, height = 200.dp)
-                                        }
-
-                                    }
-
-                                    is LoadState.Error -> {
-                                        item {
-                                            Button(items::refresh) {
-                                                Text("Try Again")
-                                            }
+                                else -> {
+                                    item(span = { GridItemSpan(2)}) {
+                                        Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                                            Text("No More Search Results.", modifier = Modifier.padding(top = 10.dp, bottom = 200.dp))
                                         }
                                     }
-                                    else -> {
-                                        item(span = { GridItemSpan(2)}) {
-                                            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                                                Text("No More Search Results.", modifier = Modifier.padding(top = 10.dp, bottom = 200.dp))
-                                            }
-                                        }
 
-                                    }
                                 }
                             }
                         }
-
                     }
 
-                    is LoadState.Error -> {
+                }
+
+                is LoadState.Error -> {
+                    if (screenState.error.message == "Not Logged In") {
+                        FeedPlaceholder()
+                    } else {
                         val error = screenState.error.message
                         Column(
                             modifier = Modifier.fillMaxWidth(),
@@ -151,11 +151,10 @@ fun Feed() {
                             }
 
                         }
+
                     }
                 }
             }
         }
-    } else {
-        FeedPlaceholder()
     }
 }

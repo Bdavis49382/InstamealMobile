@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
                 if (!authViewModel.checkLogin()) {
                     authViewModel.login(coroutineScope,credentialManager, context) {
                         menuViewModel.getMenu()
-                        items.refresh()
+                        items.retry()
                     }
                 }
             }

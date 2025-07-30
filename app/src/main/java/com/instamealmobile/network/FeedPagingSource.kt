@@ -2,6 +2,8 @@ package com.instamealmobile.network
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.instamealmobile.data.Recipe
 import javax.inject.Inject
 
@@ -10,6 +12,10 @@ class FeedPagingSource @Inject constructor(
 ) : PagingSource<Int, Recipe>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Recipe> {
         val page = params.key ?: 0
+        val auth = Firebase.auth
+        if (auth.currentUser == null) {
+            return LoadResult.Error(Exception("Not Logged In"))
+        }
         return try {
             val response = if (query.isEmpty()) {
                 api.getFeed(page = page)
