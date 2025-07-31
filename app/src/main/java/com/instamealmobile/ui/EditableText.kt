@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -29,13 +30,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun EditableText(modifier : Modifier = Modifier,text : String = "", placeholder : String = "", fontSize: TextUnit = 15.sp, maxLines : Int = 2, isEditing: Boolean=false, precursor: String ="", onSubmit : (String) -> Unit = {}) {
+fun EditableText(modifier : Modifier = Modifier,text : String = "", placeholder : String = "", fontSize: TextUnit = 15.sp, maxLines : Int = 2, isEditing: Boolean=false, precursor: String ="",  fontColor : Color = MaterialTheme.colorScheme.onBackground, onSubmit : (String) -> Unit = {}) {
     var textState = remember { mutableStateOf(text) }
-    EditableTextState(modifier,textState, placeholder,fontSize,maxLines, isEditing,precursor,onSubmit=onSubmit)
+    EditableTextState(modifier,textState, placeholder,fontSize,maxLines, isEditing,precursor,onSubmit=onSubmit, fontColor = fontColor)
 }
 
 @Composable
-fun EditableTextState(modifier : Modifier = Modifier,text : MutableState<String> = mutableStateOf(""), placeholder : String = "", fontSize: TextUnit = 15.sp, maxLines : Int = 2, isEditing: Boolean=false, precursor: String="", errorCondition: Boolean = false,errorMessage: String = "Failed Validation", onSubmit : (String) -> Unit = {}) {
+fun EditableTextState(modifier : Modifier = Modifier,text : MutableState<String> = mutableStateOf(""), placeholder : String = "", fontSize: TextUnit = 15.sp, maxLines : Int = 2, isEditing: Boolean=false, precursor: String="", errorCondition: Boolean = false,errorMessage: String = "Failed Validation",fontColor : Color = MaterialTheme.colorScheme.onBackground, onSubmit : (String) -> Unit = {}) {
     var startingText by remember { mutableStateOf("")}
     var isEditing by remember { mutableStateOf(isEditing) }
     var wasFocused by remember { mutableStateOf(false)}
@@ -91,7 +92,7 @@ fun EditableTextState(modifier : Modifier = Modifier,text : MutableState<String>
                     Text(errorMessage)
                 }
             },
-            textStyle = TextStyle(fontSize = fontSize),
+            textStyle = TextStyle(fontSize = fontSize, color = fontColor),
             keyboardActions = KeyboardActions(
                 onDone = {
                     isEditing = false
@@ -106,6 +107,7 @@ fun EditableTextState(modifier : Modifier = Modifier,text : MutableState<String>
             text = precursor + text.value,
             maxLines = maxLines,
             fontSize=fontSize,
+            color = fontColor,
             modifier = modifier
                 .fillMaxWidth()
                 .clickable { isEditing = true }
