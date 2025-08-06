@@ -33,6 +33,7 @@ import com.instamealmobile.ui.theme.InstamealMobileTheme
 import com.instamealmobile.viewModels.AuthViewModel
 import com.instamealmobile.viewModels.FeedViewModel
 import com.instamealmobile.viewModels.MenuViewModel
+import com.instamealmobile.viewModels.SearchBarViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -44,6 +45,7 @@ class MainActivity : ComponentActivity() {
             val feedViewModel: FeedViewModel = viewModel()
             val items = feedViewModel.pagingFlow.collectAsLazyPagingItems()
             val menuViewModel: MenuViewModel = viewModel()
+            val searchBarViewModel: SearchBarViewModel = viewModel()
             val context = LocalContext.current
             val coroutineScope = rememberCoroutineScope()
             val credentialManager = CredentialManager.create(context)
@@ -53,6 +55,7 @@ class MainActivity : ComponentActivity() {
                 if (!authViewModel.checkLogin()) {
                     authViewModel.login(coroutineScope,credentialManager, context) {
                         menuViewModel.getMenu()
+                        searchBarViewModel.getTags()
                         items.retry()
                     }
                 }
