@@ -85,7 +85,7 @@ fun RecipeView(lazyListState: LazyListState, recipe: Recipe, innerContent: @Comp
             }
             item {
                 Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp)) {
-                    if (recipe.servings != null) {
+                    if (!recipe.servings.isNullOrEmpty()) {
                         Text(text="${recipe.servings} Servings")
                     }
                     if (recipe.time_estimate.isNotEmpty()) {

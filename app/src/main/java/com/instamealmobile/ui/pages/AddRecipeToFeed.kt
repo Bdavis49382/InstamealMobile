@@ -198,7 +198,7 @@ fun AddRecipeToFeed(lazyListState: LazyListState) {
                         modifier = Modifier.padding(end = 10.dp)
                     )
                     Button({
-                        imgPurpose = ImagePurpose.TextParsingSteps
+                        imgPurpose = ImagePurpose.TextParsingIngredients
                         popupIsOn = true
                     }, modifier = Modifier.focusProperties { canFocus = false}) {
                         Text("Grab From Image")

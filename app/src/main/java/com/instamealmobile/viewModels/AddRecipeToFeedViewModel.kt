@@ -223,11 +223,13 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
     }
 
     fun textToIngredients(stringList: List<String>) {
-        ingredients.addAll(stringList.map {
-            it.replace("Ingredients:?".toRegex(RegexOption.IGNORE_CASE),"").trim()
-        }.filter {
-            it.isNotBlank()
-        })
+        for (string in stringList) {
+            if (string.isNotBlank()) {
+                ingredients.addAll(
+                    string.replace("Ingredients:?".toRegex(RegexOption.IGNORE_CASE),"").trim().split("\n").filter { it.isNotBlank() }
+                )
+            }
+        }
     }
     fun textToSteps(stringList: List<String>) {
         steps.addAll(stringList.map {
