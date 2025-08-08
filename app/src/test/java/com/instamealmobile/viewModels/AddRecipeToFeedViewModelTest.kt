@@ -19,6 +19,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.function.Executable
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AddRecipeToFeedViewModelTest {
@@ -191,6 +192,50 @@ class AddRecipeToFeedViewModelTest {
         assertEquals("90 minutes", viewModel.totalTime.value)
         assertTrue(viewModel.ingredients.isNotEmpty())
         assertEquals("1 Cup Water", viewModel.ingredients[0])
+        assertTrue(viewModel.steps.isNotEmpty())
+        assertEquals("Fry water until browned.", viewModel.steps[0])
+    }
+
+    @Test
+    fun textToRecipeNoIdentifiers() {
+        val fakeBlocks = mutableListOf<String>(
+            "My Title",
+            "Random Gibberish",
+            "Total: 90 minutes",
+            "1 Cup Water",
+            "Fry water until browned."
+        )
+
+        viewModel.textToRecipe(fakeBlocks)
+
+        assertEquals("My Title", viewModel.title.value)
+        assertEquals("90 minutes", viewModel.totalTime.value)
+        assertTrue(viewModel.ingredients.isNotEmpty())
+        assertEquals("1 Cup Water", viewModel.ingredients[0])
+        assertTrue(viewModel.steps.isNotEmpty())
+        assertEquals("Fry water until browned.", viewModel.steps[0])
+    }
+
+    @Test
+    fun textToRecipeUsesContext() {
+        val fakeBlocks = mutableListOf<String>(
+            "My Title of Coolness",
+            "Random gibberish.",
+            "Total: 90 minutes",
+            "1 Cup Water",
+            "Special sauce", // Because this is between two ingredients it is most likely an ingredient.
+            "2 tsp. salt",
+            "Fry water until browned."
+        )
+
+        viewModel.textToRecipe(fakeBlocks)
+
+        assertEquals("My Title of Coolness", viewModel.title.value)
+        assertEquals("90 minutes", viewModel.totalTime.value)
+        assertTrue(viewModel.ingredients.isNotEmpty())
+        assertEquals("1 Cup Water", viewModel.ingredients[0])
+        assertEquals("Special sauce", viewModel.ingredients[1])
+        assertEquals("2 tsp. salt", viewModel.ingredients[2])
         assertTrue(viewModel.steps.isNotEmpty())
         assertEquals("Fry water until browned.", viewModel.steps[0])
     }
@@ -477,5 +522,26 @@ class AddRecipeToFeedViewModelTest {
 
         )
         assertEquals(expected, viewModel.steps)
+    }
+
+    @Test
+    fun evaluateBlockIngredient() {
+        val expected = "ingredient"
+        assertAll(
+            Executable { assertEquals(expected, viewModel.evaluateBlock("1 egg")) },
+            Executable { assertEquals(expected, viewModel.evaluateBlock(" 1 egg"))},
+            Executable { assertEquals(expected, viewModel.evaluateBlock("a teaspoon vanilla")) },
+            Executable { assertEquals(expected, viewModel.evaluateBlock("tsp. vanilla"))},
+            Executable { assertEquals(expected, viewModel.evaluateBlock("IV tsp. vanilla"))},
+            Executable { assertEquals("unknown", viewModel.evaluateBlock("a smattering of ketchup"))}
+        )
+    }
+
+    @Test
+    fun evaluateBlockStep() {
+        val expected = "step"
+        assertAll(
+            Executable { assertEquals(expected, viewModel.evaluateBlock("Mix the ingredients together."))},
+        )
     }
 }

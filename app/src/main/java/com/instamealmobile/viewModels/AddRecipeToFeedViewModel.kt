@@ -56,6 +56,7 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
     // When updating a menu recipe, keep track of its index.
     var menuIndex by mutableStateOf(0)
     var scope = viewModelScope
+    val dontCapitalize = setOf<String>("a","and","as","at","but","by","down","for","from","if","in","into","like","near","nor","of","off","on","once","onto","or","over","past","so","than","that","to","upon","when","with","yet")
 
     fun setRecipe(recipe: Recipe) {
         if (recipe.id.isNullOrEmpty()) {
@@ -242,62 +243,89 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
     }
 
     fun textToRecipe(stringList: List<String>) {
-
-        var isIngredients = false
-        var isSteps = false
-        var titleFound = false
         ingredients.clear()
         steps.clear()
-        for (block in stringList) {
-                val words = block.trim().split(' ')
-                if (!titleFound and words.all { !it.isEmpty() && it[0].isUpperCase()}) {
-                    title.value= block.trim()
-                    titleFound = true
-                    continue
-                }
-                if (block.uppercase().contains("YIELD:")) {
-                    continue
-                }
-                if (block.uppercase().contains("PREP:")) {
-                    continue
-                }
-                else if (block.uppercase().contains("COOK:")) {
-                    continue
-                }
-                else if (block.uppercase().contains("TOTAL:")) {
-                    totalTime.value = block.uppercase().replace("TOTAL:","").lowercase().trim()
-                    continue
-                }
-                else if (block.uppercase().contains("SERVINGS: [0-9]{1,2}".toRegex())) {
-                    try {
-                        servings.value = "SERVINGS: ([0-9]{1,2})".toRegex().find(block.uppercase())!!.groupValues[1]
-                    } catch (e: Exception){
-                        Log.i("TEXT_WARNING",e.message?: "servings failed to convert to float")
-                    }
-                    continue
-                }
-                if (block.uppercase().trim().startsWith("INGREDIENTS")) {
-                    isIngredients = true
-                    isSteps = false
-                    continue
-                }
-                else if (block.uppercase().contains("DIRECTIONS") || block.uppercase().contains("INSTRUCTIONS")) {
-                    isIngredients = false
-                    isSteps = true
-                    continue
-                }
-                if (isIngredients) {
-                    val pattern = Regex("([0-9]+ ?[0-9]?/?[0-9]?|ONE|TWO|THREE|FOUR|FIVE|SIX|SEVEN|EIGHT|NINE|TEN)?(CUPS?|TEASPOONS?|TABLESPOONS?|DASH|PINCH|LITERS?|GALLONS?|POUNDS?|OUNCES?)?(.+)",
-                        RegexOption.IGNORE_CASE)
-                    val match = pattern.find(block.trim())
-                    if (match != null) {
-                        ingredients.add(match.groupValues.subList(1,match.groupValues.size).joinToString(" ") {it.trim()})
+        var titleFound = false
+        val guesses = stringList.map(::evaluateBlock)
+        guesses.zip(stringList).forEachIndexed { index, value ->
+            when (value.first) {
+                "title" -> {
+                    if (!titleFound) {
+                        title.value = value.second.trim()
+                        titleFound = true
                     }
                 }
-                else if (isSteps && !"STEP [1-9]{1,2}".toRegex().containsMatchIn(block.uppercase())) {
-                    steps.add(block.trim().replace("[0-9]\\. ".toRegex(), ""))
+                "servings" -> servings.value = value.second.replace("Servings:","", ignoreCase = true).trim()
+                "totalTime" -> totalTime.value = value.second.replace("Total:","", ignoreCase = true).trim()
+                "ingredient" -> ingredients.add(value.second.trim())
+                "step" -> {
+                    if (index != 0 && guesses[index - 1] != "step") {
+                        steps.clear()
+                    }
+                    steps.add(value.second.replace(Regex("^\\d{1,2}\\.?"),"").trim())
                 }
+                "unknown" -> {
+                    if(index > 0 && index < guesses.size - 1 && guesses[index - 1] == guesses[index + 1]) {
+                        if (guesses[index-1] == "ingredient") {
+                            ingredients.add(value.second.trim())
+                        } else if (guesses[index-1] == "step") {
+                            steps.add(value.second.trim())
+                        }
+                    } else if (index == 0) {
+                        title.value = value.second.trim()
+                    } else {
+                        ingredients.add(value.second.trim())
+                    }
+                }
+            }
         }
+
+    }
+    fun wordBelongsInTitle(word: String) : Boolean {
+        return if(word.isEmpty() || dontCapitalize.contains(word))
+            true
+        else
+            word.first().isUpperCase()
+    }
+    fun evaluateBlock(block: String) : String {
+        val results = mutableMapOf<String,Int>()
+        if (block.trim().split(" ").all(::wordBelongsInTitle)) {
+            results.put("title",1)
+        }
+        if (block.trim().first().isDigit()) {
+            if (block.trim()[1] == '.') {
+                results.put("step", 1)
+            } else {
+                results.put("ingredient",1)
+            }
+        }
+        val pattern = Regex("CUPS?|TEASPOONS?|TABLESPOONS?|DASH|PINCH|LITERS?|GALLONS?|POUNDS?|OUNCES?|OZ\\.?|TSP\\.?|T",
+            RegexOption.IGNORE_CASE)
+        val match = block.split(" ").any {pattern.matches(it) }
+        if (match) {
+            results.put("ingredient", results.getOrDefault("ingredient",0) + 1)
+        }
+        if (block.trim().last() == '.') {
+            results.put("step",results.getOrDefault("step",0) + 2)
+        }
+        if (block.trim().contains(Regex("COPYRIGHT|INGREDIENTS|STEPS|DIRECTIONS|INSTRUCTIONS", RegexOption.IGNORE_CASE))) {
+            results.put("junk", 1)
+        }
+        if (block.trim().contains("TOTAL:", ignoreCase = true)) {
+            results.put("totalTime", 1)
+        }
+        if (block.trim().contains("SERVINGS:", ignoreCase = true)) {
+            results.put("servings", 1)
+        }
+        val servingMatch = Regex("Makes ([0-9]{1,2}-?[0-9]{0,2}) Servings", RegexOption.IGNORE_CASE).find(block.trim())
+        if (servingMatch != null && !servingMatch.groupValues.isEmpty()) {
+            results.put("junk", 1)
+            servings.value = servingMatch.groupValues.first()
+        }
+        if (results.isEmpty()) {
+            return "unknown"
+        }
+        return results.maxBy { it.value }.key
     }
 
 }
