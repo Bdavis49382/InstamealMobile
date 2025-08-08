@@ -70,6 +70,7 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
             authorId = ""
             _img_link.value = ApiState.Resting
             steps.clear()
+            fullRecipe.value = Recipe(title="")
 
         } else {
             ingredients.clear()
