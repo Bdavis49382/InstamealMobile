@@ -79,6 +79,7 @@ fun EditableTextState(modifier : Modifier = Modifier,text : MutableState<String>
                 .onFocusChanged { focusState ->
                 if (!focusState.isFocused && wasFocused) {
                     isEditing = false
+                    onSubmit(text.value)
                 }
                 wasFocused = focusState.isFocused
             },

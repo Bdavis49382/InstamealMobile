@@ -301,6 +301,8 @@ fun AddRecipeToFeed(lazyListState: LazyListState) {
         }
         SideButtons {
             SideButton({
+                // This ensures that any changes made to list items are saved.
+                focusManager.clearFocus(force = true)
                 val validSubmission = viewModel.submitRecipe(viewModel.fullRecipe.value.id) { recipe ->
                     searchBarViewModel.getTags()
                     nav.pickedRecipe = RecipeIdentifier.factory(recipe)
