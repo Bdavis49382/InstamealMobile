@@ -27,6 +27,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.input.ImeAction
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -84,6 +85,7 @@ fun ShoppingListPage(lazyListState: LazyListState) {
                     val shoppingList =
                         (shoppingListState as ApiState.Success<List<ShoppingItem>>).data
                     LazyColumn(
+                        horizontalAlignment = Alignment.CenterHorizontally,
                         state = lazyListState,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -113,7 +115,7 @@ fun ShoppingListPage(lazyListState: LazyListState) {
                         }
                         item {
                             if (shoppingList.isEmpty()) {
-                                Text("No Shopping Left To Be Done! Add Items For Your Next Shopping Trip.")
+                                Text("No Shopping Left To Be Done! Add Items For Your Next Shopping Trip.", modifier = Modifier.padding(horizontal = 30.dp))
                             }
                         }
                     }
