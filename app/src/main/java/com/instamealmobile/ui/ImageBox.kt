@@ -54,6 +54,7 @@ fun ImageBox(openPopup: () -> Unit) {
                     val img_link = (imgLinkState as ApiState.Success<String>).data
                     SmartAsyncImage(
                         url = img_link,
+                        backupText = viewModel.title.value,
                         modifier = Modifier
                             .clickable {
                                 openPopup()
