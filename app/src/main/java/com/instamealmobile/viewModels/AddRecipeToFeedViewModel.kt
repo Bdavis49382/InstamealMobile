@@ -294,7 +294,7 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
             results.put("title",1)
         }
         if (block.trim().first().isDigit()) {
-            if (block.trim()[1] == '.') {
+            if (block.trim().length > 1 && block.trim()[1] == '.') {
                 results.put("step", 1)
             } else {
                 results.put("ingredient",1)
