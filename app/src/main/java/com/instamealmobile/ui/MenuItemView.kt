@@ -33,6 +33,8 @@ fun MenuItemView(menuListItem: MenuListItem) {
             val localDate = menuListItem.date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
             if (localDate.equals(LocalDate.now())) {
                 Text("Today")
+            } else if (localDate > LocalDate.now().plusDays(6)) {
+                Text("${localDate.dayOfWeek.getDisplayName(TextStyle.FULL,Locale.getDefault())} ${localDate.month.value}/${localDate.dayOfMonth}")
             } else {
                 Text(localDate.dayOfWeek.getDisplayName(
                     TextStyle.FULL,Locale.getDefault()))
