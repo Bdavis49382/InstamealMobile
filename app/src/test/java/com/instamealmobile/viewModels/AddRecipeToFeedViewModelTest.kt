@@ -3,6 +3,7 @@ package com.instamealmobile.viewModels
 import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.Recipe
 import com.instamealmobile.network.FeedService
+import com.instamealmobile.network.MenuService
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -27,12 +28,13 @@ class AddRecipeToFeedViewModelTest {
     private  lateinit var testScope: TestScope
     private lateinit var viewModel: AddRecipeToFeedViewModel
     val mockService = mockk<FeedService>()
+    val mockMenuService = mockk<MenuService>()
 
     @BeforeEach
     fun setUp() {
         testDispatcher = StandardTestDispatcher()
         testScope = TestScope(testDispatcher)
-        viewModel = AddRecipeToFeedViewModel(mockService)
+        viewModel = AddRecipeToFeedViewModel(mockService, mockMenuService)
         viewModel.scope = testScope
         Dispatchers.setMain(testDispatcher)
     }

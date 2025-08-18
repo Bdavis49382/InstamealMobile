@@ -16,6 +16,7 @@ import com.instamealmobile.BuildConfig
 import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.Recipe
 import com.instamealmobile.network.FeedService
+import com.instamealmobile.network.MenuService
 import com.instamealmobile.ui.ImagePurpose
 import com.itextpdf.text.pdf.PdfReader
 import com.itextpdf.text.pdf.parser.LocationTextExtractionStrategy
@@ -27,6 +28,7 @@ import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import retrofit2.HttpException
 import java.io.File
 import java.io.IOException
 import java.io.InvalidObjectException
@@ -36,7 +38,7 @@ enum class Purpose {
     MenuEdit, FeedEdit, AddNew
 }
 @HiltViewModel
-class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedService): ViewModel() {
+class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedService, private val menuApiService: MenuService): ViewModel() {
     var ingredients = mutableStateListOf<String>()
     var tags = mutableStateListOf<String>()
     var title =  mutableStateOf("")
@@ -222,6 +224,36 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
         } catch (e: IOException) {
             e.printStackTrace()
         }
+    }
+
+    fun parseWebsite(after: () -> Unit, onBadLink: () -> Unit, onBadWebsite: () -> Unit) {
+        try {
+            scope.launch {
+                try {
+                    val recipe = menuApiService.getRecipeOnline(src_link.value)
+                    title.value = recipe.title
+                    source.value = recipe.src_name ?: ""
+                    servings.value = recipe.servings ?: ""
+                    totalTime.value = recipe.time_estimate.firstOrNull() ?: ""
+                    _img_link.value = ApiState.Success(recipe.img_link?:"")
+                    ingredients.clear()
+                    ingredients.addAll(recipe.ingredients)
+                    steps.clear()
+                    steps.addAll(recipe.instructions)
+                    after()
+                } catch (e: HttpException) {
+                    if (e.code() == 404) {
+                        onBadLink()
+                    } else if (e.code() == 400 || e.code() == 500) {
+                        onBadWebsite()
+                    }
+                }
+            }
+
+        } catch (e: Exception) {
+            Log.e("FILE_UPLOAD","file wasn't able to be processed or uploaded: ${e.message} ${e.stackTrace}")
+        }
+
     }
 
     fun textToIngredients(stringList: List<String>) {

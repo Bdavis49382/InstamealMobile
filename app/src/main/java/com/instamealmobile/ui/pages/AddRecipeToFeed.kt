@@ -187,7 +187,7 @@ fun AddRecipeToFeed(lazyListState: LazyListState) {
                     imgPurpose = ImagePurpose.TextParsing
                     popupIsOn = true
                 }, modifier = Modifier.focusProperties { canFocus = false}) {
-                    Text("Grab Recipe From Image")
+                    Text("Import Recipe")
                 }
             }
             item {
@@ -201,7 +201,7 @@ fun AddRecipeToFeed(lazyListState: LazyListState) {
                         imgPurpose = ImagePurpose.TextParsingIngredients
                         popupIsOn = true
                     }, modifier = Modifier.focusProperties { canFocus = false}) {
-                        Text("Grab From Image")
+                        Text("Import")
                     }
                 }
             }
@@ -254,7 +254,7 @@ fun AddRecipeToFeed(lazyListState: LazyListState) {
                         imgPurpose = ImagePurpose.TextParsingSteps
                         popupIsOn = true
                     }, modifier = Modifier.focusProperties { canFocus = false}) {
-                        Text("Grab From Image")
+                        Text("Import")
                     }
                 }
             }

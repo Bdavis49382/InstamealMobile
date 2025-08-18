@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -28,8 +27,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.instamealmobile.OpenAlert
 import com.instamealmobile.R
 import com.instamealmobile.viewModels.AddRecipeToFeedViewModel
+import com.instamealmobile.viewModels.NavViewModel
 import java.io.File
 
 enum class ImagePurpose {
@@ -39,6 +40,7 @@ enum class ImagePurpose {
 @Composable
 fun PickerPopup(popupIsOn: Boolean,imagePurpose: ImagePurpose, onDismiss: () -> Unit) {
     val viewModel : AddRecipeToFeedViewModel = viewModel()
+    val navViewModel : NavViewModel = viewModel()
     val context = LocalContext.current
 
     val pdfPickerLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
@@ -88,9 +90,8 @@ fun PickerPopup(popupIsOn: Boolean,imagePurpose: ImagePurpose, onDismiss: () -> 
         Dialog(onDismissRequest = onDismiss) {
             Card(
                 modifier = Modifier
-                    .width(260.dp)
-                    .height(120.dp)
-                    .padding(0.dp),
+                    .height(160.dp)
+                    .fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
             ) {
                 Column(
@@ -98,7 +99,11 @@ fun PickerPopup(popupIsOn: Boolean,imagePurpose: ImagePurpose, onDismiss: () -> 
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    Text("Upload Image", modifier = Modifier.padding(bottom = 10.dp))
+                    if (imagePurpose == ImagePurpose.ImageStoring) {
+                        Text("Upload Image", modifier = Modifier.padding(bottom = 10.dp))
+                    } else {
+                        Text("Import Recipe", modifier = Modifier.padding(bottom = 10.dp))
+                    }
                     Row(verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         modifier = Modifier.fillMaxWidth()
@@ -122,11 +127,15 @@ fun PickerPopup(popupIsOn: Boolean,imagePurpose: ImagePurpose, onDismiss: () -> 
                             }) {
                                 Icon(painter = painterResource(R.drawable.baseline_picture_as_pdf_24),"pdf search")
                             }
-
+                            OutlinedButton({
+                                navViewModel.openAlert = OpenAlert.Link
+                                onDismiss()
+                            }) {
+                                Icon(painter = painterResource(R.drawable.baseline_insert_link_24),"import from link")
+                            }
                         }
                     }
                 }
-
             }
         }
     }

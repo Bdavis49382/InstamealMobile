@@ -24,6 +24,9 @@ fun Alerts(reload: () -> Unit) {
                 RatingAlert((nav.pickedRecipe as RecipeIdentifier.RecipeId).id)
             }
         }
+        OpenAlert.Link -> {
+            GetRecipeByLink()
+        }
         OpenAlert.None -> {}
     }
 }
