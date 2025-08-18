@@ -73,7 +73,7 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
             _img_link.value = ApiState.Resting
             steps.clear()
             fullRecipe.value = Recipe(title="")
-
+            validatorsActive.value = false
         } else {
             ingredients.clear()
             ingredients.addAll(recipe.ingredients)
@@ -95,6 +95,7 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
     fun validateRecipe() : Boolean {
         return ingredients.isNotEmpty() &&
                 title.value.isNotEmpty() &&
+                tags.isNotEmpty() &&
                 steps.isNotEmpty()
     }
 

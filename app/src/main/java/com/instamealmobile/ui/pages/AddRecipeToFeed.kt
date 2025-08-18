@@ -1,7 +1,6 @@
 package com.instamealmobile.ui.pages
 
 import android.widget.Toast
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -16,7 +15,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,7 +25,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.platform.LocalContext
@@ -48,6 +45,7 @@ import com.instamealmobile.ui.ImagePurpose
 import com.instamealmobile.ui.PickerPopup
 import com.instamealmobile.ui.SideButton
 import com.instamealmobile.ui.SideButtons
+import com.instamealmobile.ui.TagsDropdown
 import com.instamealmobile.viewModels.AddRecipeToFeedViewModel
 import com.instamealmobile.viewModels.MenuViewModel
 import com.instamealmobile.viewModels.NavViewModel
@@ -96,34 +94,14 @@ fun AddRecipeToFeed(lazyListState: LazyListState) {
                 )
             }
             item {
-                OutlinedTextField(
-                    value = viewModel.newTag,
-                    placeholder = {Text("New Tag")},
-                    onValueChange = {viewModel.newTag = it},
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                            viewModel.addTag(viewModel.newTag)
-                            viewModel.newTag = ""
-                        }
-                    ),
-                    singleLine = true,
-                    textStyle = TextStyle(fontSize = 12.sp),
-                    shape = RoundedCornerShape(20.dp),
-                    modifier = Modifier
-                        .width(150.dp)
-                        .padding(end = 5.dp, bottom = 5.dp)
-                )
+                TagsDropdown()
             }
             itemsIndexed(viewModel.tags, key= {index,item -> "$item$index,tags"}) { index,item ->
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     DeleteButton {
                         viewModel.tags.removeAt(index)
                     }
-                    EditableText(text = item, maxLines = 4, placeholder = "Main Dish", fontColor = MaterialTheme.colorScheme.onSecondaryContainer, modifier = Modifier
-                        .clip(RoundedCornerShape(20.dp))
-                        .background(MaterialTheme.colorScheme.secondaryContainer)
-                        .width(150.dp)
+                    EditableText(text = item, maxLines = 4, placeholder = "Main Dish", modifier = Modifier
                         .padding(start = 5.dp, bottom = 5.dp)
                     ) {
                         viewModel.tags[index] = it

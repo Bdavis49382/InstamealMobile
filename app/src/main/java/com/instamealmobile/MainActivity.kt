@@ -85,7 +85,7 @@ class MainActivity : ComponentActivity() {
                         } else if (intent.type?.startsWith("image/") == true) {
                             intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)?.let { url ->
                                 navViewModel.navigateTo(OpenSheet.AddRecipeToFeed)
-                                Toast.makeText(context, "Entering information...", Toast.LENGTH_LONG).show()
+                                Toast.makeText(context, "Entering information...", Toast.LENGTH_SHORT).show()
                                 addtoFeedViewModel.parseText(url,context,ImagePurpose.TextParsing){
                                     Toast.makeText(context, "Recipe imported. Review and save.", Toast.LENGTH_SHORT).show()
                                 }

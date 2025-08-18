@@ -51,6 +51,7 @@ class AddRecipeToFeedViewModelTest {
         viewModel.ingredients.add("")
         viewModel.steps.add("")
         viewModel.title.value = "not empty"
+        viewModel.tags.add("Beef")
 
         // Act
         val succeeded = viewModel.submitRecipe("", {})
@@ -158,6 +159,7 @@ class AddRecipeToFeedViewModelTest {
         viewModel.steps.add("Fake Step")
         viewModel.ingredients.add("Fake ingredient")
         viewModel.title.value = "Fake Title"
+        viewModel.tags.add("Beef")
 
         // Act
         val response = viewModel.validateRecipe()
