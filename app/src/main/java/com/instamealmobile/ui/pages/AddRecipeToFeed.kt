@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -97,7 +98,7 @@ fun AddRecipeToFeed(lazyListState: LazyListState) {
             }
             itemsIndexed(viewModel.tags, key= {index,item -> "$item$index,tags"}) { index,item ->
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.height(50.dp).padding(start=if (viewModel.tagsExtended) 100.dp else 0.dp)) {
-                    DeleteButton() {
+                    DeleteButton {
                         viewModel.tags.removeAt(index)
                     }
                     EditableText(text = item, maxLines = 4, placeholder = "MainDish", modifier = Modifier
@@ -271,6 +272,9 @@ fun AddRecipeToFeed(lazyListState: LazyListState) {
                         viewModel.steps[index] = it
                     }
                 }
+            }
+            item {
+                Spacer(modifier = Modifier.height(30.dp))
             }
         }
         SideButtons {

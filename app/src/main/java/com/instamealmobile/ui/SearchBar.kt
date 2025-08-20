@@ -153,10 +153,6 @@ fun SearchBar() {
                         keyboardController?.hide()
                         focusManager.clearFocus()
                         activated = false
-                        searchBoxText = ""
-                        textFieldValueState = textFieldValueState.copy(
-                            text = searchBoxText
-                        )
                     }),
                     singleLine = true,
                     textStyle = TextStyle(fontSize = 20.sp),

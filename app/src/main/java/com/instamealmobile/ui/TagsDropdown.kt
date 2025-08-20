@@ -72,7 +72,7 @@ fun TagsDropdown() {
                 }
             ),
             singleLine = true,
-            textStyle = TextStyle(fontSize = 12.sp),
+            textStyle = TextStyle(fontSize = 15.sp),
             shape = RoundedCornerShape(20.dp),
             modifier = Modifier
                 .onFocusChanged { focusState ->
