@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,7 +26,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -83,7 +83,6 @@ fun AddRecipeToFeed(lazyListState: LazyListState) {
                     placeholder = "Title",
                     onSubmit = {
                         viewModel.title.value = it
-                        focusManager.moveFocus(FocusDirection.Down)
                     },
                     maxLines = 2,
                     errorCondition = viewModel.validatorsActive.value && viewModel.title.value.isEmpty(),
@@ -97,12 +96,12 @@ fun AddRecipeToFeed(lazyListState: LazyListState) {
                 TagsDropdown()
             }
             itemsIndexed(viewModel.tags, key= {index,item -> "$item$index,tags"}) { index,item ->
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    DeleteButton {
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.height(50.dp).padding(start=if (viewModel.tagsExtended) 100.dp else 0.dp)) {
+                    DeleteButton() {
                         viewModel.tags.removeAt(index)
                     }
-                    EditableText(text = item, maxLines = 4, placeholder = "Main Dish", modifier = Modifier
-                        .padding(start = 5.dp, bottom = 5.dp)
+                    EditableText(text = item, maxLines = 4, placeholder = "MainDish", modifier = Modifier
+                        .padding(start = 2.dp, bottom = 5.dp, end = 8.dp)
                     ) {
                         viewModel.tags[index] = it
                     }
@@ -115,7 +114,6 @@ fun AddRecipeToFeed(lazyListState: LazyListState) {
                         placeholder = "Source",
                         onSubmit = {
                             viewModel.source.value = it
-                            focusManager.moveFocus(FocusDirection.Down)
                         },
                         maxLines = 1,
                         fontSize = 12.sp,
@@ -137,7 +135,6 @@ fun AddRecipeToFeed(lazyListState: LazyListState) {
                         precursor = "Servings: ",
                         onSubmit = {
                             viewModel.servings.value = it
-                            focusManager.moveFocus(FocusDirection.Down)
                         },
                         maxLines = 1,
                         fontSize = 16.sp,
@@ -151,7 +148,6 @@ fun AddRecipeToFeed(lazyListState: LazyListState) {
                         precursor = "Total Time: ",
                         onSubmit = {
                             viewModel.totalTime.value = it
-                            focusManager.moveFocus(FocusDirection.Down)
                         },
                         maxLines = 1,
                         fontSize = 16.sp,

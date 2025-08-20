@@ -91,7 +91,7 @@ fun ShoppingListPage(lazyListState: LazyListState) {
                             .fillMaxWidth()
                             .padding(bottom = 20.dp)
                     ) {
-                        items(shoppingList.reversed().sortedBy { it.checked }, key = {it.index}) { item ->
+                        items(shoppingList.reversed().sortedBy { it.checked }, key = {it.index.toString() + it.name}) { item ->
                             CheckItem(
                                 modifier = Modifier.animateItem(),
                                 shoppingItem = item,

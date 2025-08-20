@@ -58,6 +58,7 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
     // When updating a menu recipe, keep track of its index.
     var menuIndex by mutableStateOf(0)
     var scope = viewModelScope
+    var tagsExtended by mutableStateOf(false)
     val dontCapitalize = setOf<String>("a","and","as","at","but","by","down","for","from","if","in","into","like","near","nor","of","off","on","once","onto","or","over","past","so","than","that","to","upon","when","with","yet")
 
     fun setRecipe(recipe: Recipe) {
