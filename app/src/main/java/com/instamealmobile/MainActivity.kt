@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -146,7 +147,7 @@ class MainActivity : ComponentActivity() {
                             items.refresh()
                         }
 
-                        SheetPages {
+                        SheetPages(::keepScreenOn) {
                             menuViewModel.getMenu()
                             items.refresh()
                         }
@@ -156,6 +157,13 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
+        }
+    }
+    fun keepScreenOn(value: Boolean) {
+        if (value) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        } else {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
     }
 }

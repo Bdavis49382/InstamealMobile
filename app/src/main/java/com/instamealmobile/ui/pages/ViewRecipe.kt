@@ -13,12 +13,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -49,11 +51,12 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 @Composable
-fun ViewRecipe(lazyListState: LazyListState, recipeIdentifier: RecipeIdentifier?) {
+fun ViewRecipe(lazyListState: LazyListState, recipeIdentifier: RecipeIdentifier?, keepScreenOn: (Boolean) -> Unit) {
     val nav: NavViewModel = viewModel()
     val menuViewModel: MenuViewModel = viewModel()
     val menuItemState by menuViewModel.selected.collectAsState()
     var recipeIndex by remember { mutableIntStateOf(0) }
+    var screenStaysOn by remember { mutableStateOf(false)}
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
@@ -93,28 +96,33 @@ fun ViewRecipe(lazyListState: LazyListState, recipeIdentifier: RecipeIdentifier?
                 }
                 ScreenState.Success -> if (menuItemState is ApiState.Success){
                     val menuItem = (menuItemState as ApiState.Success<MenuItem>).data
-                    Column {
-                        RecipeView(lazyListState, menuItem.recipe ?: Recipe(title = "")) {
-                            Column(modifier = Modifier.padding(horizontal = 5.dp)) {
-                                EditableText(text=menuItem.note,
-                                    precursor = "Note: ",
-                                    maxLines = 1,
-                                    placeholder = "Enter Note (Optional)") {
-                                    menuItem.note = it
-                                    menuViewModel.updateMenuItem(recipeIndex, menuItem)
-                                    Toast.makeText(context, "Menu Entry Note Updated", Toast.LENGTH_SHORT).show()
+                    RecipeView(lazyListState, menuItem.recipe ?: Recipe(title = "")) {
+                        Column(modifier = Modifier.padding(horizontal = 5.dp)) {
+                            EditableText(text=menuItem.note,
+                                precursor = "Note: ",
+                                maxLines = 1,
+                                placeholder = "Enter Note (Optional)") {
+                                menuItem.note = it
+                                menuViewModel.updateMenuItem(recipeIndex, menuItem)
+                                Toast.makeText(context, "Menu Entry Note Updated", Toast.LENGTH_SHORT).show()
+                            }
+                            Row(verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(5.dp)
+                                ) {
+                                if (menuItem.date != null) {
+                                    Text(SimpleDateFormat("E, MMMM dd", Locale.getDefault()).format(menuItem.date!!))
                                 }
-                                Row(verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(5.dp)
-                                    ) {
-                                    if (menuItem.date != null) {
-                                        Text(SimpleDateFormat("E, MMMM dd", Locale.getDefault()).format(menuItem.date!!))
-                                    }
-                                    Button({menuViewModel.datePickerOpen = true}) {
-                                        Icon(painter = painterResource(R.drawable.baseline_edit_calendar_24), "Add Date")
-                                    }
+                                Button({menuViewModel.datePickerOpen = true}) {
+                                    Icon(painter = painterResource(R.drawable.baseline_edit_calendar_24), "Add Date")
                                 }
                             }
+                            Text("Keep Screen On Mode", modifier = Modifier.padding(top = 15.dp))
+                            Switch(
+                                checked = screenStaysOn,
+                                onCheckedChange = {
+                                    screenStaysOn = it
+                                    keepScreenOn(screenStaysOn)}
+                            )
                         }
                     }
                     SideButtons {

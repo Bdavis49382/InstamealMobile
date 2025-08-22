@@ -40,7 +40,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SheetPages(reload: () -> Unit) {
+fun SheetPages(keepScreenOn: (Boolean) -> Unit,reload: () -> Unit) {
     val nav: NavViewModel = viewModel()
     val lazyListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -108,7 +108,7 @@ fun SheetPages(reload: () -> Unit) {
                     }
                     OpenSheet.AddRecipeToFeed -> AddRecipeToFeed(lazyListState)
                     OpenSheet.Household -> HouseholdPage(reload)
-                    OpenSheet.ViewRecipe -> ViewRecipe(lazyListState, nav.pickedRecipe)
+                    OpenSheet.ViewRecipe -> ViewRecipe(lazyListState, nav.pickedRecipe, keepScreenOn)
                     OpenSheet.None -> Unit // Do Nothing
                 }
             }

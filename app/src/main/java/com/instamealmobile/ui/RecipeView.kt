@@ -32,10 +32,10 @@ import androidx.compose.ui.unit.sp
 import com.instamealmobile.data.Recipe
 
 @Composable
-fun RecipeView(lazyListState: LazyListState, recipe: Recipe, innerContent: @Composable () -> Unit = {}) {
+fun RecipeView(lazyListState: LazyListState, recipe: Recipe, modifier: Modifier = Modifier, innerContent: @Composable () -> Unit = {}) {
     Column(
         verticalArrangement = Arrangement.spacedBy(10.dp),
-        modifier = Modifier
+        modifier = modifier
             .padding(20.dp)
     ) {
         Text(
