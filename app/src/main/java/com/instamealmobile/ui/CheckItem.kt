@@ -14,10 +14,6 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontStyle
@@ -29,7 +25,6 @@ import com.instamealmobile.data.ShoppingItem
 
 @Composable
 fun CheckItem(shoppingItem: ShoppingItem, editMethod: (String) -> Unit, checkMethod: () -> Unit, modifier: Modifier = Modifier) {
-    var checked by remember { mutableStateOf(shoppingItem.checked) }
     Row (
         modifier = modifier.fillMaxWidth().padding(vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -44,7 +39,7 @@ fun CheckItem(shoppingItem: ShoppingItem, editMethod: (String) -> Unit, checkMet
                 .wrapContentHeight(align = Alignment.CenterVertically)
             )
             Column {
-                if (checked) {
+                if (shoppingItem.checked) {
                     Text(
                         text = shoppingItem.name,
                         fontSize = 18.sp,
@@ -75,9 +70,8 @@ fun CheckItem(shoppingItem: ShoppingItem, editMethod: (String) -> Unit, checkMet
             }
 
         }
-        Checkbox(checked = checked, modifier = Modifier.size(30.dp).padding(end = 200.dp), onCheckedChange = {
+        Checkbox(checked = shoppingItem.checked, modifier = Modifier.size(30.dp).padding(end = 200.dp), onCheckedChange = {
             checkMethod()
-            checked = it
         })
     }
 }

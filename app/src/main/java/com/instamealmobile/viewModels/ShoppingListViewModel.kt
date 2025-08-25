@@ -85,6 +85,7 @@ class ShoppingListViewModel @Inject constructor(private val apiService: Shopping
         scope.launch {
             try {
                 val response = apiService.editItem(index, item)
+                response.forEachIndexed {index, value -> value.index  = index}
                 _shoppingList.value = ApiState.Success(response)
             } catch (e: Exception) {
                 _shoppingList.value = ApiState.Error("Failed to check item: ${e.message}")

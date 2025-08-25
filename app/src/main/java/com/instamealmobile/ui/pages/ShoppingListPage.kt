@@ -26,6 +26,7 @@ import com.instamealmobile.viewModels.ShoppingListViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.input.ImeAction
@@ -44,6 +45,15 @@ fun ShoppingListPage(lazyListState: LazyListState) {
     val user = Firebase.auth
     val shoppingListState by viewModel.shoppingList.collectAsState()
     val coroutineScope = rememberCoroutineScope()
+    val sortedItems by remember(shoppingListState) {
+        derivedStateOf {
+            if (shoppingListState is ApiState.Success) {
+                (shoppingListState as ApiState.Success<List<ShoppingItem>>).data.reversed().sortedBy { it.checked }
+            } else {
+                listOf()
+            }
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.fetchShoppingList()
@@ -91,7 +101,7 @@ fun ShoppingListPage(lazyListState: LazyListState) {
                             .fillMaxWidth()
                             .padding(bottom = 20.dp)
                     ) {
-                        items(shoppingList.reversed().sortedBy { it.checked }, key = {it.index.toString() + it.name}) { item ->
+                        items(sortedItems, key = {it.index}) { item ->
                             CheckItem(
                                 modifier = Modifier.animateItem(),
                                 shoppingItem = item,
@@ -104,11 +114,6 @@ fun ShoppingListPage(lazyListState: LazyListState) {
                                     )
                                 },
                                 checkMethod = {
-                                    if(!item.checked) {
-                                        coroutineScope.launch {
-                                            lazyListState.animateScrollToItem(0)
-                                        }
-                                    }
                                     viewModel.checkItem(item.index)
                                 }
                             )
