@@ -15,10 +15,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,10 +42,14 @@ import com.instamealmobile.ui.SideButton
 import com.instamealmobile.ui.SideButtons
 import com.instamealmobile.ui.SmartAsyncImage
 import com.instamealmobile.viewModels.MenuViewModel
+import com.instamealmobile.viewModels.RemovedIngredient
+import kotlinx.coroutines.launch
 
 @Composable
 fun AddRecipeToMenu(recipe : Recipe, confirm: () -> Unit) {
     val viewModel: MenuViewModel =  viewModel()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         viewModel.ingredients.clear()
@@ -123,7 +133,25 @@ fun AddRecipeToMenu(recipe : Recipe, confirm: () -> Unit) {
                                 .width(250.dp)
                         )
                         DeleteButton(
-                            onClick = {viewModel.ingredients.removeAt(index)}
+                            onClick = {
+                                viewModel.removedIngredients.add(RemovedIngredient(viewModel.ingredients[index],index))
+                                viewModel.ingredients.removeAt(index)
+                                scope.launch {
+                                    val result = snackbarHostState.showSnackbar(
+                                        message = "Removed 1 item from list",
+                                        actionLabel = "Undo"
+                                    )
+                                    if (result == SnackbarResult.ActionPerformed) {
+                                        if (viewModel.removedIngredients.isNotEmpty()) {
+                                            viewModel.removedIngredients.last().let { lastRemoved ->
+                                                viewModel.ingredients.add(lastRemoved.index,lastRemoved.name)
+                                            }
+                                            viewModel.removedIngredients.removeAt(viewModel.removedIngredients.lastIndex)
+                                        }
+                                    }
+
+                                }
+                            }
                         )
                     }
                 }
@@ -134,6 +162,11 @@ fun AddRecipeToMenu(recipe : Recipe, confirm: () -> Unit) {
                 confirm()}
             ) {
                 Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "Edit")
+            }
+        }
+        Box(contentAlignment = Alignment.BottomCenter, modifier = Modifier.fillMaxSize()) {
+            SnackbarHost(hostState = snackbarHostState) { data ->
+                Snackbar(snackbarData = data)
             }
         }
     }

@@ -23,6 +23,8 @@ import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
+data class RemovedIngredient(val name: String, val index: Int)
+
 @HiltViewModel
 class MenuViewModel @Inject constructor(private val apiService: MenuService): ViewModel() {
     private val _menu = MutableStateFlow<ApiState<List<MenuListItem>>>(ApiState.Loading)
@@ -34,6 +36,7 @@ class MenuViewModel @Inject constructor(private val apiService: MenuService): Vi
 
     // Variables for adding a new item to menu
     var ingredients = mutableStateListOf<String>()
+    var removedIngredients = mutableStateListOf<RemovedIngredient>()
     var note by mutableStateOf("")
     var date by mutableLongStateOf(0L)
     var datePickerOpen by mutableStateOf(false)
