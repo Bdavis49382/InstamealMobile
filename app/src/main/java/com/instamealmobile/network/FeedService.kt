@@ -4,6 +4,7 @@ import com.instamealmobile.data.Recipe
 import okhttp3.MultipartBody
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Headers
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.PUT
@@ -13,6 +14,7 @@ import retrofit2.http.Query
 
 interface FeedService {
     @GET("feed/")
+    @Headers("Cache-Control: public max-age=0")
     suspend fun getFeed(@Query("page") page: Int = 0) : List<Recipe>
     @GET("feed/search/")
     suspend fun searchFeed(@Query("query") query: String) : List<Recipe>
