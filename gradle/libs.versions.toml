@@ -22,6 +22,7 @@ composeBom = "2025.05.01"
 mockk = "1.13.8"
 pagingCompose = "3.3.6"
 playServicesAuth = "21.0.0"
+reorderable = "3.0.0"
 runtimeLivedata = "1.0.0-beta01"
 textRecognition = "16.0.1"
 junitJupiter = "5.8.2"
@@ -60,6 +61,7 @@ itextg = { module = "com.itextpdf:itextg", version.ref = "itextg" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
+reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "converterGson" }
 text-recognition = { module = "com.google.mlkit:text-recognition", version.ref = "textRecognition" }
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
