@@ -8,7 +8,7 @@ data class MenuItem(
     var note: String,
     var date: Date? = null,
     val recipe_id: String? = null,
-    val recipe: Recipe? = null,
+    var recipe: Recipe? = null,
     val active_items: List<String>
 )
 

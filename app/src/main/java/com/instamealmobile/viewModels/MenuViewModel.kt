@@ -80,18 +80,18 @@ class MenuViewModel @Inject constructor(private val apiService: MenuService): Vi
             try {
                 val response = apiService.updateRecipeByIndex(index, menuItem)
                 _selected.value = ApiState.Success(response)
-                getMenu()
+                getMenu(allowCache = false)
             } catch (e: Exception) {
                 _menu.value = ApiState.Error("Failed to fetch data: ${e.message}")
             }
         }
     }
 
-    fun getMenu() {
+    fun getMenu(allowCache: Boolean = true) {
         scope.launch {
             try {
                 _menu.value = ApiState.Loading
-                val response = apiService.getMenu()
+                val response = if (allowCache) apiService.getMenu() else apiService.getMenu(allowCache="no-cache")
                 response.forEachIndexed {index, value -> value.index  = index}
                 _menu.value = ApiState.Success(response)
             } catch (e: Exception) {
@@ -122,11 +122,11 @@ class MenuViewModel @Inject constructor(private val apiService: MenuService): Vi
 
     }
 
-    fun getRecipe(index: Int) {
+    fun getRecipe(index: Int, allowCache: Boolean = true) {
         _selected.value = ApiState.Loading
         scope.launch {
             try {
-                val response = apiService.getRecipeByIndex(index)
+                val response = if (allowCache) apiService.getRecipeByIndex(index) else apiService.getRecipeByIndex(index, allowCache = "no-cache")
                 _selected.value = ApiState.Success(response)
             } catch (e: HttpException) {
                 if (e.code() == 400) {

@@ -64,7 +64,7 @@ fun ViewRecipe(lazyListState: LazyListState, recipeIdentifier: RecipeIdentifier?
             menuViewModel.getRecipe(recipeIdentifier.index)
             recipeIndex = recipeIdentifier.index
         } else if (recipeIdentifier is RecipeIdentifier.FullRecipe) {
-            menuViewModel.getRecipe(recipeIdentifier.recipe.index)
+            menuViewModel.getRecipe(recipeIdentifier.recipe.index, allowCache = false)
             recipeIndex = recipeIdentifier.recipe.index
         } else {
             throw Exception("Tried to view a recipe without using the menu index. was ${recipeIdentifier?.javaClass.toString()}")

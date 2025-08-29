@@ -5,6 +5,7 @@ import com.instamealmobile.data.MenuListItem
 import com.instamealmobile.data.Recipe
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.PATCH
 import retrofit2.http.POST
@@ -13,14 +14,14 @@ import retrofit2.http.Query
 
 interface MenuService {
     @GET("menu/")
-    suspend fun getMenu() : List<MenuListItem>
+    suspend fun getMenu(@Header("Cache-Control") allowCache: String = "public, max-age=60") : List<MenuListItem>
     @GET("menu/recipes/{recipe_id}")
     suspend fun getRecipe(@Path("recipe_id") recipe_id: String) : Recipe
     @GET("menu/online")
     @Headers("Cache-Control: public, max-age=" + 60 * 60 * 24) // cache lasts a whole day as these should almost never change
     suspend fun getRecipeOnline(@Query("link") link: String) : Recipe
     @GET("menu/index/{index}")
-    suspend fun getRecipeByIndex( @Path("index") index: Int) : MenuItem
+    suspend fun getRecipeByIndex( @Path("index") index: Int,@Header("Cache-Control") allowCache: String = "public, max-age=60") : MenuItem
     @POST("menu/")
     suspend fun addRecipe(@Body menu_item: MenuItem) : List<MenuListItem>
     @POST("menu/finish/{recipe_id}")

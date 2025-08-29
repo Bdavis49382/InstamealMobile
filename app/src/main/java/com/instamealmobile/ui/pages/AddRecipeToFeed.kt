@@ -37,7 +37,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.instamealmobile.OpenSheet
 import com.instamealmobile.data.RecipeIdentifier
-import com.instamealmobile.data.RecipeIdentifier.MenuIndex
 import com.instamealmobile.ui.DeleteButton
 import com.instamealmobile.ui.EditableText
 import com.instamealmobile.ui.EditableTextState
@@ -294,8 +293,8 @@ fun AddRecipeToFeed(lazyListState: LazyListState) {
                             ).show()
                         }
                     } else if (nav.addToFeedPurpose == Purpose.MenuEdit) {
-                        nav.navigateTo(OpenSheet.ViewRecipe, recipe = MenuIndex(recipe.index))
-                        menuViewModel.getMenu()
+                        nav.navigateTo(OpenSheet.ViewRecipe, recipe = nav.pickedRecipe)
+                        menuViewModel.getMenu(allowCache = false)
                         Toast.makeText(context, "Recipe Updated", Toast.LENGTH_SHORT).show()
                     }
                 }

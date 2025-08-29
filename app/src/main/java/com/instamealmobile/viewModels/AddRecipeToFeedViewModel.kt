@@ -104,40 +104,26 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
         if (validateRecipe()) {
             scope.launch {
                 try {
+                    var recipe = Recipe(
+                        ingredients = ingredients,
+                        title = title.value,
+                        servings = servings.value,
+                        tags = tags.map {cleanTag(it)}.toMutableList(),
+                        time_estimate = if (totalTime.value.isNotEmpty()) listOf(totalTime.value) else listOf(),
+                        src_name = source.value,
+                        img_link = if (img_link.value is ApiState.Success) {
+                            (img_link.value as? ApiState.Success)?.data
+                        } else "",
+                        author_id = authorId,
+                        instructions = steps
+                    )
                     val response = if (id.isNullOrEmpty()) {
-                        apiService.addRecipe(
-                            Recipe(
-                                ingredients = ingredients,
-                                title = title.value,
-                                servings = servings.value,
-                                tags = tags.map {cleanTag(it)}.toMutableList(),
-                                time_estimate = if (totalTime.value.isNotEmpty()) listOf(totalTime.value) else listOf(),
-                                src_name = source.value,
-                                img_link = if (img_link.value is ApiState.Success) {
-                                    (img_link.value as? ApiState.Success)?.data
-                                } else "",
-                                instructions = steps
-                            )
-                        )
+                        apiService.addRecipe(recipe)
                     } else {
-                        apiService.updateRecipe(
-                            id, Recipe(
-                                ingredients = ingredients,
-                                tags = tags.map {cleanTag(it)}.toMutableList(),
-                                title = title.value,
-                                servings = servings.value,
-                                src_link = src_link.value,
-                                time_estimate = if (totalTime.value.isNotEmpty()) listOf(totalTime.value) else listOf(),
-                                src_name = source.value,
-                                img_link = if (img_link.value is ApiState.Success) {
-                                    (img_link.value as? ApiState.Success)?.data
-                                } else "",
-                                instructions = steps,
-                                author_id = authorId
-                            )
-                        )
+                        apiService.updateRecipe(id, recipe)
                     }
-                    confirm(Recipe(title = "", id = response, index = menuIndex))
+                    recipe = recipe.copy(id = response, index = menuIndex)
+                    confirm(recipe)
                 } catch (e: Exception) {
                     Log.e("RECIPE_SUBMISSION", e.message ?: "Issue with submitting a new recipe")
                 }

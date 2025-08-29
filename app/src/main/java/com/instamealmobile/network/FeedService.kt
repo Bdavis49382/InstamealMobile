@@ -14,7 +14,7 @@ import retrofit2.http.Query
 
 interface FeedService {
     @GET("feed/")
-    @Headers("Cache-Control: public max-age=0")
+    @Headers("Cache-Control: no-cache")
     suspend fun getFeed(@Query("page") page: Int = 0) : List<Recipe>
     @GET("feed/search/")
     suspend fun searchFeed(@Query("query") query: String) : List<Recipe>
