@@ -111,6 +111,7 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
                         tags = tags.map {cleanTag(it)}.toMutableList(),
                         time_estimate = if (totalTime.value.isNotEmpty()) listOf(totalTime.value) else listOf(),
                         src_name = source.value,
+                        src_link = src_link.value,
                         img_link = if (img_link.value is ApiState.Success) {
                             (img_link.value as? ApiState.Success)?.data
                         } else "",
@@ -228,6 +229,7 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
                     ingredients.addAll(recipe.ingredients)
                     steps.clear()
                     steps.addAll(recipe.instructions)
+                    src_link.value = recipe.src_link ?: ""
                     after()
                 } catch (e: HttpException) {
                     if (e.code() == 404) {

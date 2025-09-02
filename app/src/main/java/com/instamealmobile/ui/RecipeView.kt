@@ -19,7 +19,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
@@ -68,7 +67,7 @@ fun RecipeView(lazyListState: LazyListState, recipe: Recipe, modifier: Modifier 
                             withLink(
                                 link = LinkAnnotation.Url(
                                     recipe.src_link,
-                                    TextLinkStyles(style = SpanStyle(color = Color.Blue, fontSize = 15.sp))
+                                    TextLinkStyles(style = SpanStyle(color = MaterialTheme.colorScheme.onBackground, fontSize = 15.sp, ))
                                 )
                             ) {
                                 append(recipe.src_name)
