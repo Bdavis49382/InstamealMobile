@@ -95,7 +95,8 @@ class ShoppingListViewModelTest {
     fun checkItem() = runTest {
         // Arrange
         var fakeList = mutableListOf<ShoppingItem>()
-        fakeList.add(ShoppingItem(name="Fake Item", checked = true))
+        fakeList.add(ShoppingItem(name="Fake Item", checked = false))
+        viewModel.localList.addAll(fakeList)
         coEvery { mockService.checkItem(any())} returns fakeList
 
         // Act
@@ -103,7 +104,60 @@ class ShoppingListViewModelTest {
         advanceUntilIdle()
 
         // Assert
-        assertTrue(viewModel.shoppingList.value is ApiState.Loading)
+        assertTrue(viewModel.shoppingList.value is ApiState.Success)
+        coVerify { mockService.checkItem(any()) }
+    }
+
+    @Test
+    fun checkItemMultiple() = runTest {
+        // Arrange
+        var fakeList = mutableListOf<ShoppingItem>()
+        fakeList.add(ShoppingItem(name = "Fake Item", checked = true))
+        fakeList.add(ShoppingItem(name = "Fake Item", checked = true))
+        viewModel.localList.addAll(fakeList)
+        coEvery { mockService.checkItem(any()) } returns fakeList
+
+        // Act
+        viewModel.checkItem(0)
+        advanceUntilIdle()
+
+        // Assert
+        assertTrue(viewModel.shoppingList.value is ApiState.Success)
+        coVerify { mockService.checkItem(any()) }
+    }
+
+    @Test
+    fun uncheckItem() = runTest {
+        // Arrange
+        var fakeList = mutableListOf<ShoppingItem>()
+        fakeList.add(ShoppingItem(name="Fake Item", checked = true))
+        viewModel.localList.addAll(fakeList)
+        coEvery { mockService.checkItem(any())} returns fakeList
+
+        // Act
+        viewModel.checkItem(0)
+        advanceUntilIdle()
+
+        // Assert
+        assertTrue(viewModel.shoppingList.value is ApiState.Success)
+        coVerify { mockService.checkItem(any()) }
+    }
+
+    @Test
+    fun uncheckItemMultiple() = runTest {
+        // Arrange
+        var fakeList = mutableListOf<ShoppingItem>()
+        fakeList.add(ShoppingItem(name = "Fake Item", checked = true))
+        fakeList.add(ShoppingItem(name = "Fake Item", checked = true))
+        viewModel.localList.addAll(fakeList)
+        coEvery { mockService.checkItem(any()) } returns fakeList
+
+        // Act
+        viewModel.checkItem(0)
+        advanceUntilIdle()
+
+        // Assert
+        assertTrue(viewModel.shoppingList.value is ApiState.Success)
         coVerify { mockService.checkItem(any()) }
     }
 
@@ -112,6 +166,7 @@ class ShoppingListViewModelTest {
         // Arrange
         var fakeList = mutableListOf<ShoppingItem>()
         fakeList.add(ShoppingItem(name="Fake Item"))
+        viewModel.localList.addAll(fakeList)
         coEvery { mockService.editItem(any(), any())} returns fakeList
 
         // Act

@@ -10,7 +10,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,9 +26,10 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.instamealmobile.data.ShoppingItem
+import sh.calvin.reorderable.ReorderableCollectionItemScope
 
 @Composable
-fun CheckItem(shoppingItem: ShoppingItem, editMethod: (String) -> Unit, checkMethod: () -> Unit, modifier: Modifier = Modifier) {
+fun CheckItem(scope: ReorderableCollectionItemScope,shoppingItem: ShoppingItem, editMethod: (String) -> Unit, checkMethod: () -> Unit, modifier: Modifier = Modifier) {
     Row (
         modifier = modifier.fillMaxWidth().padding(vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -53,7 +58,7 @@ fun CheckItem(shoppingItem: ShoppingItem, editMethod: (String) -> Unit, checkMet
                 else {
                     EditableText(modifier = Modifier
                         .padding(start = 10.dp)
-                        .width(300.dp),
+                        .width(250.dp),
                         fontSize = 18.sp,
                         text = shoppingItem.name,
                         onSubmit = editMethod
@@ -69,6 +74,11 @@ fun CheckItem(shoppingItem: ShoppingItem, editMethod: (String) -> Unit, checkMet
                 }
             }
 
+        }
+        if (!shoppingItem.checked) {
+            IconButton({}, modifier = with(scope) {Modifier.draggableHandle().padding(end=20.dp)}) {
+                Icon(Icons.Rounded.Menu, contentDescription = "Reorder")
+            }
         }
         Checkbox(checked = shoppingItem.checked, modifier = Modifier.size(30.dp).padding(end = 200.dp), onCheckedChange = {
             checkMethod()

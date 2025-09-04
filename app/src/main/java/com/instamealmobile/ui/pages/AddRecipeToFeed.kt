@@ -235,7 +235,8 @@ fun AddRecipeToFeed(lazyListState: LazyListState) {
             itemsIndexed(viewModel.ingredients, key= {index,item -> item}) { index,item ->
                 ReorderableItem(reorderableLazyListState, key = item) { isDragging ->
                     val shadowElevation by animateDpAsState(if (isDragging) 4.dp else 0.dp)
-                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.shadow(shadowElevation).fillMaxWidth()) {
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier
+                        .shadow(shadowElevation).fillMaxWidth()) {
                         DeleteButton{
                             viewModel.ingredients.removeAt(index)
                         }

@@ -1,12 +1,13 @@
 package com.instamealmobile.ui.pages
 
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
@@ -26,9 +27,9 @@ import com.instamealmobile.viewModels.ShoppingListViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.input.ImeAction
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -37,6 +38,8 @@ import com.instamealmobile.data.ShoppingItem
 import com.instamealmobile.data.SmallShoppingItem
 import com.instamealmobile.ui.placeholders.ShoppingListPlaceholder
 import kotlinx.coroutines.launch
+import sh.calvin.reorderable.ReorderableItem
+import sh.calvin.reorderable.rememberReorderableLazyListState
 
 @Composable
 fun ShoppingListPage(lazyListState: LazyListState) {
@@ -45,14 +48,8 @@ fun ShoppingListPage(lazyListState: LazyListState) {
     val user = Firebase.auth
     val shoppingListState by viewModel.shoppingList.collectAsState()
     val coroutineScope = rememberCoroutineScope()
-    val sortedItems by remember(shoppingListState) {
-        derivedStateOf {
-            if (shoppingListState is ApiState.Success) {
-                (shoppingListState as ApiState.Success<List<ShoppingItem>>).data.reversed().sortedBy { it.checked }
-            } else {
-                listOf()
-            }
-        }
+    val reorderableLazyListState = rememberReorderableLazyListState(lazyListState) {  from, to ->
+        viewModel.moveItem(from.index, to.index)
     }
 
     LaunchedEffect(Unit) {
@@ -101,22 +98,26 @@ fun ShoppingListPage(lazyListState: LazyListState) {
                             .fillMaxWidth()
                             .padding(bottom = 20.dp)
                     ) {
-                        items(sortedItems, key = {it.index}) { item ->
-                            CheckItem(
-                                modifier = Modifier.animateItem(),
-                                shoppingItem = item,
-                                editMethod = fun(text: String) {
-                                    val newShoppingItem = SmallShoppingItem(item)
-                                    newShoppingItem.name = text
-                                    viewModel.editItem(
-                                        item.index,
-                                        newShoppingItem
-                                    )
-                                },
-                                checkMethod = {
-                                    viewModel.checkItem(item.index)
-                                }
-                            )
+                        itemsIndexed(viewModel.localList, key = {index,item -> item.name}) { index,item ->
+                            ReorderableItem(reorderableLazyListState, key=item.name) { isDragging ->
+                                val shadowElevation by animateDpAsState(if (isDragging) 4.dp else 0.dp)
+                                CheckItem(
+                                    this,
+                                    modifier = Modifier.animateItem().shadow(shadowElevation),
+                                    shoppingItem = item,
+                                    editMethod = fun(text: String) {
+                                        val newShoppingItem = SmallShoppingItem(item)
+                                        newShoppingItem.name = text
+                                        viewModel.editItem(
+                                            index,
+                                            newShoppingItem
+                                        )
+                                    },
+                                    checkMethod = {
+                                        viewModel.checkItem(index)
+                                    }
+                                )
+                            }
                         }
                         item {
                             if (shoppingList.isEmpty()) {

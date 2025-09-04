@@ -7,7 +7,6 @@ data class ShoppingItem(
     val name: String,
     val user_initial: String = "",
     val recipe_title: String = "",
-    var index: Int = 0
     )
 
 data class SmallShoppingItem(
