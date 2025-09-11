@@ -95,7 +95,7 @@ class ShoppingListViewModelTest {
     fun checkItem() = runTest {
         // Arrange
         var fakeList = mutableListOf<ShoppingItem>()
-        fakeList.add(ShoppingItem(name="Fake Item", checked = false))
+        fakeList.add(ShoppingItem(name="Fake Item", checked = false, id="0"))
         viewModel.localList.addAll(fakeList)
         coEvery { mockService.checkItem(any())} returns fakeList
 
@@ -112,8 +112,8 @@ class ShoppingListViewModelTest {
     fun checkItemMultiple() = runTest {
         // Arrange
         var fakeList = mutableListOf<ShoppingItem>()
-        fakeList.add(ShoppingItem(name = "Fake Item", checked = true))
-        fakeList.add(ShoppingItem(name = "Fake Item", checked = true))
+        fakeList.add(ShoppingItem(name = "Fake Item", checked = true, id = "0"))
+        fakeList.add(ShoppingItem(name = "Fake Item", checked = true, id = "1"))
         viewModel.localList.addAll(fakeList)
         coEvery { mockService.checkItem(any()) } returns fakeList
 
@@ -130,7 +130,7 @@ class ShoppingListViewModelTest {
     fun uncheckItem() = runTest {
         // Arrange
         var fakeList = mutableListOf<ShoppingItem>()
-        fakeList.add(ShoppingItem(name="Fake Item", checked = true))
+        fakeList.add(ShoppingItem(name="Fake Item", checked = true, id="0"))
         viewModel.localList.addAll(fakeList)
         coEvery { mockService.checkItem(any())} returns fakeList
 
@@ -147,8 +147,8 @@ class ShoppingListViewModelTest {
     fun uncheckItemMultiple() = runTest {
         // Arrange
         var fakeList = mutableListOf<ShoppingItem>()
-        fakeList.add(ShoppingItem(name = "Fake Item", checked = true))
-        fakeList.add(ShoppingItem(name = "Fake Item", checked = true))
+        fakeList.add(ShoppingItem(name = "Fake Item", checked = true, id = "0"))
+        fakeList.add(ShoppingItem(name = "Fake Item", checked = true, id = "1"))
         viewModel.localList.addAll(fakeList)
         coEvery { mockService.checkItem(any()) } returns fakeList
 
@@ -165,7 +165,7 @@ class ShoppingListViewModelTest {
     fun editItem() = runTest {
         // Arrange
         var fakeList = mutableListOf<ShoppingItem>()
-        fakeList.add(ShoppingItem(name="Fake Item"))
+        fakeList.add(ShoppingItem(name="Fake Item", id="0"))
         viewModel.localList.addAll(fakeList)
         coEvery { mockService.editItem(any(), any())} returns fakeList
 
