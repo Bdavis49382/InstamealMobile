@@ -27,8 +27,8 @@ android {
         applicationId = "com.instamealmobile"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 3
+        versionName = "3"
 
         buildConfigField("String", "GOOGLE_CLIENT_ID", "\"$googleClientId\"")
         buildConfigField("String", "BACKEND_URL", "\"$backendURL\"")

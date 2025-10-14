@@ -150,6 +150,9 @@ class ShoppingListViewModelTest {
         fakeList.add(ShoppingItem(name = "Fake Item", checked = true, id = "0"))
         fakeList.add(ShoppingItem(name = "Fake Item", checked = true, id = "1"))
         viewModel.localList.addAll(fakeList)
+        val changedItem = fakeList.first().copy(name="Changed", checked = false)
+        fakeList.add(0,changedItem)
+        fakeList.removeAt(1)
         coEvery { mockService.checkItem(any()) } returns fakeList
 
         // Act
@@ -158,6 +161,9 @@ class ShoppingListViewModelTest {
 
         // Assert
         assertTrue(viewModel.shoppingList.value is ApiState.Success)
+        val updatedItem = (viewModel.shoppingList.value as ApiState.Success).data.first()
+        assertFalse(updatedItem.checked)
+        assertEquals(updatedItem.name,"Changed")
         coVerify { mockService.checkItem(any()) }
     }
 
