@@ -1,7 +1,10 @@
 package com.instamealmobile
 
 import android.app.Activity
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -29,9 +32,12 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.credentials.CredentialManager
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.instamealmobile.data.RecipeIdentifier
 import com.instamealmobile.ui.Header
 import com.instamealmobile.ui.ImagePurpose
 import com.instamealmobile.ui.pages.Alerts
@@ -51,6 +57,15 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val permissionState = ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS)
+        if (permissionState != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                1
+            )
+        }
+        createNotificationChannel()
         setContent {
             val authViewModel: AuthViewModel = viewModel()
             val feedViewModel: FeedViewModel = viewModel()
@@ -91,6 +106,12 @@ class MainActivity : ComponentActivity() {
                                     Toast.makeText(context, "Recipe imported. Review and save.", Toast.LENGTH_SHORT).show()
                                 }
                             }
+                        }
+                    }
+                    else -> {
+                        val id = intent?.getStringExtra("id")
+                        if (id != null) {
+                            navViewModel.navigateTo(OpenSheet.ViewRecipe, RecipeIdentifier.MenuIndex(id.toInt()))
                         }
                     }
                 }
@@ -165,5 +186,16 @@ class MainActivity : ComponentActivity() {
         } else {
             window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
+    }
+    fun createNotificationChannel() {
+        val channel = NotificationChannel(
+            MealNotificationService.MEAL_CHANNEL_ID,
+            "Meal Reminders",
+            NotificationManager.IMPORTANCE_HIGH
+        )
+        channel.description = "Used for meal reminders"
+
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
     }
 }

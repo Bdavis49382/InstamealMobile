@@ -28,12 +28,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.instamealmobile.AndroidAlarmScheduler
 import com.instamealmobile.R
 import com.instamealmobile.data.Recipe
 import com.instamealmobile.ui.DatePickerModal
@@ -48,6 +50,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun AddRecipeToMenu(recipe : Recipe, confirm: () -> Unit) {
     val viewModel: MenuViewModel =  viewModel()
+    val context = LocalContext.current
+    val scheduler = AndroidAlarmScheduler(context.applicationContext)
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
@@ -158,10 +162,10 @@ fun AddRecipeToMenu(recipe : Recipe, confirm: () -> Unit) {
             }
         }
         SideButtons {
-            SideButton({viewModel.addRecipe(recipe)
+            SideButton({viewModel.addRecipe(recipe, scheduler)
                 confirm()}
             ) {
-                Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "Edit")
+                Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "Submit")
             }
         }
         Box(contentAlignment = Alignment.BottomCenter, modifier = Modifier.fillMaxSize()) {

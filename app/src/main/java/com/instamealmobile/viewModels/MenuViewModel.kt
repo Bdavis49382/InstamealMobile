@@ -7,6 +7,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.instamealmobile.AlarmItem
+import com.instamealmobile.AndroidAlarmScheduler
+import com.instamealmobile.R
 import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.MenuItem
 import com.instamealmobile.data.MenuListItem
@@ -18,6 +21,8 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.text.SimpleDateFormat
 import java.time.Instant
+import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.ZoneId
 import java.util.Date
 import java.util.Locale
@@ -55,7 +60,7 @@ class MenuViewModel @Inject constructor(private val apiService: MenuService): Vi
         else null
     }
 
-    fun addRecipe(recipe: Recipe) {
+    fun addRecipe(recipe: Recipe, scheduler: AndroidAlarmScheduler) {
         scope.launch {
             try {
                 val response = apiService.addRecipe(MenuItem(
@@ -68,6 +73,23 @@ class MenuViewModel @Inject constructor(private val apiService: MenuService): Vi
                     img_link = recipe.img_link,
                 ))
                 response.forEachIndexed {index, value -> value.index  = index}
+                val recipeIndex = response.indexOfFirst { it.recipe_id == recipe.id}
+                // If recipe index is valid and a date was provided, set an alert for a reminder notification.
+                if (recipeIndex != -1) {
+                    getLocalDate()?.let {
+                        val alarmTime = LocalDateTime.of(
+                            it.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
+                            LocalTime.of(17,0))
+                        scheduler.schedule(
+                            AlarmItem(
+                                alarmTime,
+                                recipe.title,
+                                recipeIndex.toString(),
+                                R.drawable.baseline_calendar_today_24)
+                        )
+                    }
+
+                }
                 _menu.value = ApiState.Success(response)
             } catch (e: Exception) {
                 _menu.value = ApiState.Error("Failed to fetch data: ${e.message}")

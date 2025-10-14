@@ -29,6 +29,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.instamealmobile.AlarmItem
+import com.instamealmobile.AndroidAlarmScheduler
 import com.instamealmobile.OpenAlert
 import com.instamealmobile.OpenSheet
 import com.instamealmobile.R
@@ -48,6 +50,9 @@ import com.instamealmobile.viewModels.MenuViewModel
 import com.instamealmobile.viewModels.NavViewModel
 import com.instamealmobile.viewModels.Purpose
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneId
 import java.util.Locale
 
 @Composable
@@ -76,6 +81,7 @@ fun ViewRecipe(lazyListState: LazyListState, recipeIdentifier: RecipeIdentifier?
         is ApiState.Resting -> ScreenState.Resting
         is ApiState.Error -> ScreenState.Error
     }
+    val scheduler = AndroidAlarmScheduler(context.applicationContext)
     if (menuViewModel.datePickerOpen) {
         DatePickerModal({
             if (menuItemState is ApiState.Success) {
@@ -84,6 +90,16 @@ fun ViewRecipe(lazyListState: LazyListState, recipeIdentifier: RecipeIdentifier?
                 menuItem.date = menuViewModel.getLocalDate()
                 menuViewModel.updateMenuItem(recipeIndex, menuItem)
                 Toast.makeText(context, "Date Updated", Toast.LENGTH_SHORT).show()
+                val alarmTime = LocalDateTime.of(
+                    menuItem.date?.toInstant()?.atZone(ZoneId.systemDefault())?.toLocalDate(),
+                    LocalTime.of(17,0))
+                scheduler.schedule(
+                    AlarmItem(
+                        alarmTime,
+                        menuItem.recipe?.title ?: "",
+                        recipeIndex.toString(),
+                        R.drawable.baseline_calendar_today_24)
+                )
             }
         }) {menuViewModel.datePickerOpen = false }
     }
