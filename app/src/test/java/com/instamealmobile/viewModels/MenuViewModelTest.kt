@@ -1,5 +1,6 @@
 package com.instamealmobile.viewModels
 
+import com.instamealmobile.AndroidAlarmScheduler
 import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.MenuItem
 import com.instamealmobile.data.MenuListItem
@@ -70,11 +71,13 @@ class MenuViewModelTest {
 
         val mock = mockk<MenuListItem>()
         every { mock.index = capture(slot<Int>())} answers {}
+        every { mock.recipe_id } returns  ""
         val fakeList = mutableListOf<MenuListItem>(mock)
         coEvery { mockService.addRecipe(any())} returns fakeList
+        val fakeScheduler = mockk<AndroidAlarmScheduler>()
 
         // Act
-        viewModel.addRecipe(mockRecipe)
+        viewModel.addRecipe(mockRecipe, fakeScheduler)
 
         // Assert
         advanceUntilIdle()
