@@ -13,7 +13,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
+import kotlin.random.Random
 
 
 @HiltViewModel
@@ -22,7 +22,7 @@ class ShoppingListViewModel @Inject constructor(private val apiService: Shopping
     val shoppingList: MutableStateFlow<ApiState<List<ShoppingItem>>> = _shoppingList
     val localList = mutableStateListOf<ShoppingItem>()
     val latestMove = mutableStateOf<Pair<String,Int>?>(null)
-    val lastChecked = mutableStateOf("")
+    val lastChange = mutableStateOf(0)
     var scope = viewModelScope
 
     fun fetchShoppingList() {
@@ -83,11 +83,12 @@ class ShoppingListViewModel @Inject constructor(private val apiService: Shopping
                     localList.add(toIndex, localList.removeAt(index).copy(checked = false))
                 }
                 id?.let {
-                    lastChecked.value = id
+                    val changeId = Random.nextInt()
+                    lastChange.value = changeId
                     val response = apiService.checkItem(id)
                     delay(2000)
                     // If another check hasn't happened in the last 2 seconds, apply any changes brought down from the global version of the list
-                    if (lastChecked.value == id) {
+                    if (lastChange.value == changeId) {
                         apply(response)
                     }
                 }
@@ -117,11 +118,16 @@ class ShoppingListViewModel @Inject constructor(private val apiService: Shopping
                 val movingName = localList[fromIndex].name
                 localList.add(toIndex, localList.removeAt(fromIndex))
                 latestMove.value = Pair(movingName,toIndex)
-                delay(2000)
+                val changeId = Random.nextInt()
+                lastChange.value = changeId
+                delay(1000)
                 // Only reorder the list globally if there is not a newer reorder request
                 if (latestMove.value?.first == movingName && latestMove.value?.second == toIndex) {
                     val response = apiService.reorder(orderedList=localList)
-                    apply(response)
+                    // Only apply changes from the database if no new changes have been made
+                    if (lastChange.value == changeId) {
+                        apply(response)
+                    }
                 }
 
             } catch (e: Exception) {
