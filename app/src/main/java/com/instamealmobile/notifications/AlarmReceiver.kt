@@ -1,4 +1,4 @@
-package com.instamealmobile
+package com.instamealmobile.notifications
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -22,10 +22,16 @@ class AlarmReceiver: BroadcastReceiver() {
         val notificationService = MealNotificationService(context)
         runBlocking {
             val menuItem = menuService.getRecipeByIndex(message.toInt())
-            if (LocalDate.from(menuItem.date?.toInstant()?.atZone(ZoneId.systemDefault())) == LocalDateTime.now().toLocalDate()) {
+            if (LocalDate.from(
+                    menuItem.date?.toInstant()?.atZone(ZoneId.systemDefault())
+                ) == LocalDateTime.now().toLocalDate()
+            ) {
                 notificationService.showNotification(title, message)
             } else {
-                Log.i("ALARM","did not push notification as the date no longer matches the menu item.")
+                Log.i(
+                    "ALARM",
+                    "did not push notification as the date no longer matches the menu item."
+                )
             }
         }
     }

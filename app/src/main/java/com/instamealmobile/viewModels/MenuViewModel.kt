@@ -7,8 +7,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.instamealmobile.AlarmItem
-import com.instamealmobile.AndroidAlarmScheduler
+import com.instamealmobile.notifications.AlarmItem
+import com.instamealmobile.notifications.AndroidAlarmScheduler
 import com.instamealmobile.R
 import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.MenuItem

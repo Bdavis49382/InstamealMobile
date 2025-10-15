@@ -38,6 +38,7 @@ import androidx.credentials.CredentialManager
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.instamealmobile.data.RecipeIdentifier
+import com.instamealmobile.notifications.MealNotificationService
 import com.instamealmobile.ui.Header
 import com.instamealmobile.ui.ImagePurpose
 import com.instamealmobile.ui.pages.Alerts

@@ -1,4 +1,4 @@
-package com.instamealmobile
+package com.instamealmobile.notifications
 
 import android.app.AlarmManager
 import android.app.PendingIntent
@@ -25,7 +25,8 @@ class AndroidAlarmScheduler(
 
     override fun cancel(item: AlarmItem) {
         alarmManager.cancel(
-            PendingIntent.getBroadcast(context, item.hashCode(), Intent(context, AlarmReceiver::class.java), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+            PendingIntent.getBroadcast(context, item.hashCode(),
+                Intent(context, AlarmReceiver::class.java), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         )
     }
 }

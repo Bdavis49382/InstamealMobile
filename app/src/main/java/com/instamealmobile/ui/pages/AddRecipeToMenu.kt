@@ -35,7 +35,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.instamealmobile.AndroidAlarmScheduler
+import com.instamealmobile.notifications.AndroidAlarmScheduler
 import com.instamealmobile.R
 import com.instamealmobile.data.Recipe
 import com.instamealmobile.ui.DatePickerModal

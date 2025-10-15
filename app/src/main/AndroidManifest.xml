@@ -34,8 +34,7 @@
             </intent-filter>
 
         </activity>
-        <receiver android:name=".MealNotificationReceiver"/>
-        <receiver android:name=".AlarmReceiver"/>
+        <receiver android:name=".notifications.AlarmReceiver"/>
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.instamealmobile.provider"

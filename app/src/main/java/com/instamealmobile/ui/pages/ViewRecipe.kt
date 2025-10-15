@@ -29,8 +29,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.instamealmobile.AlarmItem
-import com.instamealmobile.AndroidAlarmScheduler
+import com.instamealmobile.notifications.AlarmItem
+import com.instamealmobile.notifications.AndroidAlarmScheduler
 import com.instamealmobile.OpenAlert
 import com.instamealmobile.OpenSheet
 import com.instamealmobile.R

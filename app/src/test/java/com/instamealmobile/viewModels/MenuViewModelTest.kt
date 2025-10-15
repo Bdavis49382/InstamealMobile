@@ -1,6 +1,6 @@
 package com.instamealmobile.viewModels
 
-import com.instamealmobile.AndroidAlarmScheduler
+import com.instamealmobile.notifications.AndroidAlarmScheduler
 import com.instamealmobile.data.ApiState
 import com.instamealmobile.data.MenuItem
 import com.instamealmobile.data.MenuListItem

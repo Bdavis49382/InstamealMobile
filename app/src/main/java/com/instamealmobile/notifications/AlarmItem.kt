@@ -1,4 +1,4 @@
-package com.instamealmobile
+package com.instamealmobile.notifications
 
 import java.time.LocalDateTime
 

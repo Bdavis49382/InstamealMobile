@@ -1,4 +1,4 @@
-package com.instamealmobile
+package com.instamealmobile.notifications
 
 interface AlarmScheduler {
     fun schedule(item: AlarmItem)
