@@ -14,11 +14,13 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
@@ -28,6 +30,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.instamealmobile.R
 import com.instamealmobile.data.Recipe
 
 @Composable
@@ -62,21 +65,24 @@ fun RecipeView(lazyListState: LazyListState, recipe: Recipe, modifier: Modifier 
                 if (recipe.src_link.isNullOrEmpty()) {
                     Text(text=recipe.src_name?:"")
                 } else {
-                    Text(
-                        buildAnnotatedString {
-                            withLink(
-                                link = LinkAnnotation.Url(
-                                    recipe.src_link,
-                                    TextLinkStyles(style = SpanStyle(color = MaterialTheme.colorScheme.onBackground, fontSize = 15.sp, ))
-                                )
-                            ) {
-                                append(recipe.src_name)
-                            }
-                        },
-                        fontStyle = FontStyle.Italic,
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(horizontal = 10.dp)
-                    )
+                    Row {
+                        Icon(painter = painterResource(R.drawable.baseline_insert_link_24), contentDescription = "link")
+                        Text(
+                            buildAnnotatedString {
+                                withLink(
+                                    link = LinkAnnotation.Url(
+                                        recipe.src_link,
+                                        TextLinkStyles(style = SpanStyle(color = MaterialTheme.colorScheme.onBackground, fontSize = 15.sp, ))
+                                    )
+                                ) {
+                                    append(recipe.src_name)
+                                }
+                            },
+                            fontStyle = FontStyle.Italic,
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(horizontal = 10.dp)
+                        )
+                    }
                 }
             }
             item {
