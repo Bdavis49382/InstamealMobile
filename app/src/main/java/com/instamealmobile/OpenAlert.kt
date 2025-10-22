@@ -1,5 +1,5 @@
 package com.instamealmobile
 
 enum class OpenAlert {
-    None, Join, Invite, Rating, Link
+    None, Join, Invite, Rating, Link, RemoveMeal
 }

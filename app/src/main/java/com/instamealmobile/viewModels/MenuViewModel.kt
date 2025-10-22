@@ -144,6 +144,19 @@ class MenuViewModel @Inject constructor(private val apiService: MenuService): Vi
 
     }
 
+    fun removeMenuItem(recipeId: String) {
+        scope.launch {
+            try {
+                _menu.value = ApiState.Loading
+                val response = apiService.deleteMenuItem(recipeId)
+                response.forEachIndexed {index, value -> value.index  = index}
+                _menu.value = ApiState.Success(response)
+            } catch (e: Exception) {
+                _menu.value = ApiState.Error("Failed to fetch data: ${e.message}")
+            }
+        }
+    }
+
     fun getRecipe(index: Int, allowCache: Boolean = true) {
         _selected.value = ApiState.Loading
         scope.launch {

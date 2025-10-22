@@ -4,6 +4,7 @@ import com.instamealmobile.data.MenuItem
 import com.instamealmobile.data.MenuListItem
 import com.instamealmobile.data.Recipe
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Headers
@@ -24,6 +25,8 @@ interface MenuService {
     suspend fun getRecipeByIndex( @Path("index") index: Int,@Header("Cache-Control") allowCache: String = "public, max-age=60") : MenuItem
     @POST("menu/")
     suspend fun addRecipe(@Body menu_item: MenuItem) : List<MenuListItem>
+    @DELETE("menu/{recipe_id}")
+    suspend fun deleteMenuItem(@Path("recipe_id") recipe_id: String) : List<MenuListItem>
     @POST("menu/finish/{recipe_id}")
     suspend fun finishMeal(
         @Path("recipe_id") recipe_id: String,

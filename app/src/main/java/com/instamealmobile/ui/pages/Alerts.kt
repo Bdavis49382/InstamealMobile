@@ -24,6 +24,14 @@ fun Alerts(reload: () -> Unit) {
                 RatingAlert((nav.pickedRecipe as RecipeIdentifier.RecipeId).id)
             }
         }
+        OpenAlert.RemoveMeal -> {
+            if (nav.pickedRecipe == null) {
+                throw Exception("Tried to remove a recipe without one selected!")
+            }
+            if (nav.pickedRecipe is RecipeIdentifier.RecipeId) {
+                RemoveAlert((nav.pickedRecipe as RecipeIdentifier.RecipeId).id)
+            }
+        }
         OpenAlert.Link -> {
             GetRecipeByLink()
         }

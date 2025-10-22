@@ -161,6 +161,17 @@ fun ViewRecipe(lazyListState: LazyListState, recipeIdentifier: RecipeIdentifier?
                         ) {
                             Icon(Icons.Default.Edit, contentDescription = "Edit")
                         }
+                        SideButton({
+                            if (menuItem.recipe_id != null) {
+                                nav.pickedRecipe = RecipeId(menuItem.recipe_id)
+                                nav.navigateTo(OpenAlert.RemoveMeal)
+                                nav.closeSheet()
+                            } else {
+                                throw Exception("Not enough information to remove recipe. No id was stored with menu item.")
+                            }
+                        }) {
+                            Text("Remove")
+                        }
                     }
                 }
 
