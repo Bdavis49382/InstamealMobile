@@ -1,5 +1,6 @@
 package com.instamealmobile.ui
 
+import android.content.Context
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -15,6 +16,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,21 +34,34 @@ import com.instamealmobile.OpenAlert
 import com.instamealmobile.R
 import com.instamealmobile.viewModels.AddRecipeToFeedViewModel
 import com.instamealmobile.viewModels.NavViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import java.io.File
 
 enum class ImagePurpose {
     TextParsing, ImageStoring, TextParsingIngredients, TextParsingSteps
 }
 
+fun showImportMessage(scope: CoroutineScope, snackbarHostState: SnackbarHostState, context: Context) {
+    scope.launch {
+        snackbarHostState.showSnackbar(message = context.getString(R.string.importMessage),
+            withDismissAction = true,
+            duration = SnackbarDuration.Indefinite)
+    }
+
+}
+
 @Composable
-fun PickerPopup(popupIsOn: Boolean,imagePurpose: ImagePurpose, onDismiss: () -> Unit) {
+fun PickerPopup(popupIsOn: Boolean,imagePurpose: ImagePurpose, snackbarHostState: SnackbarHostState,scope: CoroutineScope, onDismiss: () -> Unit) {
     val viewModel : AddRecipeToFeedViewModel = viewModel()
     val navViewModel : NavViewModel = viewModel()
     val context = LocalContext.current
 
     val pdfPickerLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) {
-            viewModel.parsePdf(uri, context) {}
+            viewModel.parsePdf(uri, context) {
+                showImportMessage(scope, snackbarHostState, context)
+            }
         }
     }
 
@@ -58,11 +74,7 @@ fun PickerPopup(popupIsOn: Boolean,imagePurpose: ImagePurpose, onDismiss: () -> 
                 }
             } else {
                 viewModel.parseText(it, context, imagePurpose) {
-                    Toast.makeText(
-                        context,
-                        "Grabbed Recipe From Image - Check For Accuracy",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    showImportMessage(scope, snackbarHostState, context)
                 }
             }
         }
@@ -80,7 +92,7 @@ fun PickerPopup(popupIsOn: Boolean,imagePurpose: ImagePurpose, onDismiss: () -> 
                 }
             } else {
                 viewModel.parseText(cameraUri.value!!, context, imagePurpose) { recipe ->
-                    Toast.makeText(context, "Grabbed Text From Image - Check For Accuracy", Toast.LENGTH_LONG).show()
+                    showImportMessage(scope, snackbarHostState, context)
                 }
             }
         }

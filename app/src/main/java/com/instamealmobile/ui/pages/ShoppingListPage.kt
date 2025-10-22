@@ -98,8 +98,8 @@ fun ShoppingListPage(lazyListState: LazyListState) {
                             .fillMaxWidth()
                             .padding(bottom = 20.dp)
                     ) {
-                        itemsIndexed(viewModel.localList, key = {index,item -> item.name}) { index,item ->
-                            ReorderableItem(reorderableLazyListState, key=item.name) { isDragging ->
+                        itemsIndexed(viewModel.localList, key = {index,item -> item.id?:item.name}) { index,item ->
+                            ReorderableItem(reorderableLazyListState, key=item.id?:item.name) { isDragging ->
                                 val shadowElevation by animateDpAsState(if (isDragging) 4.dp else 0.dp)
                                 CheckItem(
                                     this,
