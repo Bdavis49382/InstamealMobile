@@ -66,6 +66,7 @@ fun EditableTextState(modifier : Modifier = Modifier,text : MutableState<String>
             colors = TextFieldDefaults.colors(
                 unfocusedContainerColor = Color.Transparent,
                 focusedContainerColor = Color.Transparent,
+                cursorColor = MaterialTheme.colorScheme.onBackground
             ),
             onValueChange = {
                 if (text.value.isEmpty()) {

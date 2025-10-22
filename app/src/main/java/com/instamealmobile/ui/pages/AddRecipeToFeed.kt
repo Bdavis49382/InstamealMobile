@@ -22,8 +22,10 @@ import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -34,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
@@ -213,6 +216,11 @@ fun AddRecipeToFeed(lazyListState: LazyListState) {
                     onValueChange = {viewModel.newIngredient = it},
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     isError = viewModel.validatorsActive.value && viewModel.ingredients.isEmpty(),
+                    colors = TextFieldDefaults.colors(
+                        unfocusedContainerColor = Color.Transparent,
+                        focusedContainerColor = Color.Transparent,
+                        cursorColor = MaterialTheme.colorScheme.onBackground
+                    ),
                     supportingText = {
                         if (viewModel.validatorsActive.value && viewModel.ingredients.isEmpty()) {
                             Text("At least one ingredient is required.")
@@ -225,7 +233,7 @@ fun AddRecipeToFeed(lazyListState: LazyListState) {
                         }
                     ),
                     singleLine = true,
-                    textStyle = TextStyle(fontSize = 12.sp),
+                    textStyle = TextStyle(fontSize = 16.sp),
                     shape = RoundedCornerShape(20.dp),
                     modifier = Modifier
                         .width(270.dp)
@@ -271,6 +279,11 @@ fun AddRecipeToFeed(lazyListState: LazyListState) {
                     value = viewModel.newStep,
                     placeholder = {Text("New Step")},
                     isError = viewModel.validatorsActive.value && viewModel.steps.isEmpty(),
+                    colors = TextFieldDefaults.colors(
+                        unfocusedContainerColor = Color.Transparent,
+                        focusedContainerColor = Color.Transparent,
+                        cursorColor = MaterialTheme.colorScheme.onBackground
+                    ),
                     supportingText = {
                         if (viewModel.validatorsActive.value && viewModel.steps.isEmpty()) {
                             Text("At least one step is required.")
@@ -285,7 +298,7 @@ fun AddRecipeToFeed(lazyListState: LazyListState) {
                         }
                     ),
                     singleLine = true,
-                    textStyle = TextStyle(fontSize = 12.sp),
+                    textStyle = TextStyle(fontSize = 16.sp),
                     shape = RoundedCornerShape(20.dp),
                     modifier = Modifier
                         .width(240.dp)
