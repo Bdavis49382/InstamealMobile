@@ -105,7 +105,7 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
             scope.launch {
                 try {
                     var recipe = Recipe(
-                        ingredients = ingredients,
+                        ingredients = ingredients.toList(),
                         title = title.value,
                         servings = servings.value,
                         tags = tags.map {cleanTag(it)}.toMutableList(),
@@ -116,7 +116,7 @@ class AddRecipeToFeedViewModel @Inject constructor(private val apiService: FeedS
                             (img_link.value as? ApiState.Success)?.data
                         } else "",
                         author_id = authorId,
-                        instructions = steps
+                        instructions = steps.toList()
                     )
                     val response = if (id.isNullOrEmpty()) {
                         apiService.addRecipe(recipe)
