@@ -16,6 +16,9 @@ fun Alerts(reload: () -> Unit) {
         OpenAlert.Invite -> {
             InviteToHousehold()
         }
+        OpenAlert.Discard -> {
+            DiscardAlert()
+        }
         OpenAlert.Rating -> {
             if (nav.pickedRecipe == null) {
                 throw Exception("Tried to finish a recipe without one selected!")

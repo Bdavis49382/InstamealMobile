@@ -35,6 +35,7 @@ import com.composables.core.SheetDetent.Companion.Hidden
 import com.composables.core.rememberModalBottomSheetState
 import com.instamealmobile.OpenAlert
 import com.instamealmobile.OpenSheet
+import com.instamealmobile.viewModels.AddRecipeToFeedViewModel
 import com.instamealmobile.viewModels.NavViewModel
 import kotlinx.coroutines.launch
 
@@ -42,6 +43,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun SheetPages(keepScreenOn: (Boolean) -> Unit,reload: () -> Unit) {
     val nav: NavViewModel = viewModel()
+    val addRecipeToFeedViewModel : AddRecipeToFeedViewModel = viewModel()
     val lazyListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     val closeSheet = {
@@ -71,9 +73,14 @@ fun SheetPages(keepScreenOn: (Boolean) -> Unit,reload: () -> Unit) {
         }
     }
 
-    LaunchedEffect(sheetState.currentDetent) {
-        if (sheetState.currentDetent == Hidden && nav.openSheet != OpenSheet.None) {
-            nav.closeSheet()
+    LaunchedEffect(sheetState.targetDetent) {
+        if (sheetState.targetDetent == Hidden && nav.openSheet != OpenSheet.None) {
+            if (nav.openSheet == OpenSheet.AddRecipeToFeed && addRecipeToFeedViewModel.ingredients.isNotEmpty()) {
+                nav.navigateTo(OpenAlert.Discard)
+                sheetState.targetDetent = halfExpanded
+            } else {
+                nav.closeSheet()
+            }
         }
     }
 
