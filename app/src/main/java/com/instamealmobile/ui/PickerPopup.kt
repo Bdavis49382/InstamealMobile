@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
@@ -25,6 +26,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.material3.Text
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
@@ -32,6 +35,7 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.instamealmobile.OpenAlert
 import com.instamealmobile.R
+import com.instamealmobile.data.ApiState
 import com.instamealmobile.viewModels.AddRecipeToFeedViewModel
 import com.instamealmobile.viewModels.NavViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -56,6 +60,7 @@ fun PickerPopup(popupIsOn: Boolean,imagePurpose: ImagePurpose, snackbarHostState
     val viewModel : AddRecipeToFeedViewModel = viewModel()
     val navViewModel : NavViewModel = viewModel()
     val context = LocalContext.current
+    val imgLinkState by viewModel.img_link.collectAsState()
 
     val pdfPickerLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) {
@@ -102,7 +107,7 @@ fun PickerPopup(popupIsOn: Boolean,imagePurpose: ImagePurpose, snackbarHostState
         Dialog(onDismissRequest = onDismiss) {
             Card(
                 modifier = Modifier
-                    .height(160.dp)
+                    .height(200.dp)
                     .fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
             ) {
@@ -146,6 +151,18 @@ fun PickerPopup(popupIsOn: Boolean,imagePurpose: ImagePurpose, snackbarHostState
                                 Icon(painter = painterResource(R.drawable.baseline_insert_link_24),"import from link")
                             }
                         }
+                    }
+                    if (imgLinkState is ApiState.Success) {
+                        if (imagePurpose == ImagePurpose.ImageStoring && (imgLinkState as ApiState.Success).data.isNotEmpty()) {
+                            Text("Or", modifier = Modifier.padding(bottom = 10.dp))
+                            Button({
+                                viewModel.img_link.value = ApiState.Resting
+                                onDismiss()
+                            }) {
+                                Text("Remove Image")
+                            }
+                        }
+
                     }
                 }
             }
