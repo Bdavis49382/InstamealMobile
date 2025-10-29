@@ -112,7 +112,7 @@ class MainActivity : ComponentActivity() {
                     else -> {
                         val id = intent?.getStringExtra("id")
                         if (id != null) {
-                            navViewModel.navigateTo(OpenSheet.ViewRecipe, RecipeIdentifier.MenuIndex(id.toInt()))
+                            navViewModel.navigateTo(OpenSheet.ViewRecipe, RecipeIdentifier.RecipeId(id))
                         }
                     }
                 }
@@ -127,6 +127,8 @@ class MainActivity : ComponentActivity() {
                         searchBarViewModel.getTags()
                         items.retry()
                     }
+                } else {
+                    menuViewModel.getMenu()
                 }
             }
              val darkColors = darkColorScheme(

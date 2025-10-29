@@ -21,8 +21,8 @@ interface MenuService {
     @GET("menu/online")
     @Headers("Cache-Control: public, max-age=" + 60 * 60 * 24) // cache lasts a whole day as these should almost never change
     suspend fun getRecipeOnline(@Query("link") link: String) : Recipe
-    @GET("menu/index/{index}")
-    suspend fun getRecipeByIndex( @Path("index") index: Int,@Header("Cache-Control") allowCache: String = "public, max-age=60") : MenuItem
+    @GET("menu/recipeId/{recipe_id}")
+    suspend fun getRecipeById( @Path("recipe_id") recipeId: String,@Header("Cache-Control") allowCache: String = "public, max-age=60") : MenuItem
     @POST("menu/")
     suspend fun addRecipe(@Body menu_item: MenuItem) : List<MenuListItem>
     @DELETE("menu/{recipe_id}")

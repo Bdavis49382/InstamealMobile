@@ -65,12 +65,10 @@ fun ViewRecipe(lazyListState: LazyListState, recipeIdentifier: RecipeIdentifier?
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
-        if (recipeIdentifier is RecipeIdentifier.MenuIndex) {
-            menuViewModel.getRecipe(recipeIdentifier.index)
-            recipeIndex = recipeIdentifier.index
+        if (recipeIdentifier is RecipeId) {
+            menuViewModel.getRecipe(recipeIdentifier.id)
         } else if (recipeIdentifier is RecipeIdentifier.FullRecipe) {
-            menuViewModel.getRecipe(recipeIdentifier.recipe.index, allowCache = false)
-            recipeIndex = recipeIdentifier.recipe.index
+            menuViewModel.getRecipe(recipeIdentifier.recipe.id.toString(), allowCache = false)
         } else {
             throw Exception("Tried to view a recipe without using the menu index. was ${recipeIdentifier?.javaClass.toString()}")
         }
@@ -97,7 +95,7 @@ fun ViewRecipe(lazyListState: LazyListState, recipeIdentifier: RecipeIdentifier?
                     AlarmItem(
                         alarmTime,
                         menuItem.recipe?.title ?: "",
-                        recipeIndex.toString(),
+                        menuItem.recipe_id.toString(),
                         R.drawable.baseline_calendar_today_24)
                 )
             }
