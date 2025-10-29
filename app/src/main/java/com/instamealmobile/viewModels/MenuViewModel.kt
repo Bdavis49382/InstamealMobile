@@ -1,6 +1,5 @@
 package com.instamealmobile.viewModels
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -160,7 +159,6 @@ class MenuViewModel @Inject constructor(private val apiService: MenuService): Vi
         scope.launch {
             try {
                 val response = if (allowCache) apiService.getRecipeById(recipeId) else apiService.getRecipeById(recipeId, allowCache = "no-cache")
-                Log.d("id",response.toString())
                 _selected.value = ApiState.Success(response)
             } catch (e: HttpException) {
                 if (e.code() == 400) {

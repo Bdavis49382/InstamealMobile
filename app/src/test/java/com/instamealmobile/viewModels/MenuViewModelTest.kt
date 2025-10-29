@@ -49,10 +49,10 @@ class MenuViewModelTest {
     fun getRecipe() = runTest {
         // Arrange
         val mock = mockk<MenuItem>()
-        coEvery { mockService.getRecipeByIndex(any())} returns mock
+        coEvery { mockService.getRecipeById(any())} returns mock
 
         // Act
-        viewModel.getRecipe(0)
+        viewModel.getRecipe("0")
 
         // Assert
         advanceUntilIdle()

@@ -90,7 +90,7 @@ fun ViewRecipe(lazyListState: LazyListState, recipeIdentifier: RecipeIdentifier?
                 Toast.makeText(context, "Date Updated", Toast.LENGTH_SHORT).show()
                 val alarmTime = LocalDateTime.of(
                     menuItem.date?.toInstant()?.atZone(ZoneId.systemDefault())?.toLocalDate(),
-                    LocalTime.of(11,18))
+                    LocalTime.of(17,0))
                 scheduler.schedule(
                     AlarmItem(
                         alarmTime,

@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.instamealmobile.OpenSheet
 import com.instamealmobile.data.MenuListItem
-import com.instamealmobile.data.RecipeIdentifier
+import com.instamealmobile.data.RecipeIdentifier.RecipeId
 import com.instamealmobile.viewModels.NavViewModel
 import java.time.LocalDate
 import java.time.ZoneId
@@ -50,7 +50,7 @@ fun MenuItemView(menuListItem: MenuListItem) {
                 .size(120.dp)
                 .clip(CircleShape)
                 .border(3.dp, MaterialTheme.colorScheme.primary, CircleShape)
-                .clickable { nav.navigateTo(OpenSheet.ViewRecipe, RecipeIdentifier.RecipeId(
+                .clickable { nav.navigateTo(OpenSheet.ViewRecipe, RecipeId(
                     menuListItem.recipe_id
                 ))},
         )
