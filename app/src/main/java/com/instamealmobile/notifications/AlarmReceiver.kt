@@ -21,7 +21,7 @@ class AlarmReceiver: BroadcastReceiver() {
         val message = intent.getStringExtra("message") ?: return
         val notificationService = MealNotificationService(context)
         runBlocking {
-            val menuItem = menuService.getRecipeByIndex(message.toInt())
+            val menuItem = menuService.getRecipeById(message)
             if (LocalDate.from(
                     menuItem.date?.toInstant()?.atZone(ZoneId.systemDefault())
                 ) == LocalDateTime.now().toLocalDate()

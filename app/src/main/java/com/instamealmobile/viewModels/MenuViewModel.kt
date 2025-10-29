@@ -1,5 +1,6 @@
 package com.instamealmobile.viewModels
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -73,21 +74,18 @@ class MenuViewModel @Inject constructor(private val apiService: MenuService): Vi
                     img_link = recipe.img_link,
                 ))
                 response.forEachIndexed {index, value -> value.index  = index}
-                val recipeIndex = response.indexOfFirst { it.recipe_id == recipe.id}
-                // If recipe index is valid and a date was provided, set an alert for a reminder notification.
-                if (recipeIndex != -1) {
-                    getLocalDate()?.let {
-                        val alarmTime = LocalDateTime.of(
-                            it.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
-                            LocalTime.of(17,0))
-                        scheduler.schedule(
-                            AlarmItem(
-                                alarmTime,
-                                recipe.title,
-                                recipeIndex.toString(),
-                                R.drawable.baseline_calendar_today_24)
-                        )
-                    }
+                // If a date was provided, set an alert for a reminder notification.
+                getLocalDate()?.let {
+                    val alarmTime = LocalDateTime.of(
+                        it.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
+                        LocalTime.of(17,0))
+                    scheduler.schedule(
+                        AlarmItem(
+                            alarmTime,
+                            recipe.title,
+                            recipe.id.toString(),
+                            R.drawable.baseline_calendar_today_24)
+                    )
 
                 }
                 _menu.value = ApiState.Success(response)
@@ -157,11 +155,12 @@ class MenuViewModel @Inject constructor(private val apiService: MenuService): Vi
         }
     }
 
-    fun getRecipe(index: Int, allowCache: Boolean = true) {
+    fun getRecipe(recipeId: String, allowCache: Boolean = true) {
         _selected.value = ApiState.Loading
         scope.launch {
             try {
-                val response = if (allowCache) apiService.getRecipeByIndex(index) else apiService.getRecipeByIndex(index, allowCache = "no-cache")
+                val response = if (allowCache) apiService.getRecipeById(recipeId) else apiService.getRecipeById(recipeId, allowCache = "no-cache")
+                Log.d("id",response.toString())
                 _selected.value = ApiState.Success(response)
             } catch (e: HttpException) {
                 if (e.code() == 400) {

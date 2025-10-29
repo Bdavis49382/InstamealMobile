@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -111,8 +112,9 @@ class MainActivity : ComponentActivity() {
                     }
                     else -> {
                         val id = intent?.getStringExtra("id")
+                        Log.d("id",id.toString())
                         if (id != null) {
-                            navViewModel.navigateTo(OpenSheet.ViewRecipe, RecipeIdentifier.MenuIndex(id.toInt()))
+                            navViewModel.navigateTo(OpenSheet.ViewRecipe, RecipeIdentifier.RecipeId(id))
                         }
                     }
                 }
@@ -127,6 +129,8 @@ class MainActivity : ComponentActivity() {
                         searchBarViewModel.getTags()
                         items.retry()
                     }
+                } else {
+                    menuViewModel.getMenu()
                 }
             }
              val darkColors = darkColorScheme(

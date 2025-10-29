@@ -39,14 +39,8 @@ import com.instamealmobile.viewModels.MenuViewModel
 @Composable
 fun Menu() {
     val viewModel: MenuViewModel =  viewModel()
-    val authViewModel: AuthViewModel = viewModel()
     val menuState by viewModel.menu.collectAsState()
 
-    LaunchedEffect(Unit) {
-        if (authViewModel.checkLogin()) {
-            viewModel.getMenu()
-        }
-    }
     Crossfade(targetState = menuState) {menuState ->
         Box(modifier = Modifier
             .height(200.dp)

@@ -5,7 +5,6 @@ sealed class RecipeIdentifier() {
     data class RecipeLink(val link: String, val tags: List<String>) : RecipeIdentifier()
     data class FullRecipe(val recipe: Recipe): RecipeIdentifier()
     data class RecipeContent(val recipe: Recipe): RecipeIdentifier()
-    data class MenuIndex(val index: Int): RecipeIdentifier()
     companion object {
         fun factory(recipe: Recipe?): RecipeIdentifier? {
             return if(recipe == null) {
