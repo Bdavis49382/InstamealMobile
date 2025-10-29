@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -122,6 +123,28 @@ fun AddRecipeToMenu(recipe : Recipe, confirm: () -> Unit) {
                 style = TextStyle(fontSize = 25.sp),
                 modifier = Modifier.fillMaxWidth()
             )
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxWidth()) {
+                Text("Already stocked up?", modifier = Modifier.padding(end = 10.dp))
+                OutlinedButton({
+                    val removedIngredients = viewModel.ingredients.toList()
+                    viewModel.ingredients.clear()
+                    scope.launch {
+                        val result = snackbarHostState.showSnackbar(
+                            message = "Removed ${removedIngredients.size} items from list",
+                            actionLabel = "Undo"
+                        )
+                        if (result == SnackbarResult.ActionPerformed) {
+                            if (removedIngredients.isNotEmpty()) {
+                                viewModel.ingredients.addAll(removedIngredients)
+                            }
+                        }
+
+                    }
+                }) {
+                    Text("Remove All")
+                }
+            }
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(10.dp),
                 modifier = Modifier

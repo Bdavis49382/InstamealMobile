@@ -21,7 +21,7 @@ tasks.withType<Test> {
 
 android {
     namespace = "com.instamealmobile"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.instamealmobile"
