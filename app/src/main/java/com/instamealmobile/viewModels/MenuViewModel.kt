@@ -94,10 +94,10 @@ class MenuViewModel @Inject constructor(private val apiService: MenuService): Vi
         }
     }
 
-    fun updateMenuItem(index: Int,menuItem: MenuItem) {
+    fun updateMenuItem(recipeId: String,menuItem: MenuItem) {
         scope.launch {
             try {
-                val response = apiService.updateRecipeByIndex(index, menuItem)
+                val response = apiService.updateRecipeByRecipeId(recipeId, menuItem)
                 _selected.value = ApiState.Success(response)
                 getMenu(allowCache = false)
             } catch (e: Exception) {

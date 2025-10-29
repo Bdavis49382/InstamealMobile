@@ -32,6 +32,6 @@ interface MenuService {
         @Path("recipe_id") recipe_id: String,
         @Query("rating") rating: Float?
     ) : List<MenuListItem>
-    @PATCH("menu/index/{index}")
-    suspend fun updateRecipeByIndex( @Path("index") index: Int, @Body menu_item: MenuItem) : MenuItem
+    @PATCH("menu/recipeId/{recipe_id}")
+    suspend fun updateRecipeByRecipeId(@Path("recipe_id") recipeId: String, @Body menu_item: MenuItem) : MenuItem
 }

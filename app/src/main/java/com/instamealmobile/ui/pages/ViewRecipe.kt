@@ -86,7 +86,7 @@ fun ViewRecipe(lazyListState: LazyListState, recipeIdentifier: RecipeIdentifier?
                 val menuItem = (menuItemState as ApiState.Success<MenuItem>).data
                 menuViewModel.date = it ?: 0
                 menuItem.date = menuViewModel.getLocalDate()
-                menuViewModel.updateMenuItem(recipeIndex, menuItem)
+                menuViewModel.updateMenuItem(menuItem.recipe_id.toString(), menuItem)
                 Toast.makeText(context, "Date Updated", Toast.LENGTH_SHORT).show()
                 val alarmTime = LocalDateTime.of(
                     menuItem.date?.toInstant()?.atZone(ZoneId.systemDefault())?.toLocalDate(),
@@ -117,7 +117,7 @@ fun ViewRecipe(lazyListState: LazyListState, recipeIdentifier: RecipeIdentifier?
                                 maxLines = 1,
                                 placeholder = "Enter Note (Optional)") {
                                 menuItem.note = it
-                                menuViewModel.updateMenuItem(recipeIndex, menuItem)
+                                menuViewModel.updateMenuItem(menuItem.recipe_id.toString(), menuItem)
                                 Toast.makeText(context, "Menu Entry Note Updated", Toast.LENGTH_SHORT).show()
                             }
                             Row(verticalAlignment = Alignment.CenterVertically,
