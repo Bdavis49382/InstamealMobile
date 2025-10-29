@@ -21,14 +21,14 @@ tasks.withType<Test> {
 
 android {
     namespace = "com.instamealmobile"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.instamealmobile"
         minSdk = 26
         targetSdk = 35
-        versionCode = 7
-        versionName = "7"
+        versionCode = 8
+        versionName = "8"
 
         buildConfigField("String", "GOOGLE_CLIENT_ID", "\"$googleClientId\"")
         buildConfigField("String", "BACKEND_URL", "\"$backendURL\"")

@@ -78,9 +78,12 @@ fun SheetPages(keepScreenOn: (Boolean) -> Unit,reload: () -> Unit) {
             if (nav.openSheet == OpenSheet.AddRecipeToFeed && addRecipeToFeedViewModel.ingredients.isNotEmpty()) {
                 nav.navigateTo(OpenAlert.Discard)
                 sheetState.targetDetent = halfExpanded
-            } else {
-                nav.closeSheet()
             }
+        }
+    }
+    LaunchedEffect(sheetState.currentDetent) {
+        if (sheetState.currentDetent == Hidden && nav.openSheet != OpenSheet.None) {
+            nav.closeSheet()
         }
     }
 

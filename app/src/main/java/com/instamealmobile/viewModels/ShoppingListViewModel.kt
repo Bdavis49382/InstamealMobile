@@ -1,5 +1,6 @@
 package com.instamealmobile.viewModels
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -23,6 +24,8 @@ class ShoppingListViewModel @Inject constructor(private val apiService: Shopping
     val localList = mutableStateListOf<ShoppingItem>()
     val latestMove = mutableStateOf<Pair<String,Int>?>(null)
     val lastChange = mutableStateOf(0)
+    var newItemText = mutableStateOf("")
+    var suggestions = mutableStateListOf<String>()
     var scope = viewModelScope
 
     fun fetchShoppingList() {
@@ -33,6 +36,17 @@ class ShoppingListViewModel @Inject constructor(private val apiService: Shopping
                 apply(response)
             } catch (e: Exception) {
                 _shoppingList.value = ApiState.Error("Failed to fetch data: ${e.message}")
+            }
+        }
+    }
+
+    fun getSuggestions() {
+        scope.launch {
+            try {
+                suggestions.clear()
+                suggestions.addAll(apiService.getSuggestions())
+            } catch (e: Exception) {
+                Log.e("Suggestions","suggestions did not load correctly: ${e.message}")
             }
         }
     }

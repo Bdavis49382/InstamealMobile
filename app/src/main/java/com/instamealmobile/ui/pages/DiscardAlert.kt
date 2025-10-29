@@ -38,7 +38,7 @@ fun DiscardAlert() {
             Column(verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxSize()) {
-                Text("Leaving this page will discard your recipe in progress.",
+                Text("Leaving this page will discard any changes in progress.",
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth(.8f))
                 Row(modifier = Modifier.padding(top = 15.dp)) {

@@ -16,6 +16,8 @@ interface ShoppingListService {
     suspend fun getShoppingList() : List<ShoppingItem>
     @POST("shopping-list/")
     suspend fun postShoppingList(@Body item: ShoppingItem) : List<ShoppingItem>
+    @GET("shopping-list/suggestions")
+    suspend fun getSuggestions() : List<String>
     @POST("shopping-list/check/{id}")
     suspend fun checkItem(@Path("id") id: String) : List<ShoppingItem>
     @PUT("shopping-list/{id}")
