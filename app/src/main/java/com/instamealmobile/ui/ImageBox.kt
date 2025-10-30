@@ -83,7 +83,8 @@ fun ImageBox(openPopup: () -> Unit) {
                         }, modifier = Modifier.padding(vertical = 80.dp)) {
                             Icon(
                                 painter = painterResource(R.drawable.baseline_add_a_photo_24),
-                                contentDescription = "Add Photo"
+                                contentDescription = "Add Photo",
+                                tint = MaterialTheme.colorScheme.onBackground
                             )
                         }
                     }

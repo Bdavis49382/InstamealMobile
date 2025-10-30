@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
@@ -125,30 +126,35 @@ fun PickerPopup(popupIsOn: Boolean,imagePurpose: ImagePurpose, snackbarHostState
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         modifier = Modifier.fillMaxWidth()
                         ) {
-                        OutlinedButton({
+                        OutlinedButton(
+                            onClick = {
                             cameraLauncher.launch(cameraUri.value!!)
                             onDismiss()
                         }) {
-                            Icon(painter = painterResource(R.drawable.baseline_photo_camera_24),"camera")
+                            Icon(painter = painterResource(R.drawable.baseline_photo_camera_24),"camera",
+                                tint = MaterialTheme.colorScheme.onBackground)
                         }
                         OutlinedButton({
                             pickerLauncher.launch("image/*")
                             onDismiss()
                         }) {
-                            Icon(painter = painterResource(R.drawable.baseline_image_search_24),"image search")
+                            Icon(painter = painterResource(R.drawable.baseline_image_search_24),"image search",
+                                tint = MaterialTheme.colorScheme.onBackground)
                         }
                         if (imagePurpose == ImagePurpose.TextParsing) {
                             OutlinedButton({
                                 pdfPickerLauncher.launch(arrayOf("application/pdf"))
                                 onDismiss()
                             }) {
-                                Icon(painter = painterResource(R.drawable.baseline_picture_as_pdf_24),"pdf search")
+                                Icon(painter = painterResource(R.drawable.baseline_picture_as_pdf_24),"pdf search",
+                                    tint = MaterialTheme.colorScheme.onBackground)
                             }
                             OutlinedButton({
                                 navViewModel.openAlert = OpenAlert.Link
                                 onDismiss()
                             }) {
-                                Icon(painter = painterResource(R.drawable.baseline_insert_link_24),"import from link")
+                                Icon(painter = painterResource(R.drawable.baseline_insert_link_24),"import from link",
+                                    tint = MaterialTheme.colorScheme.onBackground)
                             }
                         }
                     }

@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -74,7 +75,8 @@ fun InviteToHousehold() {
                                     Toast.makeText(context, "Join Code Added to Clipboard", Toast.LENGTH_SHORT).show()
                                 }
                             }) {
-                                Icon(painter = painterResource(R.drawable.baseline_content_copy_24),"Copy Code")
+                                Icon(painter = painterResource(R.drawable.baseline_content_copy_24),"Copy Code",
+                                    tint = MaterialTheme.colorScheme.onBackground)
                             }
                             Text(code, fontSize = 25.sp, modifier = Modifier.padding(start = 5.dp))
                         }

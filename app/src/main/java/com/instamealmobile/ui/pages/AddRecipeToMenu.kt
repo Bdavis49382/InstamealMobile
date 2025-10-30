@@ -14,7 +14,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
@@ -29,6 +31,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -141,7 +144,14 @@ fun AddRecipeToMenu(recipe : Recipe, confirm: () -> Unit) {
                         }
 
                     }
-                }) {
+                },
+                    colors = ButtonColors(
+                        contentColor = MaterialTheme.colorScheme.onBackground,
+                        containerColor = Color.Transparent,
+                        disabledContentColor = MaterialTheme.colorScheme.onBackground,
+                        disabledContainerColor = Color.Transparent
+                    )
+                ) {
                     Text("Remove All")
                 }
             }
